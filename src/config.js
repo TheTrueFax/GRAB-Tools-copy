@@ -1,0 +1,7 @@
+export const GRAB_SERVER_URL = 'https://api.slin.dev/grab/v1/';
+export const GRAB_DATA_URL = 'https://grab-data.slin.dev/';
+export const GRAB_IMAGES_URL = 'https://grab-images.slin.dev/';
+export const GRAB_PAGE_URL = 'https://grabvr.quest/';
+
+export const LIVE_PAGE_URL = 'https://grabvr.tools/';
+export const DEV_PAGE_URL = 'https://localhost:5173/';

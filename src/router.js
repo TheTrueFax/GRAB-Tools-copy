@@ -1,0 +1,38 @@
+import { createRouter, createWebHistory } from 'vue-router';
+
+import MainLayout from '#layouts/MainLayout.vue';
+import PlainLayout from '#layouts/PlainLayout.vue';
+
+import HomePage from '#pages/HomePage.vue';
+import StatsPage from '#pages/StatsPage.vue';
+import ToolsPage from '#pages/ToolsPage.vue';
+import GamesPage from '#pages/GamesPage.vue';
+import ErrorPage from '#pages/ErrorPage.vue';
+import EditorPage from '#pages/EditorPage.vue';
+
+const routes = [
+	{
+		path: '/',
+		component: MainLayout,
+		children: [
+			{ path: '', component: HomePage },
+			{ path: 'stats', component: StatsPage },
+			{ path: 'tools', component: ToolsPage },
+			{ path: 'games', component: GamesPage },
+			{ path: 'error', component: ErrorPage },
+		],
+	},
+	{
+		path: '/editor',
+		component: PlainLayout,
+		children: [{ path: '', component: EditorPage }],
+	},
+	{ path: '/:pathMatch(.*)*', redirect: '/error' },
+];
+
+const router = createRouter({
+	history: createWebHistory(),
+	routes: routes,
+});
+
+export default router;

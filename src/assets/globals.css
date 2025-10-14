@@ -1,0 +1,40 @@
+/* TODO: move to head */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap');
+
+:root {
+	--text-color-default: #5b5f64;
+	--text-color-alt: #618dc3;
+	--text-color-accent: #4683ce;
+	--background-color-default: #dee7ec;
+	--background-color-alt: #aec7de;
+	--text-color-link: #2f81f7;
+	--border-color: #5b5f6488;
+	--font-weight-default: 400;
+	--font-weight-bold: 600;
+	--font-family-default: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana,
+		sans-serif;
+	--font-family-alt: 'Fira Code', 'Segoe UI', Tahoma, Geneva, Verdana,
+		sans-serif;
+	--border-radius: 0.375rem;
+	--border-radius-big: 23.8px;
+	--padding-main: 16px;
+	--padding-secondary: 8px;
+	--padding-extra: 32px;
+	--font-size-default: 16px;
+	--font-size-alt: 14px;
+	--font-size-small: 12px;
+	--font-size-big: 24px;
+	--font-size-xl: 48px;
+
+	--first-color: #d4982955;
+	--second-color: #81818155;
+	--third-color: #dd710d55;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: var(--font-family-default);
+}
