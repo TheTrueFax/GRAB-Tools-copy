@@ -19,7 +19,7 @@ const routes = [
 			{ path: 'stats', component: StatsPage },
 			{ path: 'tools', component: ToolsPage },
 			{ path: 'games', component: GamesPage },
-			{ path: 'error', component: ErrorPage },
+			{ path: ':pathMatch(.*)*', component: ErrorPage },
 		],
 	},
 	{
@@ -27,7 +27,6 @@ const routes = [
 		component: PlainLayout,
 		children: [{ path: '', component: EditorPage }],
 	},
-	{ path: '/:pathMatch(.*)*', redirect: '/error' },
 ];
 
 const router = createRouter({
