@@ -76,14 +76,16 @@
 	let layout = false;
 	console.log(`Domain: ${domain}\nPath: ${path}\nQuery: ${query}`);
 
-	if (domain === 'grab-tools.live') {
+	if (domain === 'grabvr.tools') {
 		grabToolsScript();
 	} else if (domain === 'grabvr.quest') {
 		grabVRScript();
 	}
 
 	function checkForUpdates() {
-		fetch('https://grab-tools.live/extensionVersion.json')
+		fetch(
+			'https://raw.githubusercontent.com/twhlynch/grab-tools-extension/refs/heads/main/chrome-extension/manifest.json',
+		)
 			.then((response) => response.json())
 			.then((data) => {
 				if (
@@ -287,7 +289,7 @@
 			editButton.setAttribute('target', '_blank');
 			editButton.setAttribute(
 				'href',
-				`https://grab-tools.live/editor?level=${levelId}`,
+				`https://grabvr.tools/editor?level=${levelId}`,
 			);
 			editButton.textContent = 'Edit JSON';
 
@@ -296,7 +298,7 @@
 			downloadButton.setAttribute('target', '_blank');
 			downloadButton.setAttribute(
 				'href',
-				`https://grab-tools.live/download?level=${levelId}`,
+				`https://grabvr.tools/download?level=${levelId}`,
 			);
 			downloadButton.textContent = 'Download';
 
@@ -334,7 +336,7 @@
 			editButton.setAttribute('target', '_blank');
 			editButton.setAttribute(
 				'href',
-				`https://grab-tools.live/editor?level=${levelId}`,
+				`https://grabvr.tools/editor?level=${levelId}`,
 			);
 			editButton.textContent = 'Edit JSON';
 
@@ -343,7 +345,7 @@
 			downloadButton.setAttribute('target', '_blank');
 			downloadButton.setAttribute(
 				'href',
-				`https://grab-tools.live/download?level=${levelId}`,
+				`https://grabvr.tools/download?level=${levelId}`,
 			);
 			downloadButton.textContent = 'Download';
 
