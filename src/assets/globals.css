@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap');
+@import url('./leaderboards.css');
 
 :root {
 	--text-color-default: #5b5f64;
@@ -46,17 +47,15 @@
 	font-family: var(--font-family-default);
 }
 
-/* MARK: Scrollbar */
-::-webkit-scrollbar {
-	width: 10px;
-	height: 10px;
-}
-::-webkit-scrollbar-track {
-	background: var(--background-color-alt);
-}
+*::-webkit-scrollbar,
+::-webkit-scrollbar,
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-thumb {
-	background: var(--text-color-default);
-}
-::-webkit-scrollbar-thumb:hover {
-	background: var(--text-color-alt);
+	width: 0;
+	height: 0;
+	display: none;
+	appearance: none;
+	-webkit-appearance: none;
 }

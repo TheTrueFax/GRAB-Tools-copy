@@ -6,6 +6,7 @@ import PlainLayout from '#layouts/PlainLayout.vue';
 import HomePage from '#pages/HomePage.vue';
 import StatsPage from '#pages/StatsPage.vue';
 import ToolsPage from '#pages/ToolsPage.vue';
+import ListPage from '#pages/ListPage.vue';
 import GamesPage from '#pages/GamesPage.vue';
 import ErrorPage from '#pages/ErrorPage.vue';
 import PrivacyPage from '#pages/PrivacyPage.vue';
@@ -19,6 +20,7 @@ const routes = [
 			{ path: '', component: HomePage },
 			{ path: 'stats', component: StatsPage },
 			{ path: 'tools', component: ToolsPage },
+			{ path: 'list', component: ListPage },
 			{ path: 'games', component: GamesPage },
 			{ path: 'privacy', component: PrivacyPage },
 			{ path: ':pathMatch(.*)*', component: ErrorPage },

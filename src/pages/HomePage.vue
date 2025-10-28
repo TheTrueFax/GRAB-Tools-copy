@@ -76,7 +76,7 @@ export default {
 				>JSON Level Editor</a
 			>
 			<a class="button" href="/search" target="_blank">Advanced Search</a>
-			<a class="button" href="/list" target="_blank">
+			<a class="button" href="/list">
 				<GHLLogoIcon class="ghl-icon" />
 				Hardest Levels
 			</a>
@@ -209,10 +209,12 @@ export default {
 }
 </style>
 <style>
-.ghl-icon svg,
-.ghl-icon {
-	width: 21px;
-	height: 21px;
-	color: #ffdf5b;
+#tools {
+	.ghl-icon svg,
+	.ghl-icon {
+		width: 21px;
+		height: 21px;
+		color: #ffdf5b;
+	}
 }
 </style>
