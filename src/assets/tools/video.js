@@ -2,6 +2,10 @@ import encoding from '@/assets/tools/encoding.js';
 
 const VIDEO_SERVER_URL = 'https://dotindex.pythonanywhere.com/process_video';
 
+/**
+ * @param {File} nodes - A video file
+ * @returns {Promise<Array<Object>>} - A list of level nodes
+ */
 async function video(file) {
 	const formData = new FormData();
 	formData.append('file', file);

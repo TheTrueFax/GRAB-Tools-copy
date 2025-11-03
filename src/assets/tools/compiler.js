@@ -9,6 +9,10 @@ function traverseNode(node, func, parent = null) {
 	}
 }
 
+/**
+ * @param {Array<Object>} levels - A list of levels
+ * @returns {Array<Object>} - A list of level nodes
+ */
 function compile(levels) {
 	const values = levels.map((level) => {
 		return group.groupNodes(level.levelNodes);

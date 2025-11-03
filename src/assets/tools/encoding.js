@@ -1,5 +1,8 @@
 import protobuf from 'protobufjs';
 
+/**
+ * @returns {Promise<protobuf.Root>} - The level message root
+ */
 async function load() {
 	if (window._root === undefined) {
 		const root = await protobuf.load('proto/proto.proto');
@@ -9,6 +12,10 @@ async function load() {
 	return window._root;
 }
 
+/**
+ * @param {ArrayBuffer} buffer - A level as a buffer
+ * @returns {Promise<Object>} - A level decoded to json
+ */
 async function decodeLevel(buffer) {
 	const data = await new Promise((resolve, reject) => {
 		const reader = new FileReader();
@@ -24,6 +31,10 @@ async function decodeLevel(buffer) {
 	return message.toObject(decoded);
 }
 
+/**
+ * @param {Object} level - A level as json
+ * @returns {Promise<ArrayBuffer>} - A level encoded as a buffer
+ */
 async function encodeLevel(level) {
 	const root = await load();
 	const message = root.lookupType('COD.Level.Level');
@@ -37,6 +48,9 @@ async function encodeLevel(level) {
 	return message.encode(message.fromObject(level)).finish();
 }
 
+/**
+ * @param {ArrayBuffer} buffer - A level as a buffer
+ */
 function downloadLevel(buffer, name = Date.now().toString().slice(0, -3)) {
 	let blob = new Blob([buffer], {
 		type: 'application/octet-stream',
@@ -48,6 +62,9 @@ function downloadLevel(buffer, name = Date.now().toString().slice(0, -3)) {
 	link.click();
 }
 
+/**
+ * @returns {Array<Object>} - A level json
+ */
 function createLevel(
 	nodes = [],
 	title = 'New Level',
