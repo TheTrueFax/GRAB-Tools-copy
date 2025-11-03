@@ -2,12 +2,12 @@
 import { mapState } from 'pinia';
 import { useUserStore } from '@/stores/user';
 
-import Bookmarklet from '#components/Bookmarklet.vue';
-import GHLLogoIcon from '#icons/GHLLogoIcon.vue';
-import GithubIcon from '#icons/GithubIcon.vue';
-import MailIcon from '#icons/MailIcon.vue';
-import YoutubeIcon from '#icons/YoutubeIcon.vue';
-import DiscordAltIcon from '#icons/DiscordAltIcon.vue';
+import Bookmarklet from '@/components/Bookmarklet.vue';
+import GHLLogoIcon from '@/icons/GHLLogoIcon.vue';
+import GithubIcon from '@/icons/GithubIcon.vue';
+import MailIcon from '@/icons/MailIcon.vue';
+import YoutubeIcon from '@/icons/YoutubeIcon.vue';
+import DiscordAltIcon from '@/icons/DiscordAltIcon.vue';
 
 export default {
 	components: {

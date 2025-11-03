@@ -1,10 +1,10 @@
 <script>
-import HouseIcon from '#icons/HouseIcon.vue';
-import StatsIcon from '#icons/StatsIcon.vue';
-import ToolsIcon from '#icons/ToolsIcon.vue';
-import RocketIcon from '#icons/RocketIcon.vue';
-import DiscordIcon from '#icons/DiscordIcon.vue';
-import GlobeIcon from '#icons/GlobeIcon.vue';
+import HouseIcon from '@/icons/HouseIcon.vue';
+import StatsIcon from '@/icons/StatsIcon.vue';
+import ToolsIcon from '@/icons/ToolsIcon.vue';
+import RocketIcon from '@/icons/RocketIcon.vue';
+import DiscordIcon from '@/icons/DiscordIcon.vue';
+import GlobeIcon from '@/icons/GlobeIcon.vue';
 
 export default {
 	components: {

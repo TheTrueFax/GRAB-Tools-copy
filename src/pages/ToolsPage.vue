@@ -2,20 +2,20 @@
 import { mapState } from 'pinia';
 import { useUserStore } from '@/stores/user';
 
-import ShrinkIcon from '#icons/ShrinkIcon.vue';
-import BrushIcon from '#icons/BrushIcon.vue';
-import DownloadsIcon from '#icons/DownloadsIcon.vue';
-import PalletteIcon from '#icons/PalletteIcon.vue';
-import XMLIcon from '#icons/XMLIcon.vue';
-import ChatIcon from '#icons/ChatIcon.vue';
-import CubeIcon from '#icons/CubeIcon.vue';
-import GrowIcon from '#icons/GrowIcon.vue';
-import PlayIcon from '#icons/PlayIcon.vue';
+import ShrinkIcon from '@/icons/ShrinkIcon.vue';
+import BrushIcon from '@/icons/BrushIcon.vue';
+import DownloadsIcon from '@/icons/DownloadsIcon.vue';
+import PalletteIcon from '@/icons/PalletteIcon.vue';
+import XMLIcon from '@/icons/XMLIcon.vue';
+import ChatIcon from '@/icons/ChatIcon.vue';
+import CubeIcon from '@/icons/CubeIcon.vue';
+import GrowIcon from '@/icons/GrowIcon.vue';
+import PlayIcon from '@/icons/PlayIcon.vue';
 
-import Bookmarklet from '#components/Bookmarklet.vue';
+import Bookmarklet from '@/components/Bookmarklet.vue';
 
-import LevelCompiler from '#tools/LevelCompiler.vue';
-import VideoGenerator from '#tools/VideoGenerator.vue';
+import LevelCompiler from '@/tools/LevelCompiler.vue';
+import VideoGenerator from '@/tools/VideoGenerator.vue';
 
 export default {
 	components: {

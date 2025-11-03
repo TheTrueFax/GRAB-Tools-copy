@@ -2,9 +2,9 @@
 import { mapState } from 'pinia';
 import { useUserStore } from '@/stores/user';
 
-import GHLLogoIcon from '#icons/GHLLogoIcon.vue';
-import MapIcon from '#icons/MapIcon.vue';
-import PeopleIcon from '#icons/PeopleIcon.vue';
+import GHLLogoIcon from '@/icons/GHLLogoIcon.vue';
+import MapIcon from '@/icons/MapIcon.vue';
+import PeopleIcon from '@/icons/PeopleIcon.vue';
 
 export default {
 	components: {

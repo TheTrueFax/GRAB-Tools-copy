@@ -1,6 +1,6 @@
 <script>
-import encoding from '#assets/tools/encoding.js';
-import video from '#assets/tools/video.js';
+import encoding from '@/assets/tools/encoding.js';
+import video from '@/assets/tools/video.js';
 
 export default {
 	methods: {

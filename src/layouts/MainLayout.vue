@@ -2,7 +2,7 @@
 import { mapState } from 'pinia';
 import { useUserStore } from '@/stores/user';
 
-import NavMenu from '#components/NavMenu.vue';
+import NavMenu from '@/components/NavMenu.vue';
 
 export default {
 	components: {
