@@ -1,4 +1,4 @@
-import encoding from '#assets/tools/encoding.js';
+import encoding from '@/assets/tools/encoding.js';
 
 const VIDEO_SERVER_URL = 'https://dotindex.pythonanywhere.com/process_video';
 
