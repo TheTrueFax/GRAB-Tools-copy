@@ -13,12 +13,14 @@ import Bookmarklet from '@/components/Bookmarklet.vue';
 
 import LevelCompiler from '@/tools/LevelCompiler.vue';
 import VideoGenerator from '@/tools/VideoGenerator.vue';
+import SVGDrawer from '@/tools/SVGDrawer.vue';
 
 export default {
 	components: {
 		Bookmarklet,
 		LevelCompiler,
 		VideoGenerator,
+		SVGDrawer,
 		ShrinkIcon,
 		BrushIcon,
 		DownloadsIcon,
@@ -97,6 +99,14 @@ export default {
 			</button>
 			<button
 				class="button"
+				id="svg-tool-button"
+				@click="selectTool('svg')"
+			>
+				Draw SVG
+				<BrushIcon />
+			</button>
+			<button
+				class="button"
 				id="video-generator-tool-button"
 				@click="selectTool('video-generator')"
 			>
@@ -155,6 +165,7 @@ export default {
 		<section id="tools">
 			<LevelCompiler id="level-compiler-tool" />
 			<VideoGenerator id="video-generator-tool" />
+			<SVGDrawer id="svg-tool" />
 			<div id="custom-colors-tool">
 				<h2>Custom Colors</h2>
 				<p>
