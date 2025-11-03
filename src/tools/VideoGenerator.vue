@@ -36,7 +36,7 @@ export default {
 </script>
 
 <template>
-	<div id="video-section">
+	<div>
 		<h2>Video Generator (Mp42Grab)</h2>
 		<p>
 			15 second max length. Output will always be 20x20. This is a demo of
