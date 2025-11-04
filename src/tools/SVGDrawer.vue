@@ -39,7 +39,7 @@ export default {
 		<h2>SVG Drawer</h2>
 		<p>Convert simple SVG images into their built paths.</p>
 		<div>
-			<input type="file" id="svg-tool-file" />
+			<input type="file" id="svg-tool-file" accept=".svg" />
 			<button class="button" id="svg-tool-btn" @click="draw">
 				Process
 			</button>

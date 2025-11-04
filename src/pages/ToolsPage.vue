@@ -201,7 +201,8 @@ export default {
 		display: flex;
 	}
 	input,
-	textarea {
+	textarea,
+	select {
 		padding: 5px;
 		background-color: #5f8cc235;
 		border: solid 2px #4683ce70;

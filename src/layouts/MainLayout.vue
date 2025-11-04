@@ -89,7 +89,7 @@ svg {
 	background-color: #0000;
 	cursor: pointer;
 	transition: background-color 0.2s ease-in-out;
-	:hover {
+	&:hover {
 		background-color: #5f8cc213;
 	}
 }
