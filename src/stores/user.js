@@ -33,9 +33,6 @@ export const useUserStore = defineStore('user', {
 				state.user?.is_verifier
 			);
 		},
-		user_id: (state) => {
-			return state.user?.user_id;
-		},
 		user_info: (state) => {
 			return state.user;
 		},

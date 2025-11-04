@@ -11,6 +11,7 @@ import GamesPage from '@/pages/GamesPage.vue';
 import ErrorPage from '@/pages/ErrorPage.vue';
 import PrivacyPage from '@/pages/PrivacyPage.vue';
 import EditorPage from '@/pages/EditorPage.vue';
+import DownloadPage from '@/pages/DownloadPage.vue';
 
 const routes = [
 	{
@@ -22,6 +23,7 @@ const routes = [
 			{ path: 'tools', component: ToolsPage },
 			{ path: 'list', component: ListPage },
 			{ path: 'games', component: GamesPage },
+			{ path: 'download', component: DownloadPage },
 			{ path: 'privacy', component: PrivacyPage },
 			{ path: ':pathMatch(.*)*', component: ErrorPage },
 		],

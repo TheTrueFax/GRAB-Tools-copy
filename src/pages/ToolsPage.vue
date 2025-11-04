@@ -6,7 +6,6 @@ import PalletteIcon from '@/icons/PalletteIcon.vue';
 import XMLIcon from '@/icons/XMLIcon.vue';
 import ChatIcon from '@/icons/ChatIcon.vue';
 import CubeIcon from '@/icons/CubeIcon.vue';
-import GrowIcon from '@/icons/GrowIcon.vue';
 import PlayIcon from '@/icons/PlayIcon.vue';
 
 import Bookmarklet from '@/components/Bookmarklet.vue';
@@ -17,6 +16,7 @@ import VideoGenerator from '@/tools/VideoGenerator.vue';
 import SVGDrawer from '@/tools/SVGDrawer.vue';
 import LevelJSON from '@/tools/LevelJSON.vue';
 import PointCloud from '@/tools/PointCloud.vue';
+import LevelDownloader from '@/tools/LevelDownloader.vue';
 
 export default {
 	components: {
@@ -27,6 +27,7 @@ export default {
 		SVGDrawer,
 		LevelJSON,
 		PointCloud,
+		LevelDownloader,
 		ShrinkIcon,
 		BrushIcon,
 		DownloadsIcon,
@@ -34,7 +35,6 @@ export default {
 		XMLIcon,
 		ChatIcon,
 		CubeIcon,
-		GrowIcon,
 		PlayIcon,
 	},
 	methods: {
@@ -159,14 +159,6 @@ export default {
 				Point Cloud
 				<CubeIcon />
 			</button>
-			<button
-				class="button"
-				id="explode-tool-button"
-				@click="selectTool('explode')"
-			>
-				Explode
-				<GrowIcon />
-			</button>
 		</section>
 		<section id="tools">
 			<LevelCompiler id="level-compiler-tool" />
@@ -175,6 +167,7 @@ export default {
 			<LevelJSON id="level-json-tool" />
 			<ImageGenerator id="image-generator-tool" />
 			<PointCloud id="point-cloud-tool" />
+			<LevelDownloader id="download-tool" />
 			<div id="custom-colors-tool">
 				<h2>Custom Colors</h2>
 				<p>
