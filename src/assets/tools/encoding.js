@@ -63,6 +63,20 @@ function downloadLevel(buffer, name = Date.now().toString().slice(0, -3)) {
 }
 
 /**
+ * @param {JSON} json - A level as json
+ */
+function downloadJSON(json, name = Date.now().toString().slice(0, -3)) {
+	let blob = new Blob([JSON.stringify(json, null, 2)], {
+		type: 'application/json',
+	});
+
+	let link = document.createElement('a');
+	link.href = window.URL.createObjectURL(blob);
+	link.download = name + '.json';
+	link.click();
+}
+
+/**
  * @returns {Array<Object>} - A level json
  */
 function createLevel(
@@ -114,4 +128,5 @@ export default {
 	load,
 	createLevel,
 	downloadLevel,
+	downloadJSON,
 };
