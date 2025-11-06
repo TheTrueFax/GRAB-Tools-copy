@@ -45,6 +45,19 @@ export default {
 		};
 	},
 	methods: {
+		selectTab(id) {
+			document
+				.querySelector('.sort-active')
+				.classList.remove('sort-active');
+			const maps = document.getElementById('maps');
+			const players = document.getElementById('players');
+			const selected = document.getElementById(id + '-sort-btn');
+			const list = document.getElementById(id);
+			maps.style.display = 'none';
+			players.style.display = 'none';
+			list.style.display = 'flex';
+			selected.classList.add('sort-active');
+		},
 		getSuffix(number) {
 			const suffixes = ['th', 'st', 'nd', 'rd'];
 			const lastDigit = Math.abs(number) % 10;
@@ -268,25 +281,8 @@ export default {
 	created() {
 		document.title = 'GRAB Hardest Levels | GRAB Tools';
 	},
-	async mounted() {
-		await this.init();
-
-		const maps = document.getElementById('maps');
-		const players = document.getElementById('players');
-
-		document.getElementById('sorters').addEventListener('click', (e) => {
-			const id = e.target.id;
-			if (id.includes('sort-btn')) {
-				document
-					.querySelector('.sort-active')
-					.classList.remove('sort-active');
-				maps.style.display = 'none';
-				players.style.display = 'none';
-				const list = document.getElementById(id.split('-')[0]);
-				list.style.display = 'flex';
-				e.target.classList.add('sort-active');
-			}
-		});
+	mounted() {
+		this.init();
 	},
 };
 </script>
@@ -302,11 +298,16 @@ export default {
 				<button
 					class="sort-btn button-sml sort-active"
 					id="maps-sort-btn"
+					@click="selectTab('maps')"
 				>
 					Maps
 					<MapIcon />
 				</button>
-				<button class="sort-btn button-sml" id="players-sort-btn">
+				<button
+					class="sort-btn button-sml"
+					id="players-sort-btn"
+					@click="selectTab('players')"
+				>
 					Players
 					<PeopleIcon />
 				</button>
