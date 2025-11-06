@@ -7,6 +7,7 @@ import XMLIcon from '@/icons/XMLIcon.vue';
 import ChatIcon from '@/icons/ChatIcon.vue';
 import CubeIcon from '@/icons/CubeIcon.vue';
 import PlayIcon from '@/icons/PlayIcon.vue';
+import PencilIcon from '@/icons/PencilIcon.vue';
 
 import Bookmarklet from '@/components/Bookmarklet.vue';
 
@@ -17,7 +18,7 @@ import SVGDrawer from '@/tools/SVGDrawer.vue';
 import LevelJSON from '@/tools/LevelJSON.vue';
 import PointCloud from '@/tools/PointCloud.vue';
 import LevelDownloader from '@/tools/LevelDownloader.vue';
-import PencilIcon from '@/icons/PencilIcon.vue';
+import TextSigns from '@/tools/TextSigns.vue';
 
 export default {
 	components: {
@@ -29,6 +30,7 @@ export default {
 		LevelJSON,
 		PointCloud,
 		LevelDownloader,
+		TextSigns,
 		ShrinkIcon,
 		BrushIcon,
 		DownloadsIcon,
@@ -147,10 +149,10 @@ export default {
 			</button>
 			<button
 				class="button"
-				id="text-to-sign-tool-button"
-				@click="selectTool('text-to-sign')"
+				id="text-signs-tool-button"
+				@click="selectTool('text-signs')"
 			>
-				Text To Sign
+				Text To Signs
 				<ChatIcon />
 			</button>
 			<button
@@ -170,6 +172,7 @@ export default {
 			<ImageGenerator id="image-generator-tool" />
 			<PointCloud id="point-cloud-tool" />
 			<LevelDownloader id="download-tool" />
+			<TextSigns id="text-signs-tool" />
 			<div id="custom-colors-tool">
 				<h2>Custom Colors</h2>
 				<p>

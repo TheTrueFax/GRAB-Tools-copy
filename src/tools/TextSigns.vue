@@ -1,0 +1,54 @@
+<script>
+import signs from '@/assets/tools/signs';
+import encoding from '@/assets/tools/encoding';
+
+export default {
+	methods: {
+		async run() {
+			const getByID = (id) => document.getElementById(id);
+			const toolID = 'text-signs-tool';
+
+			const text = getByID(`${toolID}-text`).value;
+			const mode = getByID(`${toolID}-mode`).value;
+
+			const level_nodes = signs.signs(text, mode === 'animated');
+
+			const level = encoding.createLevel(
+				level_nodes,
+				'Signs',
+				'Generated with GRAB Tools',
+				['.index', 'GRAB Tools'],
+			);
+
+			const encoded = await encoding.encodeLevel(level);
+			if (encoded === null) return;
+
+			encoding.downloadLevel(encoded);
+		},
+	},
+};
+</script>
+
+<template>
+	<div>
+		<h2>Text to Signs</h2>
+		<p>Generate a list of signs or an animated playback of text.</p>
+		<div>
+			<textarea
+				id="text-signs-tool-text"
+				cols="30"
+				rows="5"
+				placeholder="text"
+			></textarea>
+			<select id="text-signs-tool-mode">
+				<option value="simple" selected>simple</option>
+				<option value="animated">animated</option>
+			</select>
+			<button class="button" id="text-signs-tool-btn" @click="run">
+				Generate
+			</button>
+		</div>
+	</div>
+</template>
+
+<style scoped></style>
