@@ -43,8 +43,16 @@ export default {
 		<h2>Pixel Art</h2>
 		<p>Generate pixel art from an image.</p>
 		<div>
-			<input type="number" id="image-tool-width" placeholder="width" />
-			<input type="number" id="image-tool-height" placeholder="height" />
+			<input
+				type="number"
+				id="image-tool-width"
+				placeholder="width (50)"
+			/>
+			<input
+				type="number"
+				id="image-tool-height"
+				placeholder="height (50)"
+			/>
 			<select id="image-tool-mode">
 				<option value="cubes" selected>cubes</option>
 				<option value="particles">particles</option>
