@@ -61,3 +61,15 @@ html {
 	appearance: none;
 	-webkit-appearance: none;
 }
+
+grammarly-extension-vbars-feedback-form,
+grammarly-extension-vbar-card,
+grammarly-desktop-integration,
+grammarly-popups,
+grammarly-extension-vbars,
+grammarly-extension {
+	display: none !important;
+	visibility: hidden !important;
+	opacity: 0 !important;
+	pointer-events: none !important;
+}
