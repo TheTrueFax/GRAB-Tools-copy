@@ -12,6 +12,9 @@
 		"tauri": "tauri"
 	},
 	"dependencies": {
+		"@codemirror/lang-javascript": "^6.2.4",
+		"@codemirror/lang-json": "^6.0.2",
+		"codemirror": "^6.0.2",
 		"pako": "^2.1.0",
 		"pinia": "^2.0.32",
 		"pinia-plugin-persistedstate": "^3.1.0",
