@@ -16,6 +16,7 @@ export default defineConfig({
 			),
 		},
 	},
+	assetsInclude: ['**/*.gltf', '**/*.glb'],
 	build: {
 		emptyOutDir: true,
 		target:
