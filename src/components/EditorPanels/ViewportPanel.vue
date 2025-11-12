@@ -227,6 +227,7 @@ export default {
 			});
 			this.level = await window._levelLoader.load(json, true);
 			this.scene.add(this.level.scene);
+			console.log(this.level);
 		},
 		resize(width, height) {
 			requestAnimationFrame(() => {
