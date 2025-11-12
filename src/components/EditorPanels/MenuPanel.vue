@@ -5,6 +5,7 @@ import image from '@/assets/tools/image';
 import levelNodes from '@/assets/tools/nodes';
 import monochrome from '@/assets/tools/monochrome';
 import * as THREE from 'three';
+import group from '@/assets/tools/group';
 
 export default {
 	data() {
@@ -478,6 +479,12 @@ export default {
 				return json;
 			});
 		},
+		group_level() {
+			this.$emit('modifier', (json) => {
+				json.levelNodes = [group.groupNodes(json.levelNodes)];
+				return json;
+			});
+		},
 		duplicate_level() {
 			this.$emit('modifier', (json) => {
 				json.levelNodes = json.levelNodes.concat(json.levelNodes);
@@ -577,7 +584,7 @@ export default {
 								v-else
 								@click="
 									() => {
-										!data.file && data.func;
+										!data.file && data.func();
 									}
 								"
 							>
