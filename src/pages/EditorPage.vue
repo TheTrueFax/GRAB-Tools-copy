@@ -10,6 +10,7 @@ import ResizableRowPanel from '@/components/EditorPanels/ResizableRowPanel.vue';
 import ResizableColPanel from '@/components/EditorPanels/ResizableColPanel.vue';
 import JsonPanel from '@/components/EditorPanels/JsonPanel.vue';
 import TerminalPanel from '@/components/EditorPanels/TerminalPanel.vue';
+import RefreshedIcon from '@/icons/RefreshedIcon.vue';
 
 export default {
 	components: {
@@ -19,9 +20,13 @@ export default {
 		ResizableColPanel,
 		JsonPanel,
 		TerminalPanel,
+		RefreshedIcon,
 	},
 	data() {
-		return {};
+		return {
+			change_counter: 0,
+			just_changed: false,
+		};
 	},
 	computed: {
 		...mapState(useUserStore, ['is_logged_in', 'user_name']),
@@ -39,7 +44,16 @@ export default {
 				this.$refs.json_panel.set_json(this.json);
 			if (!skip.includes('viewport_panel'))
 				this.$refs.viewport_panel.set_json(this.json);
-			window.toast('changed');
+			// window.toast('changed');
+			this.changed();
+		},
+		changed() {
+			this.change_counter++;
+			const count = this.change_counter;
+			this.just_changed = true;
+			setTimeout(() => {
+				if (this.change_counter === count) this.just_changed = false;
+			}, 500);
 		},
 		json_changed(json) {
 			this.set_json(json, ['json_panel']);
@@ -91,6 +105,9 @@ export default {
 				</ResizableColPanel>
 			</template>
 		</ResizableRowPanel>
+		<div class="changed" v-show="just_changed">
+			<RefreshedIcon />
+		</div>
 	</main>
 </template>
 
@@ -114,5 +131,21 @@ html:has(#editor) {
 }
 .side-panel {
 	height: 100%;
+}
+.changed {
+	position: absolute;
+	top: 0.8rem;
+	right: 0.8rem;
+	animation: spin 0.5s linear infinite;
+	z-index: 1000;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
 </style>
