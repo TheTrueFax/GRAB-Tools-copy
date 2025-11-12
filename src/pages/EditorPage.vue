@@ -29,7 +29,8 @@ export default {
 	mounted() {
 		this.json = encoding.createLevel();
 		this.set_json(this.json);
-		this.$refs.side_panel.size((window.innerHeight / 3) * 2);
+		this.$refs.side_panel.size((window.innerHeight / 4) * 3);
+		this.$refs.main_panel.size((window.innerWidth / 3) * 2);
 	},
 	methods: {
 		set_json(json, skip = []) {
@@ -66,7 +67,7 @@ export default {
 			@function="run_function"
 			@viewport="run_viewport"
 		/>
-		<ResizableRowPanel class="main-panel">
+		<ResizableRowPanel class="main-panel" :ref="'main_panel'">
 			<template #first>
 				<ViewportPanel :ref="'viewport_panel'" />
 			</template>
