@@ -2,6 +2,7 @@
 import build_editor from '@/assets/EditorSetup';
 import { javascript } from '@codemirror/lang-javascript';
 import { EditorSelection } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
 
 export default {
 	data() {
@@ -10,7 +11,9 @@ export default {
 	components: {},
 	emits: ['command'],
 	mounted() {
-		this.view = build_editor(this.$refs.terminal, '', javascript());
+		this.view = build_editor(this.$refs.terminal, '', javascript(), [
+			EditorView.lineWrapping,
+		]);
 	},
 	methods: {
 		run_command(content) {
