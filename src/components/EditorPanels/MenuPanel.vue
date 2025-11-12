@@ -132,11 +132,18 @@ export default {
 						'Full View': { func: this.teleport_full },
 						Origin: { func: this.teleport_origin },
 					},
-					'Huge Far': { func: this.toggle_huge_far },
-					'Toggle Groups': { func: this.toggle_groups },
-					'Toggle Animations': { func: this.toggle_animations },
-					'Toggle Triggers': { func: this.toggle_triggers },
-					'Toggle Fog': { func: this.toggle_fog },
+					Toggle: {
+						'Huge Far': { func: this.toggle_huge_far },
+						Groups: { func: this.toggle_groups },
+						'Animation paths': { func: this.toggle_animations },
+						Triggers: { func: this.toggle_triggers },
+						Sound: { func: this.toggle_sound },
+						'Trigger connections': {
+							func: this.toggle_trigger_connections,
+						},
+						Fog: { func: this.toggle_fog },
+						Skybox: { func: this.toggle_sky },
+					},
 					'Copy Camera': { func: this.copy_camera_state },
 				},
 				Help: {
@@ -483,6 +490,48 @@ export default {
 				return json;
 			});
 		},
+		toggle_huge_far() {
+			this.$emit('viewport', (scope) => {
+				scope.huge_far = !scope.huge_far;
+				scope.camera.far = scope.huge_far ? 4000000 : 10000;
+			});
+		},
+		toggle_triggers() {
+			this.$emit('viewport', (scope) => {
+				scope.show_triggers = !scope.show_triggers;
+				scope.level.nodes.levelNodeTrigger.forEach((node) => {
+					node.visible = scope.show_triggers;
+				});
+			});
+		},
+		toggle_sound() {
+			this.$emit('viewport', (scope) => {
+				scope.show_sound = !scope.show_sound;
+				scope.level.nodes.levelNodeSound.forEach((node) => {
+					node.visible = scope.show_sound;
+				});
+			});
+		},
+		toggle_fog() {
+			this.$emit('viewport', (scope) => {
+				// FIXME: not staying set
+				scope.show_fog = !scope.show_fog;
+				scope.level.nodes.all.forEach((node) => {
+					if (node.material?.uniforms?.fogEnabled) {
+						node.material.uniforms.fogEnabled.value =
+							scope.show_fog;
+					}
+				});
+			});
+		},
+		toggle_sky() {
+			this.$emit('viewport', (scope) => {
+				scope.show_sky = !scope.show_sky;
+				console.log(scope.scene);
+				const sky = scope.level.scene.children.find((obj) => obj.isSky);
+				if (sky) sky.visible = scope.show_sky;
+			});
+		},
 	},
 	mounted() {
 		const buttons = document.querySelectorAll('.menu-btn');
@@ -519,7 +568,12 @@ export default {
 								>{{ button }}</a
 							>
 							<button
-								class="menu-btn"
+								:class="
+									'menu-btn' +
+									(data.hasOwnProperty('func') && !data.func
+										? ' unimplemented'
+										: '')
+								"
 								v-else
 								@click="
 									() => {
@@ -554,7 +608,12 @@ export default {
 										>{{ sub_button }}</a
 									>
 									<button
-										class="menu-btn"
+										:class="
+											'menu-btn' +
+											(!sub_data.func
+												? ' unimplemented'
+												: '')
+										"
 										v-else
 										@click="
 											() => {
@@ -663,6 +722,10 @@ input[type='file'] {
 	display: block;
 	width: 100%;
 	border: none;
+
+	&.unimplemented {
+		color: #3e3e3e;
+	}
 }
 
 .menu-dropdown .menu-dropdown {

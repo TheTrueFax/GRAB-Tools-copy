@@ -79,6 +79,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.4, 0.4, 0.4, 64.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureGrabbableURL,
@@ -86,6 +89,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.2, 0.2, 0.2, 16.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureIceURL,
@@ -93,6 +99,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.6, 0.6, 0.6, 64.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureLavaURL,
@@ -102,6 +111,7 @@ class LevelLoader {
 				[0.0, 0.0, 0.0, 1.0],
 				0.0,
 				1.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureWoodURL,
@@ -109,6 +119,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.2, 0.2, 0.2, 32.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureGrapplableURL,
@@ -116,6 +129,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.3, 0.3, 0.3, 32.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureGrapplableLavaURL,
@@ -123,6 +139,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.0, 0.0, 0.0, 1.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureGrabbableCrumblingURL,
@@ -130,6 +149,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.2, 0.2, 0.2, 16.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureDefaultColoredURL,
@@ -137,6 +159,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.15, 0.15, 0.15, 10.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureBouncingURL,
@@ -144,6 +169,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.8, 0.8, 0.8, 64.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureSnowURL,
@@ -151,6 +179,9 @@ class LevelLoader {
 				SHADERS.levelVS,
 				SHADERS.levelFS,
 				[0.6, 0.6, 0.6, 64.0],
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 		];
 
@@ -162,6 +193,7 @@ class LevelLoader {
 		startMaterial.depthWrite = false;
 		startMaterial.uniforms = {
 			diffuseColor: { value: [0.0, 1.0, 0.0, 1.0] },
+			fogEnabled: { value: this.options.fog ? 1.0 : 0.0 },
 		};
 
 		let finishMaterial = new THREE.ShaderMaterial();
@@ -172,6 +204,7 @@ class LevelLoader {
 		finishMaterial.depthWrite = false;
 		finishMaterial.uniforms = {
 			diffuseColor: { value: [1.0, 0.0, 0.0, 1.0] },
+			fogEnabled: { value: this.options.fog ? 1.0 : 0.0 },
 		};
 
 		let altStartMaterial = new THREE.ShaderMaterial();
@@ -182,6 +215,7 @@ class LevelLoader {
 		altStartMaterial.depthWrite = false;
 		altStartMaterial.uniforms = {
 			diffuseColor: { value: [1.0, 1.0, 0.0, 1.0] },
+			fogEnabled: { value: this.options.fog ? 1.0 : 0.0 },
 		};
 
 		let particleMaterial = new THREE.ShaderMaterial();
@@ -189,7 +223,7 @@ class LevelLoader {
 		particleMaterial.fragmentShader = SHADERS.particleFS;
 		particleMaterial.flatShading = true;
 		particleMaterial.uniforms = {
-			fogEnabled: { value: 1.0 },
+			fogEnabled: { value: this.options.fog ? 1.0 : 0.0 },
 		};
 
 		this.objectMaterials = [
@@ -200,6 +234,9 @@ class LevelLoader {
 				1.0,
 				SHADERS.signVS,
 				SHADERS.signFS,
+				0.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureDefaultColoredURL,
@@ -208,6 +245,8 @@ class LevelLoader {
 				SHADERS.levelFS,
 				[0.4, 0.4, 0.4, 64.0],
 				1.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureTriggerURL,
@@ -216,6 +255,8 @@ class LevelLoader {
 				SHADERS.levelFS,
 				[0.4, 0.4, 0.4, 64.0],
 				1.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			getMaterialForTexture(
 				textureSublevelTriggerURL,
@@ -224,6 +265,8 @@ class LevelLoader {
 				SHADERS.levelFS,
 				[0.4, 0.4, 0.4, 64.0],
 				1.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 			altStartMaterial,
 			particleMaterial,
@@ -234,6 +277,8 @@ class LevelLoader {
 				SHADERS.levelFS,
 				[0.4, 0.4, 0.4, 64.0],
 				1.0,
+				0.0,
+				this.options.fog ? 1.0 : 0.0,
 			),
 		];
 
@@ -265,6 +310,7 @@ class LevelLoader {
 			sound: false,
 			sublevels: false,
 			static: false,
+			fog: true,
 		};
 
 		for (const key in this.options) {
@@ -415,6 +461,7 @@ class LevelLoader {
 			const sky = new THREE.Mesh(this.shapes[1], this.skyMaterial);
 			sky.frustumCulled = false;
 			sky.renderOrder = 1000; // sky should be rendered after opaque, before transparent
+			sky.isSky = true;
 			scene.add(sky);
 		}
 
@@ -1398,6 +1445,7 @@ function getMaterialForTexture(
 	specularColor = [0.3, 0.3, 0.3, 16.0],
 	neonEnabled = 0.0,
 	isLava = 0.0,
+	fogEnabled = 1.0,
 ) {
 	let material = new THREE.ShaderMaterial();
 	material.vertexShader = vertexShader;
@@ -1412,7 +1460,7 @@ function getMaterialForTexture(
 		worldMatrix: { value: new THREE.Matrix4() },
 		neonEnabled: { value: neonEnabled },
 		transparentEnabled: { value: 0.0 },
-		fogEnabled: { value: 1.0 },
+		fogEnabled: { value: fogEnabled },
 		specularColor: { value: specularColor },
 		isLava: { value: isLava },
 		isColoredLava: { value: 0.0 },

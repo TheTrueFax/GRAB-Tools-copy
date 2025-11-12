@@ -15,6 +15,14 @@ export default {
 			free_movement: false,
 			editing: null,
 			dragging: false,
+			huge_far: false,
+			show_groups: false, // TODO:
+			show_animations: false, // TODO:
+			show_triggers: true,
+			show_sound: true,
+			show_trigger_connections: false, // TODO:
+			show_fog: true,
+			show_sky: true,
 		};
 	},
 	components: {
@@ -24,15 +32,6 @@ export default {
 	emits: ['changed'],
 	async mounted() {
 		if (!window._levelLoader) window._levelLoader = new LevelLoader();
-		window._levelLoader.config({
-			sky: true,
-			lights: true,
-			text: true,
-			triggers: true,
-			sound: true,
-			sublevels: true,
-			static: false,
-		});
 
 		this.setup_renderer();
 		const observer = new ResizeObserver((entries) => {
@@ -62,7 +61,8 @@ export default {
 			this.renderer.outputColorSpace = THREE.SRGBColorSpace;
 			this.renderer.setPixelRatio(window.devicePixelRatio);
 			this.renderer.setClearColor(
-				new THREE.Color(143.0 / 255.0, 182.0 / 255.0, 221.0 / 255.0),
+				// new THREE.Color(143.0 / 255.0, 182.0 / 255.0, 221.0 / 255.0),
+				new THREE.Color(28 / 255.0, 28 / 255.0, 36 / 255.0),
 				1.0,
 			);
 			this.renderer.setAnimationLoop(this.animation);
@@ -130,7 +130,7 @@ export default {
 			const raycaster = new THREE.Raycaster();
 			raycaster.setFromCamera(mouse, this.camera);
 			let individualObjects = this.level.nodes.all.filter(
-				(node) => node.parent.type === 'Scene',
+				(node) => node.parent.type === 'Scene' && node.visible,
 			);
 			let intersects = raycaster.intersectObjects(
 				individualObjects,
@@ -162,6 +162,16 @@ export default {
 					if (obj.children) obj.children.length = 0;
 				});
 			}
+			window._levelLoader.config({
+				sky: this.show_sky,
+				lights: true,
+				text: true,
+				triggers: this.show_triggers,
+				sound: this.show_sound,
+				sublevels: true,
+				static: false,
+				fog: this.show_fog,
+			});
 			this.level = await window._levelLoader.load(json, true);
 			this.scene.add(this.level.scene);
 		},
