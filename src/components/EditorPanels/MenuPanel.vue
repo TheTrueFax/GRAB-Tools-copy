@@ -3,6 +3,7 @@ import encoding from '@/assets/tools/encoding';
 import video from '@/assets/tools/video';
 import image from '@/assets/tools/image';
 import levelNodes from '@/assets/tools/nodes';
+import monochrome from '@/assets/tools/monochrome';
 
 export default {
 	data() {
@@ -387,6 +388,12 @@ export default {
 					);
 					scope.camera.lookAt(position.x, position.y, position.z);
 				}
+			});
+		},
+		monochrome_level() {
+			this.$emit('modifier', (json) => {
+				json.levelNodes = monochrome.monochrome(json.levelNodes);
+				return json;
 			});
 		},
 	},
