@@ -2,6 +2,7 @@
 import encoding from '@/assets/tools/encoding';
 import video from '@/assets/tools/video';
 import image from '@/assets/tools/image';
+import levelNodes from '@/assets/tools/nodes';
 
 export default {
 	data() {
@@ -197,6 +198,30 @@ export default {
 				return json;
 			});
 		},
+		async insert_json(e) {
+			const files = Array.from(e.target.files);
+			if (!files.length) return;
+
+			const file = files[0];
+			const new_json = JSON.parse(await file.text());
+
+			this.$emit('modifier', (json) => {
+				json.levelNodes = json.levelNodes.concat(new_json.levelNodes);
+				return json;
+			});
+		},
+		async insert_nodes(e) {
+			const files = Array.from(e.target.files);
+			if (!files.length) return;
+
+			const file = files[0];
+			const new_json = JSON.parse(await file.text());
+
+			this.$emit('modifier', (json) => {
+				json.levelNodes = json.levelNodes.concat(new_json);
+				return json;
+			});
+		},
 		async insert_image(e) {
 			const files = Array.from(e.target.files);
 			if (!files.length) return;
@@ -218,6 +243,126 @@ export default {
 
 			this.$emit('modifier', (json) => {
 				json.levelNodes = json.levelNodes.concat(level_nodes);
+				return json;
+			});
+		},
+		insert_node_wrapper(func) {
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(func());
+				return json;
+			});
+		},
+		insert_static() {
+			const node = levelNodes.levelNodeStatic();
+			delete node.levelNodeStatic.color1;
+			delete node.levelNodeStatic.color2;
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(node);
+				return json;
+			});
+		},
+		insert_animated() {
+			const node = levelNodes.levelNodeStatic();
+			const animation = levelNodes.animation();
+			animation.frames.push(levelNodes.frame());
+			const frame = levelNodes.frame();
+			frame.time = 1;
+			frame.position.y = 1;
+			animation.frames.push(frame);
+			node.animations.push(animation);
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(node);
+				return json;
+			});
+		},
+		insert_colored() {
+			const node = levelNodes.levelNodeStatic();
+			node.levelNodeStatic.material = 8;
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(node);
+				return json;
+			});
+		},
+		insert_sign() {
+			this.insert_node_wrapper(levelNodes.levelNodeSign);
+		},
+		insert_start() {
+			this.insert_node_wrapper(levelNodes.levelNodeStart);
+		},
+		insert_finish() {
+			this.insert_node_wrapper(levelNodes.levelNodeFinish);
+		},
+		insert_gravity() {
+			this.insert_node_wrapper(levelNodes.levelNodeGravity);
+		},
+		insert_particle() {
+			this.insert_node_wrapper(levelNodes.levelNodeParticleEmitter);
+		},
+		insert_trigger() {
+			this.insert_node_wrapper(levelNodes.levelNodeTrigger);
+		},
+		insert_sound() {
+			this.insert_node_wrapper(levelNodes.levelNodeSound);
+		},
+		insert_colored_lava() {
+			const node = levelNodes.levelNodeStatic();
+			node.levelNodeStatic.material = 3;
+			node.levelNodeStatic.color1.r = 1;
+			node.levelNodeStatic.color2.b = 1;
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(node);
+				return json;
+			});
+		},
+		insert_ambience_trigger() {
+			const trigger = levelNodes.levelNodeTrigger();
+			trigger.levelNodeTrigger.triggerSources.push(
+				levelNodes.triggerSourceBasic(),
+			);
+			trigger.levelNodeTrigger.triggerTargets.push(
+				levelNodes.triggerTargetAmbience(),
+			);
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(trigger);
+				return json;
+			});
+		},
+		insert_animation_trigger() {
+			const trigger = levelNodes.levelNodeTrigger();
+			trigger.levelNodeTrigger.triggerSources.push(
+				levelNodes.triggerSourceBasic(),
+			);
+			trigger.levelNodeTrigger.triggerTargets.push(
+				levelNodes.triggerTargetAnimation(),
+			);
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(trigger);
+				return json;
+			});
+		},
+		insert_sound_trigger() {
+			const trigger = levelNodes.levelNodeTrigger();
+			trigger.levelNodeTrigger.triggerSources.push(
+				levelNodes.triggerSourceBasic(),
+			);
+			trigger.levelNodeTrigger.triggerTargets.push(
+				levelNodes.triggerTargetSound(),
+			);
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(trigger);
+				return json;
+			});
+		},
+		insert_sublevel_trigger() {
+			const trigger = levelNodes.levelNodeTrigger();
+			trigger.levelNodeTrigger.triggerSources.push(
+				levelNodes.triggerSourceBasic(),
+			);
+			trigger.levelNodeTrigger.triggerTargets.push(
+				levelNodes.triggerTargetSubLevel(),
+			);
+			this.$emit('modifier', (json) => {
+				json.levelNodes.push(trigger);
 				return json;
 			});
 		},
