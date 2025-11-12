@@ -124,6 +124,11 @@ export default {
 		},
 		selected_event(e) {
 			this.editing = e.target.object;
+
+			if (this.editing?.material?.uniforms?.worldMatrix)
+				this.editing.material.uniforms.worldMatrix = {
+					value: new THREE.Matrix4().copy(this.editing.matrixWorld),
+				};
 		},
 		edit_event(e) {
 			this.controls.enabled = !e.value;
@@ -142,11 +147,29 @@ export default {
 					node.scale.z = this.editing.scale.z;
 				}
 				if (node.rotation) {
-					node.rotation.x = this.editing.rotation.x;
-					node.rotation.y = this.editing.rotation.y;
-					node.rotation.z = this.editing.rotation.z;
-					node.rotation.w = this.editing.rotation.w;
+					node.rotation.x = this.editing.quaternion.x;
+					node.rotation.y = this.editing.quaternion.y;
+					node.rotation.z = this.editing.quaternion.z;
+					node.rotation.w = this.editing.quaternion.w;
 				}
+				this.editing.initialPosition = {
+					x: this.editing.position.x,
+					y: this.editing.position.y,
+					z: this.editing.position.z,
+				};
+				this.editing.initialRotation = {
+					x: this.editing.quaternion.x,
+					y: this.editing.quaternion.y,
+					z: this.editing.quaternion.z,
+					w: this.editing.quaternion.w,
+				};
+				if (this.editing?.material?.uniforms?.worldMatrix)
+					this.editing.material.uniforms.worldMatrix = {
+						value: new THREE.Matrix4().copy(
+							this.editing.matrixWorld,
+						),
+					};
+
 				this.$emit('changed');
 			}
 		},
