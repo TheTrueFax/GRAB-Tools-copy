@@ -1421,7 +1421,7 @@ class LevelLoader {
 						node.animations.length > 0 &&
 						node.animations[0].frames &&
 						node.animations[0].frames.length > 0 &&
-						node.activeAnimation === 0
+						(node.activeAnimation ?? 0) === 0
 					) {
 						object.animation = node.animations[0];
 						object.animation.currentFrameIndex = 0;
