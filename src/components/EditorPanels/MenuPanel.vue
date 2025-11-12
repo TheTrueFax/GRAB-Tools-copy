@@ -5,6 +5,7 @@ import image from '@/assets/tools/image';
 import levelNodes from '@/assets/tools/nodes';
 import monochrome from '@/assets/tools/monochrome';
 import * as THREE from 'three';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import group from '@/assets/tools/group';
 import { useConfigStore } from '@/stores/config';
 
@@ -195,6 +196,28 @@ export default {
 		save_json() {
 			this.$emit('function', (json) => {
 				encoding.downloadJSON(json);
+			});
+		},
+		save_gltf() {
+			this.$emit('viewport', (scope) => {
+				const exporter = new GLTFExporter();
+				exporter.parse(
+					scope.scene,
+					(gltf) => {
+						let blob = new Blob([JSON.stringify(gltf)], {
+							type: 'text/json',
+						});
+						let link = document.createElement('a');
+						link.href = window.URL.createObjectURL(blob);
+						link.download =
+							Date.now().toString().slice(0, -3) + '.gltf';
+						link.click();
+					},
+					(err) => {
+						window.toast(err, 'error');
+					},
+					{},
+				);
 			});
 		},
 		async insert_level(e) {
