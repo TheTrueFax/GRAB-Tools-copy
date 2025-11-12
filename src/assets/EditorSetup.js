@@ -39,6 +39,7 @@ const themeOptions = {
 	'&': {
 		backgroundColor: colors.bg,
 		color: colors.fg,
+		fontSize: '0.8rem',
 	},
 	'.cm-gutters': {
 		backgroundColor: colors.bg,
