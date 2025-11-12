@@ -472,17 +472,17 @@ class LevelLoader {
 				if (node.levelNodeGroup) {
 					object = new THREE.Object3D();
 					parentNode.add(object);
-					object.position.x = -node.levelNodeGroup.position.x;
+					object.position.x = node.levelNodeGroup.position.x;
 					object.position.y = node.levelNodeGroup.position.y;
-					object.position.z = -node.levelNodeGroup.position.z;
+					object.position.z = node.levelNodeGroup.position.z;
 
 					object.scale.x = node.levelNodeGroup.scale.x;
 					object.scale.y = node.levelNodeGroup.scale.y;
 					object.scale.z = node.levelNodeGroup.scale.z;
 
-					object.quaternion.x = -node.levelNodeGroup.rotation.x;
+					object.quaternion.x = node.levelNodeGroup.rotation.x;
 					object.quaternion.y = node.levelNodeGroup.rotation.y;
-					object.quaternion.z = -node.levelNodeGroup.rotation.z;
+					object.quaternion.z = node.levelNodeGroup.rotation.z;
 					object.quaternion.w = node.levelNodeGroup.rotation.w;
 
 					object.initialPosition = object.position.clone();
@@ -494,17 +494,17 @@ class LevelLoader {
 					level.nodes.levelNodeGroup.push(object);
 				} else if (node.levelNodeGravity) {
 					object = new THREE.Object3D();
-					object.position.x = -node.levelNodeGravity.position.x;
+					object.position.x = node.levelNodeGravity.position.x;
 					object.position.y = node.levelNodeGravity.position.y;
-					object.position.z = -node.levelNodeGravity.position.z;
+					object.position.z = node.levelNodeGravity.position.z;
 
 					object.scale.x = node.levelNodeGravity.scale.x;
 					object.scale.y = node.levelNodeGravity.scale.y;
 					object.scale.z = node.levelNodeGravity.scale.z;
 
-					object.quaternion.x = -node.levelNodeGravity.rotation.x;
+					object.quaternion.x = node.levelNodeGravity.rotation.x;
 					object.quaternion.y = node.levelNodeGravity.rotation.y;
-					object.quaternion.z = -node.levelNodeGravity.rotation.z;
+					object.quaternion.z = node.levelNodeGravity.rotation.z;
 					object.quaternion.w = node.levelNodeGravity.rotation.w;
 
 					object.initialPosition = object.position.clone();
@@ -646,22 +646,22 @@ class LevelLoader {
 				} else if (node.levelNodeParticleEmitter) {
 					object = new THREE.Object3D();
 					object.position.x =
-						-node.levelNodeParticleEmitter.position.x;
+						node.levelNodeParticleEmitter.position.x;
 					object.position.y =
 						node.levelNodeParticleEmitter.position.y;
 					object.position.z =
-						-node.levelNodeParticleEmitter.position.z;
+						node.levelNodeParticleEmitter.position.z;
 
 					object.scale.x = node.levelNodeParticleEmitter.scale.x;
 					object.scale.y = node.levelNodeParticleEmitter.scale.y;
 					object.scale.z = node.levelNodeParticleEmitter.scale.z;
 
 					object.quaternion.x =
-						-node.levelNodeParticleEmitter.rotation.x;
+						node.levelNodeParticleEmitter.rotation.x;
 					object.quaternion.y =
 						node.levelNodeParticleEmitter.rotation.y;
 					object.quaternion.z =
-						-node.levelNodeParticleEmitter.rotation.z;
+						node.levelNodeParticleEmitter.rotation.z;
 					object.quaternion.w =
 						node.levelNodeParticleEmitter.rotation.w;
 
@@ -690,25 +690,25 @@ class LevelLoader {
 						node.levelNodeParticleEmitter.endSize.y * 2;
 
 					let velocityMin = new THREE.Vector3(
-						-node.levelNodeParticleEmitter.velocityMin.x,
+						node.levelNodeParticleEmitter.velocityMin.x,
 						node.levelNodeParticleEmitter.velocityMin.y,
-						-node.levelNodeParticleEmitter.velocityMin.z,
+						node.levelNodeParticleEmitter.velocityMin.z,
 					);
 					let velocityMax = new THREE.Vector3(
-						-node.levelNodeParticleEmitter.velocityMax.x,
+						node.levelNodeParticleEmitter.velocityMax.x,
 						node.levelNodeParticleEmitter.velocityMax.y,
-						-node.levelNodeParticleEmitter.velocityMax.z,
+						node.levelNodeParticleEmitter.velocityMax.z,
 					);
 
 					let accelerationMin = new THREE.Vector3(
-						-node.levelNodeParticleEmitter.accelerationMin.x,
+						node.levelNodeParticleEmitter.accelerationMin.x,
 						node.levelNodeParticleEmitter.accelerationMin.y,
-						-node.levelNodeParticleEmitter.accelerationMin.z,
+						node.levelNodeParticleEmitter.accelerationMin.z,
 					);
 					let accelerationMax = new THREE.Vector3(
-						-node.levelNodeParticleEmitter.accelerationMax.x,
+						node.levelNodeParticleEmitter.accelerationMax.x,
 						node.levelNodeParticleEmitter.accelerationMax.y,
-						-node.levelNodeParticleEmitter.accelerationMax.z,
+						node.levelNodeParticleEmitter.accelerationMax.z,
 					);
 
 					let startColor = [
@@ -988,17 +988,17 @@ class LevelLoader {
 						newMaterial,
 					);
 					parentNode.add(object);
-					object.position.x = -node.levelNodeStatic.position.x;
+					object.position.x = node.levelNodeStatic.position.x;
 					object.position.y = node.levelNodeStatic.position.y;
-					object.position.z = -node.levelNodeStatic.position.z;
+					object.position.z = node.levelNodeStatic.position.z;
 
 					object.scale.x = node.levelNodeStatic.scale.x;
 					object.scale.y = node.levelNodeStatic.scale.y;
 					object.scale.z = node.levelNodeStatic.scale.z;
 
-					object.quaternion.x = -node.levelNodeStatic.rotation.x;
+					object.quaternion.x = node.levelNodeStatic.rotation.x;
 					object.quaternion.y = node.levelNodeStatic.rotation.y;
-					object.quaternion.z = -node.levelNodeStatic.rotation.z;
+					object.quaternion.z = node.levelNodeStatic.rotation.z;
 					object.quaternion.w = node.levelNodeStatic.rotation.w;
 
 					object.initialPosition = object.position.clone();
@@ -1036,17 +1036,17 @@ class LevelLoader {
 						newMaterial,
 					);
 					parentNode.add(object);
-					object.position.x = -node.levelNodeCrumbling.position.x;
+					object.position.x = node.levelNodeCrumbling.position.x;
 					object.position.y = node.levelNodeCrumbling.position.y;
-					object.position.z = -node.levelNodeCrumbling.position.z;
+					object.position.z = node.levelNodeCrumbling.position.z;
 
 					object.scale.x = node.levelNodeCrumbling.scale.x;
 					object.scale.y = node.levelNodeCrumbling.scale.y;
 					object.scale.z = node.levelNodeCrumbling.scale.z;
 
-					object.quaternion.x = -node.levelNodeCrumbling.rotation.x;
+					object.quaternion.x = node.levelNodeCrumbling.rotation.x;
 					object.quaternion.y = node.levelNodeCrumbling.rotation.y;
-					object.quaternion.z = -node.levelNodeCrumbling.rotation.z;
+					object.quaternion.z = node.levelNodeCrumbling.rotation.z;
 					object.quaternion.w = node.levelNodeCrumbling.rotation.w;
 
 					object.initialPosition = object.position.clone();
@@ -1107,17 +1107,17 @@ class LevelLoader {
 					);
 
 					parentNode.add(object);
-					object.position.x = -node.levelNodeTrigger.position.x;
+					object.position.x = node.levelNodeTrigger.position.x;
 					object.position.y = node.levelNodeTrigger.position.y;
-					object.position.z = -node.levelNodeTrigger.position.z;
+					object.position.z = node.levelNodeTrigger.position.z;
 
 					object.scale.x = node.levelNodeTrigger.scale.x;
 					object.scale.y = node.levelNodeTrigger.scale.y;
 					object.scale.z = node.levelNodeTrigger.scale.z;
 
-					object.quaternion.x = -node.levelNodeTrigger.rotation.x;
+					object.quaternion.x = node.levelNodeTrigger.rotation.x;
 					object.quaternion.y = node.levelNodeTrigger.rotation.y;
-					object.quaternion.z = -node.levelNodeTrigger.rotation.z;
+					object.quaternion.z = node.levelNodeTrigger.rotation.z;
 					object.quaternion.w = node.levelNodeTrigger.rotation.w;
 
 					object.initialPosition = object.position.clone();
@@ -1156,9 +1156,9 @@ class LevelLoader {
 					object = new THREE.Mesh(shapes[1], newMaterial);
 
 					parentNode.add(object);
-					object.position.x = -node.levelNodeSound.position.x;
+					object.position.x = node.levelNodeSound.position.x;
 					object.position.y = node.levelNodeSound.position.y;
-					object.position.z = -node.levelNodeSound.position.z;
+					object.position.z = node.levelNodeSound.position.z;
 
 					object.scale.x = 1;
 					object.scale.y = 1;
@@ -1202,14 +1202,14 @@ class LevelLoader {
 						object = new THREE.Mesh(objects[0], objectMaterials[6]);
 					}
 					parentNode.add(object);
-					object.position.x = -node.levelNodeStart.position.x;
+					object.position.x = node.levelNodeStart.position.x;
 					object.position.y = node.levelNodeStart.position.y;
-					object.position.z = -node.levelNodeStart.position.z;
+					object.position.z = node.levelNodeStart.position.z;
 
 					object.quaternion.set(
-						-node.levelNodeStart.rotation.x,
+						node.levelNodeStart.rotation.x,
 						node.levelNodeStart.rotation.y,
-						-node.levelNodeStart.rotation.z,
+						node.levelNodeStart.rotation.z,
 						node.levelNodeStart.rotation.w,
 					);
 					// only rotate around Y axis ? this looks wrong but sure
@@ -1240,9 +1240,9 @@ class LevelLoader {
 				} else if (node.levelNodeFinish) {
 					object = new THREE.Mesh(objects[0], objectMaterials[1]);
 					parentNode.add(object);
-					object.position.x = -node.levelNodeFinish.position.x;
+					object.position.x = node.levelNodeFinish.position.x;
 					object.position.y = node.levelNodeFinish.position.y;
-					object.position.z = -node.levelNodeFinish.position.z;
+					object.position.z = node.levelNodeFinish.position.z;
 
 					object.scale.x = node.levelNodeFinish.radius * 2.0;
 					object.scale.z = node.levelNodeFinish.radius * 2.0;
@@ -1259,13 +1259,13 @@ class LevelLoader {
 
 					object = new THREE.Mesh(objects[1], newMaterial);
 					parentNode.add(object);
-					object.position.x = -node.levelNodeSign.position.x;
+					object.position.x = node.levelNodeSign.position.x;
 					object.position.y = node.levelNodeSign.position.y;
-					object.position.z = -node.levelNodeSign.position.z;
+					object.position.z = node.levelNodeSign.position.z;
 
-					object.quaternion.x = -node.levelNodeSign.rotation.x;
+					object.quaternion.x = node.levelNodeSign.rotation.x;
 					object.quaternion.y = node.levelNodeSign.rotation.y;
-					object.quaternion.z = -node.levelNodeSign.rotation.z;
+					object.quaternion.z = node.levelNodeSign.rotation.z;
 					object.quaternion.w = node.levelNodeSign.rotation.w;
 
 					object.initialPosition = object.position.clone();
@@ -1455,29 +1455,29 @@ function updateObjectAnimation(object, time) {
 	}
 
 	const oldRotation = new THREE.Quaternion(
-		-oldFrame.rotation.x,
+		oldFrame.rotation.x,
 		oldFrame.rotation.y,
-		-oldFrame.rotation.z,
+		oldFrame.rotation.z,
 		oldFrame.rotation.w,
 	);
 	const newRotation = new THREE.Quaternion(
-		-newFrame.rotation.x,
+		newFrame.rotation.x,
 		newFrame.rotation.y,
-		-newFrame.rotation.z,
+		newFrame.rotation.z,
 		newFrame.rotation.w,
 	);
 	const finalRotation = new THREE.Quaternion();
 	finalRotation.slerpQuaternions(oldRotation, newRotation, factor);
 
 	const oldPosition = new THREE.Vector3(
-		-oldFrame.position.x,
+		oldFrame.position.x,
 		oldFrame.position.y,
-		-oldFrame.position.z,
+		oldFrame.position.z,
 	);
 	const newPosition = new THREE.Vector3(
-		-newFrame.position.x,
+		newFrame.position.x,
 		newFrame.position.y,
-		-newFrame.position.z,
+		newFrame.position.z,
 	);
 	const finalPosition = new THREE.Vector3();
 	finalPosition.lerpVectors(oldPosition, newPosition, factor);
