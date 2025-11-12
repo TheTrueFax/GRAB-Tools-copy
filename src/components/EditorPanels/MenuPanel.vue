@@ -8,11 +8,8 @@ export default {
 		return {
 			menu: {
 				File: {
-					New: {
-						Empty: { func: this.load_new_level },
-						Template: { func: this.load_template },
-					},
-					Open: {
+					Load: {
+						New: { func: this.load_new_level },
 						'Level File': {
 							func: this.open_level_file,
 							file: true,
@@ -21,6 +18,7 @@ export default {
 							func: this.open_json_file,
 							file: true,
 						},
+						Template: { func: this.load_template },
 						'Cheat Sheet': { func: this.open_cheat_sheet },
 					},
 					Save: {
@@ -31,8 +29,18 @@ export default {
 				},
 				Insert: {
 					Level: {
-						func: this.insert_level,
-						file: true,
+						Level: {
+							func: this.insert_level,
+							file: true,
+						},
+						JSON: {
+							func: this.insert_json,
+							file: true,
+						},
+						Nodes: {
+							func: this.insert_nodes,
+							file: true,
+						},
 					},
 					Node: {
 						Static: { func: this.insert_static },
@@ -56,17 +64,6 @@ export default {
 						'Sublevel Trigger': {
 							func: this.insert_sublevel_trigger,
 						},
-					},
-					'Modded Node': {
-						'Neon & Transparent': {
-							func: this.insert_neon_transparent,
-						},
-						'Scalable Start': { func: this.insert_scalable_start },
-						'Scalable Finish': {
-							func: this.insert_scalable_finish,
-						},
-						'High Gravity': { func: this.insert_high_gravity },
-						'Break Times': { func: this.insert_modded_crumbling },
 					},
 					Media: {
 						Image: {
@@ -126,7 +123,6 @@ export default {
 					},
 				},
 				View: {
-					'Low Res': { func: this.toggle_low_res },
 					Teleport: {
 						Start: { func: this.teleport_start },
 						Finish: { func: this.teleport_finish },
