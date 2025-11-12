@@ -472,18 +472,18 @@ class LevelLoader {
 				if (node.levelNodeGroup) {
 					object = new THREE.Object3D();
 					parentNode.add(object);
-					object.position.x = node.levelNodeGroup.position.x;
-					object.position.y = node.levelNodeGroup.position.y;
-					object.position.z = node.levelNodeGroup.position.z;
+					object.position.x = node.levelNodeGroup.position?.x ?? 0;
+					object.position.y = node.levelNodeGroup.position?.y ?? 0;
+					object.position.z = node.levelNodeGroup.position?.z ?? 0;
 
-					object.scale.x = node.levelNodeGroup.scale.x;
-					object.scale.y = node.levelNodeGroup.scale.y;
-					object.scale.z = node.levelNodeGroup.scale.z;
+					object.scale.x = node.levelNodeGroup.scale?.x ?? 0;
+					object.scale.y = node.levelNodeGroup.scale?.y ?? 0;
+					object.scale.z = node.levelNodeGroup.scale?.z ?? 0;
 
-					object.quaternion.x = node.levelNodeGroup.rotation.x;
-					object.quaternion.y = node.levelNodeGroup.rotation.y;
-					object.quaternion.z = node.levelNodeGroup.rotation.z;
-					object.quaternion.w = node.levelNodeGroup.rotation.w;
+					object.quaternion.x = node.levelNodeGroup.rotation?.x ?? 0;
+					object.quaternion.y = node.levelNodeGroup.rotation?.y ?? 0;
+					object.quaternion.z = node.levelNodeGroup.rotation?.z ?? 0;
+					object.quaternion.w = node.levelNodeGroup.rotation?.w ?? 0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -494,18 +494,22 @@ class LevelLoader {
 					level.nodes.levelNodeGroup.push(object);
 				} else if (node.levelNodeGravity) {
 					object = new THREE.Object3D();
-					object.position.x = node.levelNodeGravity.position.x;
-					object.position.y = node.levelNodeGravity.position.y;
-					object.position.z = node.levelNodeGravity.position.z;
+					object.position.x = node.levelNodeGravity.position?.x ?? 0;
+					object.position.y = node.levelNodeGravity.position?.y ?? 0;
+					object.position.z = node.levelNodeGravity.position?.z ?? 0;
 
-					object.scale.x = node.levelNodeGravity.scale.x;
-					object.scale.y = node.levelNodeGravity.scale.y;
-					object.scale.z = node.levelNodeGravity.scale.z;
+					object.scale.x = node.levelNodeGravity.scale?.x ?? 0;
+					object.scale.y = node.levelNodeGravity.scale?.y ?? 0;
+					object.scale.z = node.levelNodeGravity.scale?.z ?? 0;
 
-					object.quaternion.x = node.levelNodeGravity.rotation.x;
-					object.quaternion.y = node.levelNodeGravity.rotation.y;
-					object.quaternion.z = node.levelNodeGravity.rotation.z;
-					object.quaternion.w = node.levelNodeGravity.rotation.w;
+					object.quaternion.x =
+						node.levelNodeGravity.rotation?.x ?? 0;
+					object.quaternion.y =
+						node.levelNodeGravity.rotation?.y ?? 0;
+					object.quaternion.z =
+						node.levelNodeGravity.rotation?.z ?? 0;
+					object.quaternion.w =
+						node.levelNodeGravity.rotation?.w ?? 0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -543,9 +547,9 @@ class LevelLoader {
 					object.getWorldQuaternion(worldQuaternion);
 
 					let velocity = new THREE.Vector3(
-						node.levelNodeGravity.direction.x,
-						node.levelNodeGravity.direction.y,
-						node.levelNodeGravity.direction.z,
+						node.levelNodeGravity.direction?.x ?? 0,
+						node.levelNodeGravity.direction?.y ?? 0,
+						node.levelNodeGravity.direction?.z ?? 0,
 					);
 					velocity.applyQuaternion(worldQuaternion);
 
@@ -606,9 +610,9 @@ class LevelLoader {
 						object.getWorldQuaternion(worldQuaternion);
 
 						let velocity = new THREE.Vector3(
-							node.levelNodeGravity.direction.x,
-							node.levelNodeGravity.direction.y,
-							node.levelNodeGravity.direction.z,
+							node.levelNodeGravity.direction?.x ?? 0,
+							node.levelNodeGravity.direction?.y ?? 0,
+							node.levelNodeGravity.direction?.z ?? 0,
 						);
 						velocity.applyQuaternion(worldQuaternion);
 
@@ -646,24 +650,27 @@ class LevelLoader {
 				} else if (node.levelNodeParticleEmitter) {
 					object = new THREE.Object3D();
 					object.position.x =
-						node.levelNodeParticleEmitter.position.x;
+						node.levelNodeParticleEmitter.position?.x ?? 0;
 					object.position.y =
-						node.levelNodeParticleEmitter.position.y;
+						node.levelNodeParticleEmitter.position?.y ?? 0;
 					object.position.z =
-						node.levelNodeParticleEmitter.position.z;
+						node.levelNodeParticleEmitter.position?.z ?? 0;
 
-					object.scale.x = node.levelNodeParticleEmitter.scale.x;
-					object.scale.y = node.levelNodeParticleEmitter.scale.y;
-					object.scale.z = node.levelNodeParticleEmitter.scale.z;
+					object.scale.x =
+						node.levelNodeParticleEmitter.scale?.x ?? 0;
+					object.scale.y =
+						node.levelNodeParticleEmitter.scale?.y ?? 0;
+					object.scale.z =
+						node.levelNodeParticleEmitter.scale?.z ?? 0;
 
 					object.quaternion.x =
-						node.levelNodeParticleEmitter.rotation.x;
+						node.levelNodeParticleEmitter.rotation?.x ?? 0;
 					object.quaternion.y =
-						node.levelNodeParticleEmitter.rotation.y;
+						node.levelNodeParticleEmitter.rotation?.y ?? 0;
 					object.quaternion.z =
-						node.levelNodeParticleEmitter.rotation.z;
+						node.levelNodeParticleEmitter.rotation?.z ?? 0;
 					object.quaternion.w =
-						node.levelNodeParticleEmitter.rotation.w;
+						node.levelNodeParticleEmitter.rotation?.w ?? 0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -671,55 +678,57 @@ class LevelLoader {
 					let particleGeometry = new THREE.BufferGeometry();
 
 					let particlesPerSecond =
-						node.levelNodeParticleEmitter.particlesPerSecond;
+						node.levelNodeParticleEmitter.particlesPerSecond ?? 0;
 
-					let lifeSpanMin = node.levelNodeParticleEmitter.lifeSpan.x;
-					let lifeSpanMax = node.levelNodeParticleEmitter.lifeSpan.y;
+					let lifeSpanMin =
+						node.levelNodeParticleEmitter.lifeSpan?.x ?? 0;
+					let lifeSpanMax =
+						node.levelNodeParticleEmitter.lifeSpan?.y ?? 0;
 					let particleCount = Math.min(
 						Math.floor(particlesPerSecond * lifeSpanMax),
 						1000,
 					);
 
 					let startSizeMin =
-						node.levelNodeParticleEmitter.startSize.x * 2;
+						(node.levelNodeParticleEmitter.startSize?.x ?? 0) * 2;
 					let startSizeMax =
-						node.levelNodeParticleEmitter.startSize.y * 2;
+						(node.levelNodeParticleEmitter.startSize?.y ?? 0) * 2;
 					let endSizeMin =
-						node.levelNodeParticleEmitter.endSize.x * 2;
+						(node.levelNodeParticleEmitter.endSize?.x ?? 0) * 2;
 					let endSizeMax =
-						node.levelNodeParticleEmitter.endSize.y * 2;
+						(node.levelNodeParticleEmitter.endSize?.y ?? 0) * 2;
 
 					let velocityMin = new THREE.Vector3(
-						node.levelNodeParticleEmitter.velocityMin.x,
-						node.levelNodeParticleEmitter.velocityMin.y,
-						node.levelNodeParticleEmitter.velocityMin.z,
+						node.levelNodeParticleEmitter.velocityMin?.x ?? 0,
+						node.levelNodeParticleEmitter.velocityMin?.y ?? 0,
+						node.levelNodeParticleEmitter.velocityMin?.z ?? 0,
 					);
 					let velocityMax = new THREE.Vector3(
-						node.levelNodeParticleEmitter.velocityMax.x,
-						node.levelNodeParticleEmitter.velocityMax.y,
-						node.levelNodeParticleEmitter.velocityMax.z,
+						node.levelNodeParticleEmitter.velocityMax?.x ?? 0,
+						node.levelNodeParticleEmitter.velocityMax?.y ?? 0,
+						node.levelNodeParticleEmitter.velocityMax?.z ?? 0,
 					);
 
 					let accelerationMin = new THREE.Vector3(
-						node.levelNodeParticleEmitter.accelerationMin.x,
-						node.levelNodeParticleEmitter.accelerationMin.y,
-						node.levelNodeParticleEmitter.accelerationMin.z,
+						node.levelNodeParticleEmitter.accelerationMin?.x ?? 0,
+						node.levelNodeParticleEmitter.accelerationMin?.y ?? 0,
+						node.levelNodeParticleEmitter.accelerationMin?.z ?? 0,
 					);
 					let accelerationMax = new THREE.Vector3(
-						node.levelNodeParticleEmitter.accelerationMax.x,
-						node.levelNodeParticleEmitter.accelerationMax.y,
-						node.levelNodeParticleEmitter.accelerationMax.z,
+						node.levelNodeParticleEmitter.accelerationMax?.x ?? 0,
+						node.levelNodeParticleEmitter.accelerationMax?.y ?? 0,
+						node.levelNodeParticleEmitter.accelerationMax?.z ?? 0,
 					);
 
 					let startColor = [
-						node.levelNodeParticleEmitter.startColor.r,
-						node.levelNodeParticleEmitter.startColor.g,
-						node.levelNodeParticleEmitter.startColor.b,
+						node.levelNodeParticleEmitter.startColor?.r ?? 0,
+						node.levelNodeParticleEmitter.startColor?.g ?? 0,
+						node.levelNodeParticleEmitter.startColor?.b ?? 0,
 					];
 					let endColor = [
-						node.levelNodeParticleEmitter.endColor.r,
-						node.levelNodeParticleEmitter.endColor.g,
-						node.levelNodeParticleEmitter.endColor.b,
+						node.levelNodeParticleEmitter.endColor?.r ?? 0,
+						node.levelNodeParticleEmitter.endColor?.g ?? 0,
+						node.levelNodeParticleEmitter.endColor?.b ?? 0,
 					];
 
 					// all default to 0, mimics slowly spawning in at the start
@@ -907,14 +916,14 @@ class LevelLoader {
 					let material =
 						materials[
 							Math.min(
-								Math.max(node.levelNodeStatic.material, 0),
+								Math.max(node.levelNodeStatic.material ?? 0, 0),
 								materials.length - 1,
 							)
 						];
 
 					// Neon
 					if (
-						node.levelNodeStatic.material ===
+						(node.levelNodeStatic.material ?? 0) ===
 							root.COD.Level.LevelNodeMaterial.DEFAULT_COLORED &&
 						node.levelNodeStatic.isNeon
 					) {
@@ -927,9 +936,9 @@ class LevelLoader {
 
 					// Transparent
 					if (
-						(node.levelNodeStatic.material ==
+						((node.levelNodeStatic.material ?? 0) ==
 							root.COD.Level.LevelNodeMaterial.DEFAULT_COLORED ||
-							node.levelNodeStatic.material ==
+							(node.levelNodeStatic.material ?? 0) ==
 								root.COD.Level.LevelNodeMaterial.LAVA) &&
 						node.levelNodeStatic.isTransparent
 					) {
@@ -938,26 +947,26 @@ class LevelLoader {
 					}
 
 					if (
-						(node.levelNodeStatic.material ==
+						((node.levelNodeStatic.material ?? 0) ==
 							root.COD.Level.LevelNodeMaterial.DEFAULT_COLORED ||
-							node.levelNodeStatic.material ===
+							(node.levelNodeStatic.material ?? 0) ===
 								root.COD.Level.LevelNodeMaterial.LAVA) &&
 						node.levelNodeStatic.color1
 					) {
 						newMaterial.uniforms.diffuseColor.value = [
-							node.levelNodeStatic.color1.r,
-							node.levelNodeStatic.color1.g,
-							node.levelNodeStatic.color1.b,
+							node.levelNodeStatic.color1.r ?? 0,
+							node.levelNodeStatic.color1.g ?? 0,
+							node.levelNodeStatic.color1.b ?? 0,
 						];
 
 						let specularFactor =
 							Math.sqrt(
-								node.levelNodeStatic.color1.r *
-									node.levelNodeStatic.color1.r +
-									node.levelNodeStatic.color1.g *
-										node.levelNodeStatic.color1.g +
-									node.levelNodeStatic.color1.b *
-										node.levelNodeStatic.color1.b,
+								(node.levelNodeStatic.color1.r ?? 0) *
+									(node.levelNodeStatic.color1.r ?? 0) +
+									(node.levelNodeStatic.color1.g ?? 0) *
+										(node.levelNodeStatic.color1.g ?? 0) +
+									(node.levelNodeStatic.color1.b ?? 0) *
+										(node.levelNodeStatic.color1.b ?? 0),
 							) * 0.15;
 						let specularColor = [
 							specularFactor,
@@ -967,10 +976,10 @@ class LevelLoader {
 						];
 						if (node.levelNodeStatic.color2) {
 							specularColor = [
-								node.levelNodeStatic.color2.r,
-								node.levelNodeStatic.color2.g,
-								node.levelNodeStatic.color2.b,
-								node.levelNodeStatic.color2.a,
+								node.levelNodeStatic.color2.r ?? 0,
+								node.levelNodeStatic.color2.g ?? 0,
+								node.levelNodeStatic.color2.b ?? 0,
+								node.levelNodeStatic.color2.a ?? 0,
 							];
 							if (
 								node.levelNodeStatic.material ===
@@ -984,22 +993,22 @@ class LevelLoader {
 					}
 
 					object = new THREE.Mesh(
-						shapes[node.levelNodeStatic.shape - 1000],
+						shapes[(node.levelNodeStatic.shape ?? 1000) - 1000],
 						newMaterial,
 					);
 					parentNode.add(object);
-					object.position.x = node.levelNodeStatic.position.x;
-					object.position.y = node.levelNodeStatic.position.y;
-					object.position.z = node.levelNodeStatic.position.z;
+					object.position.x = node.levelNodeStatic.position?.x ?? 0;
+					object.position.y = node.levelNodeStatic.position?.y ?? 0;
+					object.position.z = node.levelNodeStatic.position?.z ?? 0;
 
-					object.scale.x = node.levelNodeStatic.scale.x;
-					object.scale.y = node.levelNodeStatic.scale.y;
-					object.scale.z = node.levelNodeStatic.scale.z;
+					object.scale.x = node.levelNodeStatic.scale?.x ?? 0;
+					object.scale.y = node.levelNodeStatic.scale?.y ?? 0;
+					object.scale.z = node.levelNodeStatic.scale?.z ?? 0;
 
-					object.quaternion.x = node.levelNodeStatic.rotation.x;
-					object.quaternion.y = node.levelNodeStatic.rotation.y;
-					object.quaternion.z = node.levelNodeStatic.rotation.z;
-					object.quaternion.w = node.levelNodeStatic.rotation.w;
+					object.quaternion.x = node.levelNodeStatic.rotation?.x ?? 0;
+					object.quaternion.y = node.levelNodeStatic.rotation?.y ?? 0;
+					object.quaternion.z = node.levelNodeStatic.rotation?.z ?? 0;
+					object.quaternion.w = node.levelNodeStatic.rotation?.w ?? 0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -1018,36 +1027,43 @@ class LevelLoader {
 					newMaterial.uniforms.worldNormalMatrix.value = normalMatrix;
 
 					level.nodes.material[
-						node.levelNodeStatic.material || 0
+						node.levelNodeStatic.material ?? 0
 					]?.push(object);
-					level.nodes.shape[node.levelNodeStatic.shape || 1000]?.push(
+					level.nodes.shape[node.levelNodeStatic.shape ?? 1000]?.push(
 						object,
 					);
 					level.nodes.levelNodeStatic.push(object);
 					level.complexity += 2;
 				} else if (node.levelNodeCrumbling) {
-					let material = materials[node.levelNodeCrumbling.material];
+					let material = materials[7];
 					let newMaterial = material.clone();
 					newMaterial.uniforms.colorTexture =
 						material.uniforms.colorTexture;
 
 					object = new THREE.Mesh(
-						shapes[node.levelNodeCrumbling.shape - 1000],
+						shapes[(node.levelNodeCrumbling.shape ?? 1000) - 1000],
 						newMaterial,
 					);
 					parentNode.add(object);
-					object.position.x = node.levelNodeCrumbling.position.x;
-					object.position.y = node.levelNodeCrumbling.position.y;
-					object.position.z = node.levelNodeCrumbling.position.z;
+					object.position.x =
+						node.levelNodeCrumbling.position?.x ?? 0;
+					object.position.y =
+						node.levelNodeCrumbling.position?.y ?? 0;
+					object.position.z =
+						node.levelNodeCrumbling.position?.z ?? 0;
 
-					object.scale.x = node.levelNodeCrumbling.scale.x;
-					object.scale.y = node.levelNodeCrumbling.scale.y;
-					object.scale.z = node.levelNodeCrumbling.scale.z;
+					object.scale.x = node.levelNodeCrumbling.scale?.x ?? 0;
+					object.scale.y = node.levelNodeCrumbling.scale?.y ?? 0;
+					object.scale.z = node.levelNodeCrumbling.scale?.z ?? 0;
 
-					object.quaternion.x = node.levelNodeCrumbling.rotation.x;
-					object.quaternion.y = node.levelNodeCrumbling.rotation.y;
-					object.quaternion.z = node.levelNodeCrumbling.rotation.z;
-					object.quaternion.w = node.levelNodeCrumbling.rotation.w;
+					object.quaternion.x =
+						node.levelNodeCrumbling.rotation?.x ?? 0;
+					object.quaternion.y =
+						node.levelNodeCrumbling.rotation?.y ?? 0;
+					object.quaternion.z =
+						node.levelNodeCrumbling.rotation?.z ?? 0;
+					object.quaternion.w =
+						node.levelNodeCrumbling.rotation?.w ?? 0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -1066,10 +1082,10 @@ class LevelLoader {
 					newMaterial.uniforms.worldNormalMatrix.value = normalMatrix;
 
 					level.nodes.material[
-						node.levelNodeCrumbling.material || 0
+						node.levelNodeCrumbling.material ?? 0
 					]?.push(object);
 					level.nodes.shape[
-						node.levelNodeCrumbling.shape || 1000
+						node.levelNodeCrumbling.shape ?? 1000
 					]?.push(object);
 					level.nodes.levelNodeCrumbling.push(object);
 					level.complexity += 3;
@@ -1102,23 +1118,27 @@ class LevelLoader {
 					newMaterial.transparent = true;
 					newMaterial.uniforms.transparentEnabled.value = 1.0;
 					object = new THREE.Mesh(
-						shapes[node.levelNodeTrigger.shape - 1000],
+						shapes[(node.levelNodeTrigger.shape ?? 1000) - 1000],
 						newMaterial,
 					);
 
 					parentNode.add(object);
-					object.position.x = node.levelNodeTrigger.position.x;
-					object.position.y = node.levelNodeTrigger.position.y;
-					object.position.z = node.levelNodeTrigger.position.z;
+					object.position.x = node.levelNodeTrigger.position?.x ?? 0;
+					object.position.y = node.levelNodeTrigger.position?.y ?? 0;
+					object.position.z = node.levelNodeTrigger.position?.z ?? 0;
 
-					object.scale.x = node.levelNodeTrigger.scale.x;
-					object.scale.y = node.levelNodeTrigger.scale.y;
-					object.scale.z = node.levelNodeTrigger.scale.z;
+					object.scale.x = node.levelNodeTrigger.scale?.x ?? 0;
+					object.scale.y = node.levelNodeTrigger.scale?.y ?? 0;
+					object.scale.z = node.levelNodeTrigger.scale?.z ?? 0;
 
-					object.quaternion.x = node.levelNodeTrigger.rotation.x;
-					object.quaternion.y = node.levelNodeTrigger.rotation.y;
-					object.quaternion.z = node.levelNodeTrigger.rotation.z;
-					object.quaternion.w = node.levelNodeTrigger.rotation.w;
+					object.quaternion.x =
+						node.levelNodeTrigger.rotation?.x ?? 0;
+					object.quaternion.y =
+						node.levelNodeTrigger.rotation?.y ?? 0;
+					object.quaternion.z =
+						node.levelNodeTrigger.rotation?.z ?? 0;
+					object.quaternion.w =
+						node.levelNodeTrigger.rotation?.w ?? 0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -1140,7 +1160,7 @@ class LevelLoader {
 					object.visible = this.options.triggers;
 
 					level.nodes.shape[
-						node.levelNodeTrigger.shape || 1000
+						node.levelNodeTrigger.shape ?? 1000
 					]?.push(object);
 					level.nodes.levelNodeTrigger.push(object);
 					level.complexity += 5;
@@ -1156,9 +1176,9 @@ class LevelLoader {
 					object = new THREE.Mesh(shapes[1], newMaterial);
 
 					parentNode.add(object);
-					object.position.x = node.levelNodeSound.position.x;
-					object.position.y = node.levelNodeSound.position.y;
-					object.position.z = node.levelNodeSound.position.z;
+					object.position.x = node.levelNodeSound.position?.x ?? 0;
+					object.position.y = node.levelNodeSound.position?.y ?? 0;
+					object.position.z = node.levelNodeSound.position?.z ?? 0;
 
 					object.scale.x = 1;
 					object.scale.y = 1;
@@ -1187,10 +1207,6 @@ class LevelLoader {
 					level.nodes.levelNodeSound.push(object);
 					level.complexity += 8;
 				} else if (node.levelNodeStart) {
-					console.log(
-						decoded.defaultSpawnPointID,
-						level.nodes.all.length,
-					);
 					const isDefaultSpawn =
 						(decoded.defaultSpawnPointID == 0 &&
 							level.nodes.levelNodeStart.length == 0) ||
@@ -1202,15 +1218,15 @@ class LevelLoader {
 						object = new THREE.Mesh(objects[0], objectMaterials[6]);
 					}
 					parentNode.add(object);
-					object.position.x = node.levelNodeStart.position.x;
-					object.position.y = node.levelNodeStart.position.y;
-					object.position.z = node.levelNodeStart.position.z;
+					object.position.x = node.levelNodeStart.position?.x ?? 0;
+					object.position.y = node.levelNodeStart.position?.y ?? 0;
+					object.position.z = node.levelNodeStart.position?.z ?? 0;
 
 					object.quaternion.set(
-						node.levelNodeStart.rotation.x,
-						node.levelNodeStart.rotation.y,
-						node.levelNodeStart.rotation.z,
-						node.levelNodeStart.rotation.w,
+						node.levelNodeStart.rotation?.x ?? 0,
+						node.levelNodeStart.rotation?.y ?? 0,
+						node.levelNodeStart.rotation?.z ?? 0,
+						node.levelNodeStart.rotation?.w ?? 0,
 					);
 					// only rotate around Y axis ? this looks wrong but sure
 					object.quaternion.x = 0;
@@ -1218,8 +1234,8 @@ class LevelLoader {
 
 					object.quaternion.normalize();
 
-					object.scale.x = node.levelNodeStart.radius * 2.0;
-					object.scale.z = node.levelNodeStart.radius * 2.0;
+					object.scale.x = (node.levelNodeStart.radius ?? 0) * 2.0;
+					object.scale.z = (node.levelNodeStart.radius ?? 0) * 2.0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -1240,12 +1256,12 @@ class LevelLoader {
 				} else if (node.levelNodeFinish) {
 					object = new THREE.Mesh(objects[0], objectMaterials[1]);
 					parentNode.add(object);
-					object.position.x = node.levelNodeFinish.position.x;
-					object.position.y = node.levelNodeFinish.position.y;
-					object.position.z = node.levelNodeFinish.position.z;
+					object.position.x = node.levelNodeFinish.position?.x ?? 0;
+					object.position.y = node.levelNodeFinish.position?.y ?? 0;
+					object.position.z = node.levelNodeFinish.position?.z ?? 0;
 
-					object.scale.x = node.levelNodeFinish.radius * 2.0;
-					object.scale.z = node.levelNodeFinish.radius * 2.0;
+					object.scale.x = (node.levelNodeFinish.radius ?? 0) * 2.0;
+					object.scale.z = (node.levelNodeFinish.radius ?? 0) * 2.0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -1259,14 +1275,14 @@ class LevelLoader {
 
 					object = new THREE.Mesh(objects[1], newMaterial);
 					parentNode.add(object);
-					object.position.x = node.levelNodeSign.position.x;
-					object.position.y = node.levelNodeSign.position.y;
-					object.position.z = node.levelNodeSign.position.z;
+					object.position.x = node.levelNodeSign.position?.x ?? 0;
+					object.position.y = node.levelNodeSign.position?.y ?? 0;
+					object.position.z = node.levelNodeSign.position?.z ?? 0;
 
-					object.quaternion.x = node.levelNodeSign.rotation.x;
-					object.quaternion.y = node.levelNodeSign.rotation.y;
-					object.quaternion.z = node.levelNodeSign.rotation.z;
-					object.quaternion.w = node.levelNodeSign.rotation.w;
+					object.quaternion.x = node.levelNodeSign.rotation?.x ?? 0;
+					object.quaternion.y = node.levelNodeSign.rotation?.y ?? 0;
+					object.quaternion.z = node.levelNodeSign.rotation?.z ?? 0;
+					object.quaternion.w = node.levelNodeSign.rotation?.w ?? 0;
 
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
@@ -1422,8 +1438,8 @@ function updateObjectAnimation(object, time) {
 	let animation = object.animation;
 	const animationFrames = animation.frames;
 	const relativeTime =
-		(time * object.animation.speed) %
-		animationFrames[animationFrames.length - 1].time;
+		(time * (object.animation.speed ?? 0)) %
+		(animationFrames[animationFrames.length - 1].time ?? 0);
 
 	//Find frames to blend between
 	let oldFrame = animationFrames[animation.currentFrameIndex];
@@ -1448,36 +1464,36 @@ function updateObjectAnimation(object, time) {
 	}
 
 	let factor = 0.0;
-	let timeDiff = newFrame.time - oldFrame.time;
+	let timeDiff = (newFrame.time ?? 0) - (oldFrame.time ?? 0);
 	if (Math.abs(timeDiff) > 0.00000001) {
 		//Prevent dividing by 0 if time of both frames is equal
-		factor = (relativeTime - oldFrame.time) / timeDiff;
+		factor = (relativeTime - (oldFrame.time ?? 0)) / timeDiff;
 	}
 
 	const oldRotation = new THREE.Quaternion(
-		oldFrame.rotation.x,
-		oldFrame.rotation.y,
-		oldFrame.rotation.z,
-		oldFrame.rotation.w,
+		oldFrame.rotation?.x ?? 0,
+		oldFrame.rotation?.y ?? 0,
+		oldFrame.rotation?.z ?? 0,
+		oldFrame.rotation?.w ?? 0,
 	);
 	const newRotation = new THREE.Quaternion(
-		newFrame.rotation.x,
-		newFrame.rotation.y,
-		newFrame.rotation.z,
-		newFrame.rotation.w,
+		newFrame.rotation?.x ?? 0,
+		newFrame.rotation?.y ?? 0,
+		newFrame.rotation?.z ?? 0,
+		newFrame.rotation?.w ?? 0,
 	);
 	const finalRotation = new THREE.Quaternion();
 	finalRotation.slerpQuaternions(oldRotation, newRotation, factor);
 
 	const oldPosition = new THREE.Vector3(
-		oldFrame.position.x,
-		oldFrame.position.y,
-		oldFrame.position.z,
+		oldFrame.position?.x ?? 0,
+		oldFrame.position?.y ?? 0,
+		oldFrame.position?.z ?? 0,
 	);
 	const newPosition = new THREE.Vector3(
-		newFrame.position.x,
-		newFrame.position.y,
-		newFrame.position.z,
+		newFrame.position?.x ?? 0,
+		newFrame.position?.y ?? 0,
+		newFrame.position?.z ?? 0,
 	);
 	const finalPosition = new THREE.Vector3();
 	finalPosition.lerpVectors(oldPosition, newPosition, factor);
