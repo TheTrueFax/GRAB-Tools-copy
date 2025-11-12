@@ -21,14 +21,13 @@ export default {
 		TerminalPanel,
 	},
 	data() {
-		return {
-			json: encoding.createLevel(),
-		};
+		return {};
 	},
 	computed: {
 		...mapState(useUserStore, ['is_logged_in', 'user_name']),
 	},
 	mounted() {
+		this.json = encoding.createLevel();
 		this.set_json(this.json);
 		this.$refs.side_panel.size((window.innerHeight / 3) * 2);
 	},
