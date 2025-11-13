@@ -200,12 +200,11 @@ export default {
 				this.$emit('changed');
 			}
 		},
-		select_event(e) {
-			if (this.free_movement) return;
+		cast_for_node(x, y) {
 			const canvasSize = this.renderer.domElement.getBoundingClientRect();
 			const mouse = {
-				x: ((e.clientX - canvasSize.left) / canvasSize.width) * 2 - 1,
-				y: -((e.clientY - canvasSize.top) / canvasSize.height) * 2 + 1,
+				x: ((x - canvasSize.left) / canvasSize.width) * 2 - 1,
+				y: -((y - canvasSize.top) / canvasSize.height) * 2 + 1,
 			};
 			const raycaster = new THREE.Raycaster();
 			raycaster.setFromCamera(mouse, this.camera);
@@ -223,6 +222,11 @@ export default {
 					intersect = intersect.parent;
 				}
 			}
+			return intersect;
+		},
+		select_event(e) {
+			if (this.free_movement) return;
+			const intersect = this.cast_for_node(e.clientX, e.clientY);
 			if (intersect && intersect !== this.editing) {
 				this.transform_controls.attach(intersect);
 				this.scene.add(this.transform_controls);
