@@ -491,7 +491,11 @@ export default {
 				this.contextmenu_position.y = e.clientY;
 				this.contextmenu = undefined;
 				const intersect = this.cast_for_node(e.clientX, e.clientY);
-				if (intersect && intersect.uuid === this.editing.uuid) {
+				if (
+					intersect &&
+					this.editing &&
+					intersect.uuid === this.editing.uuid
+				) {
 					this.contextmenu = {
 						Delete: {
 							func: this.delete_selection,
