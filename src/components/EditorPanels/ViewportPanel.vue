@@ -14,6 +14,7 @@ import ScaleIcon from '@/icons/ScaleIcon.vue';
 import SpaceIcon from '@/icons/SpaceIcon.vue';
 import group from '@/assets/tools/group.js';
 import ContextMenu from '@/components/EditorPanels/ContextMenu.vue';
+import levelNodes from '@/assets/tools/nodes.js';
 
 export default {
 	data() {
@@ -436,6 +437,41 @@ export default {
 					break;
 			}
 		},
+		add_animation_target() {
+			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
+			const trigger = this.editing.userData.node.levelNodeTrigger;
+			if (!trigger.triggerTargets) trigger.triggerTargets = [];
+			trigger.triggerTargets.push(levelNodes.triggerTargetAnimation());
+			this.$emit('changed');
+		},
+		add_sublevel_target() {
+			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
+			const trigger = this.editing.userData.node.levelNodeTrigger;
+			if (!trigger.triggerTargets) trigger.triggerTargets = [];
+			trigger.triggerTargets.push(levelNodes.triggerTargetSubLevel());
+			this.$emit('changed');
+		},
+		add_ambience_target() {
+			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
+			const trigger = this.editing.userData.node.levelNodeTrigger;
+			if (!trigger.triggerTargets) trigger.triggerTargets = [];
+			trigger.triggerTargets.push(levelNodes.triggerTargetAmbience());
+			this.$emit('changed');
+		},
+		add_sound_target() {
+			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
+			const trigger = this.editing.userData.node.levelNodeTrigger;
+			if (!trigger.triggerTargets) trigger.triggerTargets = [];
+			trigger.triggerTargets.push(levelNodes.triggerTargetSound());
+			this.$emit('changed');
+		},
+		add_trigger_source() {
+			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
+			const trigger = this.editing.userData.node.levelNodeTrigger;
+			if (!trigger.triggerSources) trigger.triggerSources = [];
+			trigger.triggerSources.push(levelNodes.triggerSourceBasic());
+			this.$emit('changed');
+		},
 		open_context_menu(e) {
 			if (e.target === this.renderer.domElement) {
 				this.contextmenu_position.x = e.clientX;
@@ -456,6 +492,25 @@ export default {
 							func: this.copy_editing_id,
 						},
 					};
+					if (this.editing.userData.node.levelNodeTrigger) {
+						this.contextmenu['Add Target'] = {
+							Animation: {
+								func: this.add_animation_target,
+							},
+							SubLevel: {
+								func: this.add_sublevel_target,
+							},
+							Ambience: {
+								func: this.add_ambience_target,
+							},
+							Sound: {
+								func: this.add_sound_target,
+							},
+						};
+						this.contextmenu['Add Source'] = {
+							func: this.add_trigger_source,
+						};
+					}
 				}
 				if (this.contextmenu) e.preventDefault();
 			}
