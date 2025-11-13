@@ -209,6 +209,7 @@ export default {
 			}
 		},
 		cast_for_node(x, y) {
+			if (!this.level) return;
 			const canvasSize = this.renderer.domElement.getBoundingClientRect();
 			const mouse = {
 				x: ((x - canvasSize.left) / canvasSize.width) * 2 - 1,
