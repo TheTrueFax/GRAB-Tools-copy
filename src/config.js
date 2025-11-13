@@ -7,3 +7,6 @@ export const LIVE_PAGE_URL = 'https://grabvr.tools/';
 export const STATS_SERVER_URL = 'https://grab-tools.live/stats_data/';
 export const DEV_PAGE_URL = 'https://localhost:5173/';
 export const SERVER_URL = 'https://grab-tools-api.twhlynch.workers.dev/';
+
+import pkg from '../package.json';
+export const VERSION = pkg.version;

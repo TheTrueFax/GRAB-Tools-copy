@@ -9,6 +9,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import group from '@/assets/tools/group';
 import obj from '@/assets/tools/obj';
 import { useConfigStore } from '@/stores/config';
+import { VERSION } from '@/config';
 
 export default {
 	data() {
@@ -169,6 +170,9 @@ export default {
 						'C: clone': { href: '#' },
 						'X: delete': { href: '#' },
 						'G: group': { href: '#' },
+					},
+					[`v${this.$config.VERSION}`]: {
+						href: 'https://github.com/twhlynch/GRAB-Tools',
 					},
 				},
 			},
