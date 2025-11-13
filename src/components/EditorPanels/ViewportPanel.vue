@@ -443,6 +443,15 @@ export default {
 				this.contextmenu = undefined;
 				if (this.editing) {
 					this.contextmenu = {
+						Delete: {
+							func: this.delete_selection,
+						},
+						Clone: {
+							func: this.clone_selection,
+						},
+						Group: {
+							func: this.group_selection,
+						},
 						'Copy ID': {
 							func: this.copy_editing_id,
 						},
