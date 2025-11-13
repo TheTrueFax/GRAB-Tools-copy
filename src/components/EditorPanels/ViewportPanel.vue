@@ -35,6 +35,7 @@ export default {
 			transform_space: 'local',
 			contextmenu: undefined,
 			contextmenu_position: { x: 0, y: 0 },
+			is_animating: true,
 		};
 	},
 	components: {
@@ -160,8 +161,24 @@ export default {
 			);
 		},
 		selected_event(e) {
+			if (e.target.object) {
+				if (this.editing?.uuid !== e.target.object.uuid) {
+					this.is_animating = false;
+					this.reset_node_positions();
+				}
+			} else if (this.editing) {
+				this.is_animating = true;
+			}
 			this.editing = e.target.object;
 			this.update_node_shader(this.editing);
+		},
+		reset_node_positions() {
+			this.level.meta.time = 0;
+			this.level.nodes.animated.forEach((node) => {
+				node.animation.currentFrameIndex = 0;
+				node.quaternion.copy(node.initialRotation);
+				node.position.copy(node.initialPosition);
+			});
 		},
 		edit_event(e) {
 			this.controls.enabled = !e.value;
@@ -185,17 +202,8 @@ export default {
 					node.rotation.z = this.editing.quaternion.z;
 					node.rotation.w = this.editing.quaternion.w;
 				}
-				this.editing.initialPosition = {
-					x: this.editing.position.x,
-					y: this.editing.position.y,
-					z: this.editing.position.z,
-				};
-				this.editing.initialRotation = {
-					x: this.editing.quaternion.x,
-					y: this.editing.quaternion.y,
-					z: this.editing.quaternion.z,
-					w: this.editing.quaternion.w,
-				};
+				this.editing.initialPosition.copy(this.editing.position);
+				this.editing.initialRotation.copy(this.editing.quaternion);
 				this.update_node_shader(this.editing);
 				this.$emit('changed');
 			}
@@ -277,10 +285,12 @@ export default {
 			});
 		},
 		animation() {
-			if (!this.level) return;
 			const delta = this.clock.getDelta();
+			if (!this.level) return;
 
-			this.level.update(delta);
+			if (this.is_animating) {
+				this.level.update(delta);
+			}
 			this.controls.update(delta);
 			this.renderer.render(this.scene, this.camera);
 		},
