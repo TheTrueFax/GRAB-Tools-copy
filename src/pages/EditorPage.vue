@@ -89,6 +89,7 @@ export default {
 				<ViewportPanel
 					:ref="'viewport_panel'"
 					@changed="viewport_changed"
+					@modifier="run_modifier"
 				/>
 			</template>
 			<template #second>

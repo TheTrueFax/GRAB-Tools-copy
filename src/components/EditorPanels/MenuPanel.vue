@@ -154,6 +154,23 @@ export default {
 					Tutorial: { href: 'https://youtube.com/@dotindex' },
 					Discord: { href: 'http://discord.grabvr.tools' },
 					'Clear Storage': { func: this.clear_storage },
+					Keybinds: {
+						// TODO: add small key hints to buttons
+						'WASD: movement': { href: '#' },
+						'EQ: up/down': { href: '#' },
+						'Shift: speed': { href: '#' },
+						'C: speed+': { href: '#' },
+						'Right: orbit': { href: '#' },
+						'Left: pan': { href: '#' },
+						'Scroll: zoom': { href: '#' },
+						'Q: transform space': { href: '#' },
+						'E: scale': { href: '#' },
+						'R: rotate': { href: '#' },
+						'T: translate': { href: '#' },
+						'C: clone': { href: '#' },
+						'X: delete': { href: '#' },
+						'G: group': { href: '#' },
+					},
 				},
 			},
 		};

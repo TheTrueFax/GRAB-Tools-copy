@@ -12,6 +12,7 @@ import TranslateIcon from '@/icons/TranslateIcon.vue';
 import RotateIcon from '@/icons/RotateIcon.vue';
 import ScaleIcon from '@/icons/ScaleIcon.vue';
 import SpaceIcon from '@/icons/SpaceIcon.vue';
+import group from '@/assets/tools/group.js';
 
 export default {
 	data() {
@@ -40,7 +41,7 @@ export default {
 		ScaleIcon,
 		SpaceIcon,
 	},
-	emits: ['changed'],
+	emits: ['changed', 'modifier'],
 	async mounted() {
 		if (!window._levelLoader) window._levelLoader = new LevelLoader();
 
@@ -63,7 +64,11 @@ export default {
 			}
 		});
 		observer.observe(this.$refs.viewport);
+		window.addEventListener('keydown', this.keydown);
 		await this.set_json(this.json);
+	},
+	unmounted() {
+		window.removeEventListener('keydown', this.keydown);
 	},
 	methods: {
 		setup_renderer() {
@@ -289,13 +294,16 @@ export default {
 		mouseup(e) {
 			this.controls.isMouseActive = false;
 		},
-		set_transform_mode(e) {
-			const mode = e.target.id.split('-')[1];
+		set_transform_mode(mode) {
 			this.transform_mode = mode;
 			this.transform_controls.setMode(this.transform_mode);
+		},
+		transform_mode_event(e) {
+			const mode = e.target.id.split('-')[1];
+			this.set_transform_mode(mode);
 			e.target.checked = true;
 		},
-		set_transform_space(e) {
+		toggle_transform_space(_) {
 			this.transform_controls.setSpace(
 				this.transform_controls.space === 'local' ? 'world' : 'local',
 			);
@@ -322,6 +330,79 @@ export default {
 			const sky = this.level.scene.children.find((obj) => obj.isSky);
 			if (sky) sky.visible = this.show_sky;
 		},
+		nodes_are_equal(obj1, obj2) {
+			// TODO: move node a level deeped to prevent copying
+			const node1 = Object.entries(obj1).find((e) =>
+				e[0].includes('levelNode'),
+			)[1];
+			const node2 = Object.entries(obj2).find((e) =>
+				e[0].includes('levelNode'),
+			)[1];
+			return node1 === node2;
+		},
+		clone_selection() {
+			this.$emit('modifier', (json) => {
+				// TODO: decent deepclone method
+				json.levelNodes.push(
+					JSON.parse(JSON.stringify(this.editing.userData.node)),
+				);
+				return json;
+			});
+		},
+		delete_selection() {
+			console.log(this.editing.userData.node);
+			this.$emit('modifier', (json) => {
+				json.levelNodes = json.levelNodes.filter((node) =>
+					this.nodes_are_equal(node, this.editing.userData.node),
+				);
+				return json;
+			});
+		},
+		group_selection() {
+			this.$emit('modifier', (json) => {
+				json.levelNodes = json.levelNodes.filter((node) =>
+					this.nodes_are_equal(node, this.editing.userData.node),
+				);
+				json.levelNodes.push(
+					group.groupNodes([this.editing.userData.node]),
+				);
+				return json;
+			});
+		},
+		keydown(e) {
+			switch (e.code) {
+				case 'KeyQ':
+					this.toggle_transform_space();
+					break;
+
+				case 'KeyE':
+					this.set_transform_mode('scale');
+					break;
+
+				case 'KeyR':
+					this.set_transform_mode('rotate');
+					break;
+
+				case 'KeyT':
+					this.set_transform_mode('translate');
+					break;
+
+				case 'KeyC':
+					this.clone_selection();
+					break;
+
+				case 'KeyX':
+					this.delete_selection();
+					break;
+
+				case 'KeyG':
+					this.group_selection();
+					break;
+
+				default:
+					break;
+			}
+		},
 	},
 };
 </script>
@@ -342,7 +423,7 @@ export default {
 					id="modes-translate"
 					type="checkbox"
 					:checked="transform_mode === 'translate'"
-					@click="set_transform_mode"
+					@click="transform_mode_event"
 				/>
 			</div>
 			<div>
@@ -353,7 +434,7 @@ export default {
 					id="modes-rotate"
 					type="checkbox"
 					:checked="transform_mode === 'rotate'"
-					@click="set_transform_mode"
+					@click="transform_mode_event"
 				/>
 			</div>
 			<div>
@@ -364,7 +445,7 @@ export default {
 					id="modes-scale"
 					type="checkbox"
 					:checked="transform_mode === 'scale'"
-					@click="set_transform_mode"
+					@click="transform_mode_event"
 				/>
 			</div>
 			<div>
@@ -374,8 +455,8 @@ export default {
 				<input
 					id="space"
 					type="checkbox"
-					:checked="transform_space === 'global'"
-					@click="set_transform_space"
+					:checked="transform_space === 'world'"
+					@click="toggle_transform_space"
 				/>
 			</div>
 		</div>
