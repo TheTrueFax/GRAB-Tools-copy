@@ -570,28 +570,12 @@ export default {
 		},
 		toggle_sky() {
 			this.$emit('viewport', (scope) => {
-				scope.show_sky = !scope.show_sky;
-				console.log(scope.scene);
-				const sky = scope.level.scene.children.find((obj) => obj.isSky);
-				if (sky) sky.visible = scope.show_sky;
+				scope.toggle_sky();
 			});
 		},
 		save_config() {
 			this.$emit('viewport', (scope) => {
-				const config = {
-					zoom_to_cursor: scope.zoom_to_cursor,
-					free_movement: scope.free_movement,
-					huge_far: scope.huge_far,
-					show_groups: scope.show_groups,
-					show_animations: scope.show_animations,
-					show_triggers: scope.show_triggers,
-					show_sound: scope.show_sound,
-					show_trigger_connections: scope.show_trigger_connections,
-					show_fog: scope.show_fog,
-					show_sky: scope.show_sky,
-				};
-				const configStore = useConfigStore();
-				configStore.editor_config = config;
+				scope.save_config();
 			});
 		},
 		clear_storage() {

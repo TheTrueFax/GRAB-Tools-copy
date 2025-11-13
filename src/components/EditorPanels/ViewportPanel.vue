@@ -301,6 +301,27 @@ export default {
 			);
 			this.transform_space = this.transform_controls.space;
 		},
+		save_config() {
+			const config = {
+				zoom_to_cursor: this.zoom_to_cursor,
+				free_movement: this.free_movement,
+				huge_far: this.huge_far,
+				show_groups: this.show_groups,
+				show_animations: this.show_animations,
+				show_triggers: this.show_triggers,
+				show_sound: this.show_sound,
+				show_trigger_connections: this.show_trigger_connections,
+				show_fog: this.show_fog,
+				show_sky: this.show_sky,
+			};
+			const configStore = useConfigStore();
+			configStore.editor_config = config;
+		},
+		toggle_sky() {
+			this.show_sky = !this.show_sky;
+			const sky = this.level.scene.children.find((obj) => obj.isSky);
+			if (sky) sky.visible = this.show_sky;
+		},
 	},
 };
 </script>
