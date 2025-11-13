@@ -347,16 +347,6 @@ export default {
 			const sky = this.level.scene.children.find((obj) => obj.isSky);
 			if (sky) sky.visible = this.show_sky;
 		},
-		nodes_are_equal(obj1, obj2) {
-			// TODO: move node a level deeped to prevent copying
-			const node1 = Object.entries(obj1).find((e) =>
-				e[0].includes('levelNode'),
-			)[1];
-			const node2 = Object.entries(obj2).find((e) =>
-				e[0].includes('levelNode'),
-			)[1];
-			return node1 === node2;
-		},
 		clone_selection() {
 			this.$emit('modifier', (json) => {
 				// TODO: decent deepclone method
@@ -367,18 +357,23 @@ export default {
 			});
 		},
 		delete_selection() {
-			console.log(this.editing.userData.node);
 			this.$emit('modifier', (json) => {
-				json.levelNodes = json.levelNodes.filter((node) =>
-					this.nodes_are_equal(node, this.editing.userData.node),
+				json.levelNodes = json.levelNodes.filter(
+					(n) =>
+						n !==
+						this.level.nodes.all[this.editing.userData.id].userData
+							.node,
 				);
 				return json;
 			});
 		},
 		group_selection() {
 			this.$emit('modifier', (json) => {
-				json.levelNodes = json.levelNodes.filter((node) =>
-					this.nodes_are_equal(node, this.editing.userData.node),
+				json.levelNodes = json.levelNodes.filter(
+					(n) =>
+						n !==
+						this.level.nodes.all[this.editing.userData.id].userData
+							.node,
 				);
 				json.levelNodes.push(
 					group.groupNodes([this.editing.userData.node]),
