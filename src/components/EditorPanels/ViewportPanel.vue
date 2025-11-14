@@ -182,31 +182,31 @@ export default {
 		},
 		edit_event(e) {
 			this.controls.enabled = !e.value;
-			if (!e.value) {
-				this.dragging = true;
-				const entries = Object.entries(this.editing.userData.node);
-				const node = entries.find((e) => e[0].includes('levelNode'))[1];
-				if (node.position) {
-					node.position.x = this.editing.position.x;
-					node.position.y = this.editing.position.y;
-					node.position.z = this.editing.position.z;
-				}
-				if (node.scale) {
-					node.scale.x = Math.abs(this.editing.scale.x);
-					node.scale.y = Math.abs(this.editing.scale.y);
-					node.scale.z = Math.abs(this.editing.scale.z);
-				}
-				if (node.rotation) {
-					node.rotation.x = this.editing.quaternion.x;
-					node.rotation.y = this.editing.quaternion.y;
-					node.rotation.z = this.editing.quaternion.z;
-					node.rotation.w = this.editing.quaternion.w;
-				}
-				this.editing.initialPosition.copy(this.editing.position);
-				this.editing.initialRotation.copy(this.editing.quaternion);
-				this.update_node_shader(this.editing);
-				this.$emit('changed');
+			if (e.value) return;
+			if (!this.editing) return;
+			this.dragging = true;
+			const entries = Object.entries(this.editing.userData.node);
+			const node = entries.find((e) => e[0].includes('levelNode'))[1];
+			if (node.position) {
+				node.position.x = this.editing.position.x;
+				node.position.y = this.editing.position.y;
+				node.position.z = this.editing.position.z;
 			}
+			if (node.scale) {
+				node.scale.x = Math.abs(this.editing.scale.x);
+				node.scale.y = Math.abs(this.editing.scale.y);
+				node.scale.z = Math.abs(this.editing.scale.z);
+			}
+			if (node.rotation) {
+				node.rotation.x = this.editing.quaternion.x;
+				node.rotation.y = this.editing.quaternion.y;
+				node.rotation.z = this.editing.quaternion.z;
+				node.rotation.w = this.editing.quaternion.w;
+			}
+			this.editing.initialPosition.copy(this.editing.position);
+			this.editing.initialRotation.copy(this.editing.quaternion);
+			this.update_node_shader(this.editing);
+			this.$emit('changed');
 		},
 		cast_for_node(x, y) {
 			if (!this.level) return;
