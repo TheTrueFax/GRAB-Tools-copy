@@ -71,7 +71,7 @@ async function build_video(frames, width, height, callback) {
 	const canvas = document.createElement('canvas');
 	canvas.width = width;
 	canvas.height = height;
-	const ctx = canvas.getContext('2d');
+	const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
 	const level_nodes = [];
 	for (let y = 0; y < height; y++) {

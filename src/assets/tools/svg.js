@@ -26,7 +26,9 @@ async function svg(file, complexity) {
 }
 
 function parse_color(color) {
-	const ctx = document.createElement('canvas').getContext('2d');
+	const ctx = document
+		.createElement('canvas')
+		.getContext('2d', { willReadFrequently: true });
 	ctx.fillStyle = color;
 	ctx.fillRect(0, 0, 1, 1);
 	const data = ctx.getImageData(0, 0, 1, 1).data;
