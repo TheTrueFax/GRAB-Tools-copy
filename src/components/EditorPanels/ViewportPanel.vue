@@ -15,6 +15,7 @@ import SpaceIcon from '@/icons/SpaceIcon.vue';
 import group from '@/assets/tools/group.js';
 import ContextMenu from '@/components/EditorPanels/ContextMenu.vue';
 import levelNodes from '@/assets/tools/nodes.js';
+import JsonPanel from './JsonPanel.vue';
 
 export default {
 	data() {
@@ -36,6 +37,7 @@ export default {
 			contextmenu: undefined,
 			contextmenu_position: { x: 0, y: 0 },
 			is_animating: true,
+			show_mini_editor: false,
 		};
 	},
 	components: {
@@ -46,6 +48,7 @@ export default {
 		ScaleIcon,
 		SpaceIcon,
 		ContextMenu,
+		JsonPanel,
 	},
 	emits: ['changed', 'modifier'],
 	async mounted() {
@@ -503,11 +506,17 @@ export default {
 
 				case 'Escape':
 					this.contextmenu = undefined;
+					this.close_mini_editor();
 					break;
 
 				default:
 					break;
 			}
+		},
+		close_mini_editor() {
+			if (this.show_mini_editor)
+				this.mini_editor_changed(this.$refs.mini_editor.json);
+			this.show_mini_editor = false;
 		},
 		add_animation_target(node = undefined) {
 			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
@@ -553,6 +562,30 @@ export default {
 			trigger.triggerSources.push(levelNodes.triggerSourceBlockNames());
 			this.$emit('changed');
 		},
+		edit_object_json(object = undefined) {
+			if (!object) object = this.editing;
+			if (!object) return;
+
+			this.show_mini_editor = true;
+			this.$refs.mini_editor.set_json(object.userData.node);
+		},
+		mini_editor_changed(new_node) {
+			const id = this.editing?.userData?.id;
+			if (!id) {
+				window.toast('Failed to write node', 'error');
+				return;
+			}
+			this.$emit('modifier', (json) => {
+				console.log(json);
+				const index = json.levelNodes.findIndex(
+					(n) => n === this.level.nodes.all[id - 1].userData.node,
+				);
+				if (index !== -1) {
+					json.levelNodes[index] = new_node;
+				}
+				return json;
+			});
+		},
 		open_context_menu(e) {
 			if (e.target === this.renderer.domElement) {
 				this.contextmenu_position.x = e.clientX;
@@ -576,6 +609,9 @@ export default {
 						},
 						'Copy ID': {
 							func: this.copy_editing_id,
+						},
+						'Edit JSON': {
+							func: this.edit_object_json,
 						},
 					};
 					if (this.editing.userData?.node?.levelNodeTrigger) {
@@ -710,6 +746,19 @@ export default {
 			:style="`top: ${contextmenu_position.y}px; left: ${contextmenu_position.x}px;`"
 			@click="close_context_menu"
 		/>
+		<JsonPanel
+			:mini="true"
+			ref="mini_editor"
+			v-show="show_mini_editor"
+			class="mini-editor"
+		/>
+		<button
+			class="close-mini-editor"
+			@click="close_mini_editor"
+			v-show="show_mini_editor"
+		>
+			Save
+		</button>
 		<div class="modes">
 			<div>
 				<label for="modes-translate">
@@ -798,6 +847,21 @@ export default {
 }
 </style>
 <style scoped>
+.mini-editor {
+	position: absolute;
+	z-index: 1;
+}
+.close-mini-editor {
+	position: absolute;
+	z-index: 1;
+	top: 0.5rem;
+	right: 0.5rem;
+	background-color: var(--red);
+	border-radius: 0.5rem;
+	cursor: pointer;
+	padding: 0.5rem 0.8rem;
+	color: white;
+}
 .viewport,
 canvas {
 	width: 100%;

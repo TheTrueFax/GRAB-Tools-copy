@@ -6,6 +6,9 @@ import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { EditorSelection } from '@codemirror/state';
 
 export default {
+	props: {
+		mini: Boolean,
+	},
 	data() {
 		return {
 			json: {},
