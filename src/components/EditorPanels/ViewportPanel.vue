@@ -192,10 +192,16 @@ export default {
 				node.position.y = this.editing.position.y;
 				node.position.z = this.editing.position.z;
 			}
-			if (node.scale) {
+			if (node.scale && typeof node.scale === 'object') {
 				node.scale.x = Math.abs(this.editing.scale.x);
 				node.scale.y = Math.abs(this.editing.scale.y);
 				node.scale.z = Math.abs(this.editing.scale.z);
+			}
+			if (node.scale && typeof node.scale === 'number') {
+				node.scale = Math.abs(this.editing.scale.x);
+			}
+			if (node.radius) {
+				node.radius = Math.abs(this.editing.scale.x) / 2;
 			}
 			if (node.rotation) {
 				node.rotation.x = this.editing.quaternion.x;
