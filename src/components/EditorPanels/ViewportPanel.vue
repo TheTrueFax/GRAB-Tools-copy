@@ -561,14 +561,6 @@ export default {
 						},
 					};
 				}
-				if (!intersect) {
-					this.contextmenu = {
-						'Start View': { func: this.teleport_start },
-						'Finish View': { func: this.teleport_finish },
-						'Full View': { func: this.teleport_full },
-						'Origin View': { func: this.teleport_origin },
-					};
-				}
 				if (this.contextmenu) e.preventDefault();
 			}
 		},
