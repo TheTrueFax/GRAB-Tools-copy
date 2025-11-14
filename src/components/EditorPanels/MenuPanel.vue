@@ -76,7 +76,6 @@ export default {
 					Media: {
 						Image: {
 							func: this.insert_image,
-							file: true,
 						},
 						Video: {
 							func: this.insert_video,
@@ -277,17 +276,55 @@ export default {
 				return json;
 			});
 		},
-		async insert_image(e) {
-			const files = Array.from(e.target.files);
-			if (!files.length) return;
+		insert_image() {
+			this.$emit(
+				'popup',
+				[
+					{
+						type: 'number',
+						text: 'width (50)',
+					},
+					{
+						type: 'number',
+						text: 'height (50)',
+					},
+					{
+						type: 'option',
+						options: ['cubes', 'particles'],
+					},
+					{
+						type: 'option',
+						options: ['plane', 'sphere'],
+					},
+					{
+						type: 'file',
+						accept: 'image/*',
+					},
+				],
+				async (width, height, mode, shape, files) => {
+					if (!files.length) {
+						window.toast('No image file chosen', 'error');
+						return;
+					}
 
-			const file = files[0];
-			const group = await image.image(file, 30, 30, 'cubes', 'plane');
+					const file = files[0];
+					width = parseInt(width) || 50;
+					height = parseInt(height.value) || 50;
 
-			this.$emit('modifier', (json) => {
-				json.levelNodes.push(group);
-				return json;
-			});
+					const node = await image.image(
+						file,
+						width,
+						height,
+						mode,
+						shape,
+					);
+
+					this.$emit('modifier', (json) => {
+						json.levelNodes.push(node);
+						return json;
+					});
+				},
+			);
 		},
 		async insert_video(e) {
 			const files = Array.from(e.target.files);
