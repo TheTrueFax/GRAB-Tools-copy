@@ -79,7 +79,6 @@ export default {
 						},
 						Video: {
 							func: this.insert_video,
-							file: true,
 						},
 						'Point Cloud': {
 							func: this.insert_model,
@@ -326,17 +325,46 @@ export default {
 				},
 			);
 		},
-		async insert_video(e) {
-			const files = Array.from(e.target.files);
-			if (!files.length) return;
+		insert_video() {
+			this.$emit(
+				'popup',
+				[
+					{
+						type: 'number',
+						text: 'width (40)',
+					},
+					{
+						type: 'number',
+						text: 'height (30)',
+					},
+					{
+						type: 'file',
+						accept: '.mp4',
+					},
+				],
+				async (width, height, files) => {
+					if (!files.length) {
+						window.toast('No video file chosen', 'error');
+						return;
+					}
 
-			const file = files[0];
-			const level_nodes = await video.video(file, 30, 30);
+					const file = files[0];
+					width = parseInt(width) || 40;
+					height = parseInt(height.value) || 30;
 
-			this.$emit('modifier', (json) => {
-				json.levelNodes = json.levelNodes.concat(level_nodes);
-				return json;
-			});
+					const nodes = await video.video(
+						file,
+						width,
+						height,
+						(progress) => {}, // TODO:
+					);
+
+					this.$emit('modifier', (json) => {
+						json.levelNodes = json.levelNodes.concat(nodes);
+						return json;
+					});
+				},
+			);
 		},
 		async insert_model(e) {
 			const files = Array.from(e.target.files);
