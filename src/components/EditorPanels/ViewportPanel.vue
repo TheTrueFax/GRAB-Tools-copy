@@ -268,7 +268,7 @@ export default {
 			this.editing.initialRotation.copy(this.editing.quaternion);
 			this.update_node_shader(this.editing);
 			this.update_trigger_path_positions([this.editing]);
-			this.$emit('changed');
+			this.changed();
 		},
 		cast_for_node(x, y) {
 			if (!this.level) return;
@@ -339,6 +339,14 @@ export default {
 			this.add_animation_paths();
 			this.scene.add(this.level.scene);
 			console.log(this.level);
+		},
+		changed() {
+			this.level.level.complexity = this.level.complexity;
+			this.level.level.formatVersion = this.$config.FORMAT_VERSION;
+			this.$emit('changed');
+		},
+		modifier(func) {
+			this.$emit('modifier', func);
 		},
 		resize(width, height) {
 			this.camera.aspect = width / height;
@@ -633,7 +641,7 @@ export default {
 		},
 		clone_selection() {
 			if (!this.editing) return;
-			this.$emit('modifier', (json) => {
+			this.modifier((json) => {
 				// TODO: decent deepclone method
 				json.levelNodes.push(
 					JSON.parse(JSON.stringify(this.editing.userData.node)),
@@ -643,7 +651,7 @@ export default {
 		},
 		delete_selection() {
 			if (!this.editing) return;
-			this.$emit('modifier', (json) => {
+			this.modifier((json) => {
 				json.levelNodes = json.levelNodes.filter(
 					(n) =>
 						n !==
@@ -655,7 +663,7 @@ export default {
 		},
 		group_selection() {
 			if (!this.editing) return;
-			this.$emit('modifier', (json) => {
+			this.modifier((json) => {
 				json.levelNodes = json.levelNodes.filter(
 					(n) =>
 						n !==
@@ -720,7 +728,7 @@ export default {
 			const id = node?.userData?.id ?? 0;
 			target.triggerTargetAnimation.objectID = id;
 			trigger.triggerTargets.push(target);
-			this.$emit('changed');
+			this.changed();
 			const target_object = this.level.nodes.all[id - 1];
 			if (!target_object) return;
 			this.add_trigger_path(this.editing, target_object);
@@ -731,21 +739,21 @@ export default {
 			const trigger = this.editing.userData.node.levelNodeTrigger;
 			if (!trigger.triggerTargets) trigger.triggerTargets = [];
 			trigger.triggerTargets.push(levelNodes.triggerTargetSubLevel());
-			this.$emit('changed');
+			this.changed();
 		},
 		add_ambience_target() {
 			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
 			const trigger = this.editing.userData.node.levelNodeTrigger;
 			if (!trigger.triggerTargets) trigger.triggerTargets = [];
 			trigger.triggerTargets.push(levelNodes.triggerTargetAmbience());
-			this.$emit('changed');
+			this.changed();
 		},
 		add_sound_target() {
 			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
 			const trigger = this.editing.userData.node.levelNodeTrigger;
 			if (!trigger.triggerTargets) trigger.triggerTargets = [];
 			trigger.triggerTargets.push(levelNodes.triggerTargetSound());
-			this.$emit('changed');
+			this.changed();
 			this.update_connection_visibility();
 		},
 		add_trigger_source() {
@@ -753,20 +761,20 @@ export default {
 			const trigger = this.editing.userData.node.levelNodeTrigger;
 			if (!trigger.triggerSources) trigger.triggerSources = [];
 			trigger.triggerSources.push(levelNodes.triggerSourceBasic());
-			this.$emit('changed');
+			this.changed();
 		},
 		add_trigger_blocks_source() {
 			if (!this.editing?.userData?.node?.levelNodeTrigger) return;
 			const trigger = this.editing.userData.node.levelNodeTrigger;
 			if (!trigger.triggerSources) trigger.triggerSources = [];
 			trigger.triggerSources.push(levelNodes.triggerSourceBlockNames());
-			this.$emit('changed');
+			this.changed();
 		},
 		add_animation() {
 			if (!this.editing?.userData?.node) return;
 			const node = this.editing.userData.node;
 			(node.animations ??= []).push(levelNodes.animation());
-			this.$emit('changed');
+			this.changed();
 		},
 		edit_object_json(object = undefined) {
 			if (!object) object = this.editing;
@@ -781,7 +789,7 @@ export default {
 				window.toast('Failed to write node', 'error');
 				return;
 			}
-			this.$emit('modifier', (json) => {
+			this.modifier((json) => {
 				console.log(json);
 				const index = json.levelNodes.findIndex(
 					(n) => n === this.level.nodes.all[id - 1].userData.node,
