@@ -1519,7 +1519,10 @@ function updateObjectAnimation(object, time) {
 		if (newFrameIndex >= animationFrames.length) newFrameIndex = 0;
 		newFrame = animationFrames[newFrameIndex];
 
-		if (oldFrame.time <= relativeTime && newFrame.time > relativeTime)
+		if (
+			(oldFrame.time ?? 0) <= relativeTime &&
+			(newFrame.time ?? 0) > relativeTime
+		)
 			break;
 		object.userData.currentFrameIndex += 1;
 		if (object.userData.currentFrameIndex >= animationFrames.length - 1)
