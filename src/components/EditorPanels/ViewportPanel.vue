@@ -173,9 +173,11 @@ export default {
 				this.is_animating = true;
 			}
 			this.editing = e.target.object;
-			this.update_node_shader(this.editing);
-			this.validate_node(this.editing);
-			this.update_trigger_path_positions();
+			if (this.editing) {
+				this.update_node_shader(this.editing);
+				this.validate_node(this.editing);
+				this.update_trigger_path_positions([this.editing]);
+			}
 		},
 		reset_node_positions() {
 			this.level.meta.time = 0;
@@ -264,7 +266,7 @@ export default {
 			this.editing.initialPosition.copy(this.editing.position);
 			this.editing.initialRotation.copy(this.editing.quaternion);
 			this.update_node_shader(this.editing);
-			this.update_trigger_path_positions();
+			this.update_trigger_path_positions([this.editing]);
 			this.$emit('changed');
 		},
 		cast_for_node(x, y) {
@@ -442,6 +444,7 @@ export default {
 		toggle_trigger_connections() {
 			this.show_trigger_connections = !this.show_trigger_connections;
 			this.update_connection_visibility();
+			this.update_trigger_path_positions();
 		},
 		update_connection_visibility() {
 			this.level.nodes.levelNodeTrigger.forEach((trigger) => {
@@ -487,38 +490,35 @@ export default {
 			return false;
 		},
 		update_trigger_path_positions(related_objects = undefined) {
-			if (this.level.nodes.levelNodeTrigger?.length) {
-				this.level.nodes.levelNodeTrigger.forEach((object) => {
-					if (!object.userData.trigger_paths) return;
-					object.userData.trigger_paths.forEach((line) => {
-						const path_target = line.userData.object;
-						const path_trigger = line.userData.trigger;
+			if (!this.show_trigger_connections) return;
 
-						if (
-							related_objects !== undefined &&
-							!related_objects.includes(path_target) &&
-							!related_objects.includes(path_trigger) &&
-							!related_objects.some((obj) =>
-								this.object_contains(obj, path_target),
-							) &&
-							!related_objects.some((obj) =>
-								this.object_contains(obj, path_trigger),
-							)
-						) {
-							return;
-						}
+			if (related_objects === undefined)
+				related_objects = this.level.nodes?.levelNodeTrigger ?? [];
 
-						const trigger_position = new THREE.Vector3();
-						path_trigger.getWorldPosition(trigger_position);
-						const position = new THREE.Vector3();
-						path_target.getWorldPosition(position);
-
-						const points = [trigger_position, position];
-						line.geometry =
-							new THREE.BufferGeometry().setFromPoints(points);
+			const lines = [];
+			related_objects.forEach((obj) => {
+				if (obj.userData?.relevant_connections?.length) {
+					obj.userData?.relevant_connections.forEach((line) => {
+						lines.push(line);
 					});
-				});
-			}
+				}
+			});
+
+			const unique_lines = [...new Set(lines)];
+			unique_lines.forEach((line) => {
+				const path_target = line.userData.object;
+				const path_trigger = line.userData.trigger;
+
+				const trigger_position = new THREE.Vector3();
+				path_trigger.getWorldPosition(trigger_position);
+				const position = new THREE.Vector3();
+				path_target.getWorldPosition(position);
+
+				const points = [trigger_position, position];
+				line.geometry = new THREE.BufferGeometry().setFromPoints(
+					points,
+				);
+			});
 		},
 		add_trigger_path(trigger, object) {
 			const path_material = new THREE.LineBasicMaterial({
@@ -539,9 +539,29 @@ export default {
 			line.visible = this.show_trigger_connections;
 			line.userData.trigger = trigger;
 			line.userData.object = object;
-			this.level.scene.add(line);
-
 			trigger.userData.trigger_paths.push(line);
+			if (!trigger.userData.relevant_connections) {
+				trigger.userData.relevant_connections = [];
+			}
+			trigger.userData.relevant_connections.push(line);
+			let current = object;
+			while (current?.userData?.node) {
+				if (!current.userData.relevant_connections) {
+					current.userData.relevant_connections = [];
+				}
+				current.userData.relevant_connections.push(line);
+				current = current.parent;
+			}
+			current = trigger;
+			while (current?.userData?.node) {
+				if (!current.userData.relevant_connections) {
+					current.userData.relevant_connections = [];
+				}
+				current.userData.relevant_connections.push(line);
+				current = current.parent;
+			}
+
+			this.level.scene.add(line);
 		},
 		clone_selection() {
 			if (!this.editing) return;
