@@ -32,15 +32,9 @@ export default {
 		size(position) {
 			const { container, first, second } = this.$refs;
 			const bounds = container.getBoundingClientRect();
-			first.style.height =
-				Math.max(bounds.height * 0.1, position - bounds.top) + 'px';
+			first.style.height = position - bounds.top + 'px';
 			second.style.height =
-				Math.max(
-					bounds.height * 0.1,
-					bounds.height - (position - bounds.top),
-				) -
-				5 +
-				'px';
+				bounds.height - (position - bounds.top) - 5 + 'px';
 		},
 		prevent(e) {
 			e.preventDefault();
