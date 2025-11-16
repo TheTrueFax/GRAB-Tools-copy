@@ -171,6 +171,10 @@ export default {
 						'X: delete': { href: '#' },
 						'G: group': { href: '#' },
 					},
+					Credit: {
+						Slin: { href: 'https://slin.dev' },
+						EBSpark: { href: 'https://ebspark.github.io/' },
+					},
 					[`v${this.$config.VERSION}`]: {
 						href: 'https://github.com/twhlynch/GRAB-Tools',
 					},
