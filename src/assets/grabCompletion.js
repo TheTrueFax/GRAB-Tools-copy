@@ -1,7 +1,7 @@
 import protobuf from 'protobufjs';
 import { autocompletion, startCompletion } from '@codemirror/autocomplete';
 import { EditorView } from '@codemirror/view';
-import proto from '../../public/proto/proto.proto?raw';
+import proto from '@/assets/proto/proto.proto?raw';
 
 function get_field_name(doc, pos) {
 	const text = doc.sliceString(0, pos);
