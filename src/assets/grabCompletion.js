@@ -1,7 +1,6 @@
-import protobuf from 'protobufjs';
 import { autocompletion, startCompletion } from '@codemirror/autocomplete';
 import { EditorView } from '@codemirror/view';
-import proto from '@/assets/proto/proto.proto?raw';
+import encoding from '@/assets/tools/encoding';
 
 function get_field_name(doc, pos) {
 	const text = doc.sliceString(0, pos);
@@ -96,8 +95,7 @@ function get_completions(completions, doc, pos) {
 }
 
 export function grabCompletion() {
-	const parsed = protobuf.parse(proto);
-	const root = parsed.root;
+	const root = encoding.load();
 	root.resolveAll();
 	const enums = collect_enums(root);
 	const completions = collect_completions(enums);

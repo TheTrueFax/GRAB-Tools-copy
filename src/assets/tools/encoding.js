@@ -1,12 +1,13 @@
 import protobuf from 'protobufjs';
 import { FORMAT_VERSION } from '@/config';
+import definition from '@/assets/proto/proto.proto?raw';
 
 /**
- * @returns {Promise<protobuf.Root>} - The level message root
+ * @returns {protobuf.Root} - The level message root
  */
-async function load() {
+function load() {
 	if (window._root === undefined) {
-		const root = await protobuf.load('proto/proto.proto');
+		const { root } = protobuf.parse(definition);
 		window._root = root;
 	}
 
@@ -25,7 +26,7 @@ async function decodeLevel(buffer) {
 		reader.readAsArrayBuffer(buffer);
 	});
 
-	const root = await load();
+	const root = load();
 	const message = root.lookupType('COD.Level.Level');
 	const decoded = message.decode(new Uint8Array(data));
 
@@ -37,7 +38,7 @@ async function decodeLevel(buffer) {
  * @returns {Promise<ArrayBuffer>} - A level encoded as a buffer
  */
 async function encodeLevel(level) {
-	const root = await load();
+	const root = load();
 	const message = root.lookupType('COD.Level.Level');
 
 	const errMsg = message.verify(level);

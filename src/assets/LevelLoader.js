@@ -4,6 +4,7 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
 import * as protobuf from 'protobufjs';
+import encoding from '@/assets/tools/encoding.js';
 
 import * as SHADERS from './shaders/shaders.js';
 
@@ -291,11 +292,7 @@ class LevelLoader {
 		skyMaterial.side = THREE.BackSide;
 		this.skyMaterial = skyMaterial;
 
-		this.rootPromise = Promise.all([
-			protobuf.load('/proto/proto.proto'),
-		]).then((result) => {
-			this.root = result[0];
-		});
+		this.root = encoding.load();
 
 		fontLoader.load('/fonts/Roboto_Regular.json', (font) => {
 			this.font = font;
@@ -359,8 +356,6 @@ class LevelLoader {
 				updateObjectParticles(object, delta);
 			}
 		};
-
-		await this.rootPromise;
 
 		let root = this.root;
 		level.root = this.root;
