@@ -16,6 +16,8 @@ import group from '@/assets/tools/group.js';
 import ContextMenu from '@/components/EditorPanels/ContextMenu.vue';
 import levelNodes from '@/assets/tools/nodes.js';
 import JsonPanel from './JsonPanel.vue';
+import AnimationPanel from '@/components/EditorPanels/AnimationPanel.vue';
+import ResizableColPanel from '@/components/EditorPanels/ResizableColPanel.vue';
 
 export default {
 	data() {
@@ -49,6 +51,8 @@ export default {
 		SpaceIcon,
 		ContextMenu,
 		JsonPanel,
+		AnimationPanel,
+		ResizableColPanel,
 	},
 	emits: ['changed', 'modifier', 'scope'],
 	async mounted() {
@@ -75,6 +79,10 @@ export default {
 		observer.observe(this.$refs.viewport);
 		window.addEventListener('keydown', this.keydown);
 		await this.set_json(this.json);
+
+		this.$refs.resize.size(
+			this.$refs.resize.$el.getBoundingClientRect().bottom - 30 - 5,
+		);
 	},
 	unmounted() {
 		window.removeEventListener('keydown', this.keydown);
@@ -170,7 +178,7 @@ export default {
 					this.reset_node_positions();
 				}
 			} else if (this.editing) {
-				this.is_animating = true;
+				this.is_animating = this.$refs.animation_panel.playing;
 			}
 			this.editing = e.target.object;
 			if (this.editing) {
@@ -341,11 +349,13 @@ export default {
 			this.$emit('scope', (scope) => {
 				scope.$refs.statistics.set_level(this.level);
 			});
+			this.$refs.animation_panel.set_level(this.level);
 			console.log(this.level);
 		},
 		changed() {
 			this.level.level.complexity = this.level.complexity;
 			this.level.level.formatVersion = this.$config.FORMAT_VERSION;
+			this.$refs.animation_panel.set_level(this.level);
 			this.$emit('changed');
 		},
 		modifier(func) {
@@ -358,6 +368,13 @@ export default {
 			this.renderer.setSize(width, height);
 			this.renderer.render(this.scene, this.camera);
 		},
+		set_time(time) {
+			this.level.meta.time = 0;
+			this.level.nodes.animated.forEach((node) => {
+				node.userData.currentFrameIndex = 0;
+			});
+			this.level.update(time);
+		},
 		animation() {
 			const delta = this.clock.getDelta();
 			if (!this.level) return;
@@ -366,6 +383,7 @@ export default {
 				this.level.update(delta);
 				this.update_trigger_path_positions(this.level.nodes.animated);
 			}
+			this.$refs.animation_panel.set_time(this.level.meta.time);
 			this.controls.update(delta);
 			this.renderer.render(this.scene, this.camera);
 		},
@@ -1064,115 +1082,125 @@ export default {
 			this.controls.target.copy(center);
 			this.camera.lookAt(center);
 		},
+		run_in_scope(func) {
+			func(this);
+		},
 	},
 };
 </script>
 
 <template>
-	<section
-		:ref="'viewport'"
-		class="viewport"
-		@mousedown="mousedown"
-		@mouseup="mouseup"
-		@contextmenu="open_context_menu"
-	>
-		<ContextMenu
-			v-if="contextmenu"
-			:ref="'contextmenu'"
-			:menu="contextmenu"
-			:style="`top: ${contextmenu_position.y}px; left: ${contextmenu_position.x}px;`"
-			@click="close_context_menu"
-		/>
-		<JsonPanel
-			:mini="true"
-			ref="mini_editor"
-			v-show="show_mini_editor"
-			class="mini-editor"
-		/>
-		<button
-			class="close-mini-editor"
-			@click="close_mini_editor"
-			v-show="show_mini_editor"
-		>
-			Save
-		</button>
-		<div class="modes">
-			<div>
-				<label for="modes-translate">
-					<TranslateIcon />
-				</label>
-				<input
-					id="modes-translate"
-					type="checkbox"
-					:checked="transform_mode === 'translate'"
-					@click="transform_mode_event"
+	<ResizableColPanel ref="resize">
+		<template #first>
+			<section
+				:ref="'viewport'"
+				class="viewport"
+				@mousedown="mousedown"
+				@mouseup="mouseup"
+				@contextmenu="open_context_menu"
+			>
+				<ContextMenu
+					v-if="contextmenu"
+					:ref="'contextmenu'"
+					:menu="contextmenu"
+					:style="`top: ${contextmenu_position.y}px; left: ${contextmenu_position.x}px;`"
+					@click="close_context_menu"
 				/>
-			</div>
-			<div>
-				<label for="modes-rotate">
-					<RotateIcon />
-				</label>
-				<input
-					id="modes-rotate"
-					type="checkbox"
-					:checked="transform_mode === 'rotate'"
-					@click="transform_mode_event"
+				<JsonPanel
+					:mini="true"
+					ref="mini_editor"
+					v-show="show_mini_editor"
+					class="mini-editor"
 				/>
-			</div>
-			<div>
-				<label for="modes-scale">
-					<ScaleIcon />
-				</label>
-				<input
-					id="modes-scale"
-					type="checkbox"
-					:checked="transform_mode === 'scale'"
-					@click="transform_mode_event"
-				/>
-			</div>
-			<div>
-				<label for="space">
-					<SpaceIcon />
-				</label>
-				<input
-					id="space"
-					type="checkbox"
-					:checked="transform_space === 'world'"
-					@click="toggle_transform_space"
-				/>
-			</div>
-		</div>
-		<div class="controls">
-			<div>
-				<label
-					for="controls-mouse-zoom"
-					title="toggle zoom to cursor position"
+				<button
+					class="close-mini-editor"
+					@click="close_mini_editor"
+					v-show="show_mini_editor"
 				>
-					<CursorIcon />
-				</label>
-				<input
-					id="controls-mouse-zoom"
-					type="checkbox"
-					:checked="zoom_to_cursor"
-					@change="zoomToCursorChange"
-				/>
-			</div>
-			<div>
-				<label
-					for="controls-wasd"
-					title="toggle keyboard movement controls"
-				>
-					<KeyboardIcon />
-				</label>
-				<input
-					id="controls-wasd"
-					type="checkbox"
-					:checked="free_movement"
-					@change="toggleControls"
-				/>
-			</div>
-		</div>
-	</section>
+					Save
+				</button>
+				<div class="modes">
+					<div>
+						<label for="modes-translate">
+							<TranslateIcon />
+						</label>
+						<input
+							id="modes-translate"
+							type="checkbox"
+							:checked="transform_mode === 'translate'"
+							@click="transform_mode_event"
+						/>
+					</div>
+					<div>
+						<label for="modes-rotate">
+							<RotateIcon />
+						</label>
+						<input
+							id="modes-rotate"
+							type="checkbox"
+							:checked="transform_mode === 'rotate'"
+							@click="transform_mode_event"
+						/>
+					</div>
+					<div>
+						<label for="modes-scale">
+							<ScaleIcon />
+						</label>
+						<input
+							id="modes-scale"
+							type="checkbox"
+							:checked="transform_mode === 'scale'"
+							@click="transform_mode_event"
+						/>
+					</div>
+					<div>
+						<label for="space">
+							<SpaceIcon />
+						</label>
+						<input
+							id="space"
+							type="checkbox"
+							:checked="transform_space === 'world'"
+							@click="toggle_transform_space"
+						/>
+					</div>
+				</div>
+				<div class="controls">
+					<div>
+						<label
+							for="controls-mouse-zoom"
+							title="toggle zoom to cursor position"
+						>
+							<CursorIcon />
+						</label>
+						<input
+							id="controls-mouse-zoom"
+							type="checkbox"
+							:checked="zoom_to_cursor"
+							@change="zoomToCursorChange"
+						/>
+					</div>
+					<div>
+						<label
+							for="controls-wasd"
+							title="toggle keyboard movement controls"
+						>
+							<KeyboardIcon />
+						</label>
+						<input
+							id="controls-wasd"
+							type="checkbox"
+							:checked="free_movement"
+							@change="toggleControls"
+						/>
+					</div>
+				</div>
+			</section>
+		</template>
+		<template #second>
+			<AnimationPanel ref="animation_panel" @scope="run_in_scope" />
+		</template>
+	</ResizableColPanel>
 </template>
 
 <style>

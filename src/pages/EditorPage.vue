@@ -89,6 +89,7 @@ export default {
 		<ResizableRowPanel class="main-panel" :ref="'main_panel'">
 			<template #first>
 				<ViewportPanel
+					class="view-panel"
 					:ref="'viewport_panel'"
 					@changed="viewport_changed"
 					@modifier="run_modifier"
@@ -135,11 +136,15 @@ html:has(#editor) {
 footer {
 	height: 1.2rem;
 	font-size: 0.8rem;
+	background-color: #1e1e1e;
 }
 .main-panel {
 	height: calc(100% - 3rem - 1rem);
 }
 .side-panel {
+	height: 100%;
+}
+.view-panel {
 	height: 100%;
 }
 
