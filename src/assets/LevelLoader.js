@@ -71,6 +71,7 @@ class LevelLoader {
 			for (let object of result) {
 				this.objects.push(object);
 			}
+			this.objects[1].rotateY(Math.PI);
 		});
 
 		this.materials = [
@@ -1411,14 +1412,12 @@ class LevelLoader {
 								(textHeight + 0.2 * (index + 1)) / 2;
 							textMesh.position.add(
 								new THREE.Vector3(
-									textWidth / 2,
+									-textWidth / 2,
 									-verticalSpacing +
 										0.05 * (lines.length + 1),
-									-(node.levelNodeSign.hideModel ? 0 : 0.021),
+									node.levelNodeSign.hideModel ? 0 : 0.021,
 								),
-							); // Adjust these values to place the text on the block
-
-							textMesh.rotation.y = Math.PI;
+							);
 
 							object.add(textMesh);
 						});
