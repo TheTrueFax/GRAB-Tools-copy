@@ -545,45 +545,64 @@ export default {
 		},
 		add_animation_path(object) {
 			const path_material = new THREE.LineBasicMaterial({
-				color: 0x0000ff,
+				color: 0x000099,
 			});
 			const points_material = new THREE.PointsMaterial({
+				color: 0x000099,
+				size: 3,
+				sizeAttenuation: false,
+			});
+			const current_points_material = new THREE.PointsMaterial({
 				color: 0x0000ff,
 				size: 3,
 				sizeAttenuation: false,
+			});
+			const current_path_material = new THREE.LineBasicMaterial({
+				color: 0x0000ff,
 			});
 
 			const position = new THREE.Vector3();
 			object.getWorldPosition(position);
 
-			const points = object.userData.node.animations[0].frames.map(
-				(frame) =>
-					new THREE.Vector3(
-						frame.position?.x ?? 0,
-						frame.position?.y ?? 0,
-						frame.position?.z ?? 0,
-					),
-			);
+			object.userData.node.animations.forEach((animation, i) => {
+				const points = animation.frames.map(
+					(frame) =>
+						new THREE.Vector3(
+							frame.position?.x ?? 0,
+							frame.position?.y ?? 0,
+							frame.position?.z ?? 0,
+						),
+				);
 
-			const line_geometry = new THREE.BufferGeometry().setFromPoints(
-				points,
-			);
-			const path_line = new THREE.Line(line_geometry, path_material);
-			const points_line = new THREE.Points(
-				line_geometry,
-				points_material,
-			);
-			const path_group = new THREE.Group();
-			path_group.add(path_line);
-			path_group.add(points_line);
+				const line_geometry = new THREE.BufferGeometry().setFromPoints(
+					points,
+				);
+				const path_line = new THREE.Line(
+					line_geometry,
+					i === (object.userData.node.activeAnimation ?? 0)
+						? current_path_material
+						: path_material,
+				);
+				const points_line = new THREE.Points(
+					line_geometry,
+					i === (object.userData.node.activeAnimation ?? 0)
+						? current_points_material
+						: points_material,
+				);
+				const path_group = new THREE.Group();
+				path_group.add(path_line);
+				path_group.add(points_line);
 
-			path_group.visible = this.show_animations;
-			(object.userData.animation_paths ??= []).push(path_group);
-			path_group.userData.object = object;
+				path_group.visible = this.show_animations;
+				(object.userData.animation_paths ??= []).push(path_group);
+				path_group.userData.object = object;
 
-			(object.userData.relevant_animation_paths ??= []).push(path_group);
+				(object.userData.relevant_animation_paths ??= []).push(
+					path_group,
+				);
 
-			object.parent.add(path_group);
+				object.parent.add(path_group);
+			});
 
 			this.update_animation_path_position(object);
 		},

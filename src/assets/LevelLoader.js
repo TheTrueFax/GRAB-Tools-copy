@@ -1437,16 +1437,18 @@ class LevelLoader {
 						object.material.uniforms.worldMatrix = {
 							value: new THREE.Matrix4().copy(object.matrixWorld),
 						};
-					//Attach data of the first animation to the object (which is all the initial animation system supports anyway)
+
+					const active_animation = node.activeAnimation ?? 0;
 					if (
-						node.animations &&
-						node.animations.length > 0 &&
-						node.animations[0].frames &&
-						node.animations[0].frames.length > 0 &&
-						(node.activeAnimation ?? 0) === 0
+						node.activeAnimation !== -1 &&
+						node.animations?.[active_animation]?.frames?.length
 					) {
-						object.userData.animation = node.animations[0];
+						object.userData.animation =
+							node.animations[active_animation];
 						object.userData.currentFrameIndex = 0;
+					}
+
+					if (node.animations?.[0]?.frames?.length) {
 						level.nodes.animated.push(object);
 					}
 				}
@@ -1506,9 +1508,10 @@ async function getGeometryForModel(name) {
 
 function updateObjectAnimation(object, time) {
 	let animation = object.userData.animation;
+	if (!animation) return;
 	const animationFrames = animation.frames;
 	const relativeTime =
-		(time * (object.userData.animation.speed ?? 0)) %
+		(time * (animation.speed ?? 0)) %
 		(animationFrames[animationFrames.length - 1].time ?? 0);
 
 	//Find frames to blend between
