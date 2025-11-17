@@ -1,5 +1,6 @@
 import { SERVER_URL } from '@/config';
 import { defineStore } from 'pinia';
+import { LogEvent } from '@/requests/LogEvent';
 
 export const useUserStore = defineStore('user', {
 	state: () => ({
@@ -49,6 +50,8 @@ export const useUserStore = defineStore('user', {
 				this.user_name = data.alias;
 				this.meta_id = data.id;
 			}
+			// TODO: load user info
+			LogEvent('LOGIN');
 		},
 		async logout() {
 			this.$reset();

@@ -1,4 +1,5 @@
 import { GRAB_SERVER_URL } from '@/config';
+import { LogEvent } from '@/requests/LogEvent';
 
 /**
  * @param {String} level_id
@@ -14,6 +15,8 @@ export async function download_level_request(level_id) {
 		window.toast(`Error: ${text}`, 'error');
 		return null;
 	}
+
+	await LogEvent('DOWNLOAD', level_id);
 
 	return await response.arrayBuffer();
 }
