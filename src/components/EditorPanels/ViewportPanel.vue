@@ -87,16 +87,22 @@ export default {
 		window.removeEventListener('keydown', this.keydown);
 	},
 	methods: {
-		update_node_shader(object) {
+		update_node_shader(object, position = true, light = true) {
 			if (!object) return;
 
-			if (object?.material?.uniforms?.worldMatrix) {
+			if (position && object?.material?.uniforms?.worldMatrix) {
 				object.material.uniforms.worldMatrix = {
-					value: object.matrixWorld,
+					value: new THREE.Matrix4().copy(object.matrixWorld),
+				};
+				const normalMatrix = new THREE.Matrix3();
+				normalMatrix.getNormalMatrix(object.matrixWorld);
+
+				object.material.uniforms.frozenNormalMatrix = {
+					value: normalMatrix,
 				};
 			}
 
-			if (object?.material?.uniforms?.worldNormalMatrix) {
+			if (light && object?.material?.uniforms?.worldNormalMatrix) {
 				const normalMatrix = new THREE.Matrix3();
 				normalMatrix.getNormalMatrix(object.matrixWorld);
 
@@ -106,7 +112,9 @@ export default {
 			}
 
 			if (object.children?.length) {
-				object.children.forEach(this.update_node_shader);
+				object.children.forEach((child) =>
+					this.update_node_shader(child, position, light),
+				);
 			}
 		},
 		setup_renderer() {
@@ -169,6 +177,8 @@ export default {
 				node.userData.currentFrameIndex = 0;
 				node.quaternion.copy(node.initialRotation);
 				node.position.copy(node.initialPosition);
+				node.updateMatrixWorld(true);
+				this.update_node_shader(node);
 			});
 		},
 		moving_event(e) {
@@ -330,6 +340,9 @@ export default {
 			if (this.is_animating) {
 				this.level.update(delta);
 				this.update_trigger_path_positions(this.level.nodes.animated);
+				this.level.nodes.animated.forEach((object) => {
+					this.update_node_shader(object, false, true);
+				});
 			}
 			this.$refs.animation_panel.set_time(this.level.meta.time);
 			this.controls.update(delta);

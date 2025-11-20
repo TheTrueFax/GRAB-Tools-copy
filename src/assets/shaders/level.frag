@@ -1,5 +1,6 @@
 varying vec3 vWorldPosition;
 varying vec3 vInitialWorldPosition;
+varying vec3 vFrozenNormal;
 varying vec3 vNormal;
 
 uniform sampler2D colorTexture;
@@ -26,7 +27,7 @@ void main()
     vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
     vec4 texColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-    vec3 blendNormals = abs(vNormal);
+    vec3 blendNormals = abs(vFrozenNormal);
     if (blendNormals.x > blendNormals.y && blendNormals.x > blendNormals.z)
     {
         texColor.rgb = texture2D(colorTexture, vInitialWorldPosition.zy * tileFactor).rgb;

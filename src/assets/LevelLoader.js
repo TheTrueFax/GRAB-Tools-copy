@@ -1080,6 +1080,8 @@ class LevelLoader {
 					let normalMatrix = new THREE.Matrix3();
 					normalMatrix.getNormalMatrix(worldMatrix);
 					newMaterial.uniforms.worldNormalMatrix.value = normalMatrix;
+					newMaterial.uniforms.frozenNormalMatrix.value =
+						normalMatrix;
 
 					level.nodes.material[
 						node.levelNodeStatic.material ?? 0
@@ -1135,6 +1137,8 @@ class LevelLoader {
 					let normalMatrix = new THREE.Matrix3();
 					normalMatrix.getNormalMatrix(worldMatrix);
 					newMaterial.uniforms.worldNormalMatrix.value = normalMatrix;
+					newMaterial.uniforms.frozenNormalMatrix.value =
+						normalMatrix;
 
 					level.nodes.material[
 						node.levelNodeCrumbling.material ?? 0
@@ -1210,6 +1214,8 @@ class LevelLoader {
 					let normalMatrix = new THREE.Matrix3();
 					normalMatrix.getNormalMatrix(worldMatrix);
 					newMaterial.uniforms.worldNormalMatrix.value = normalMatrix;
+					newMaterial.uniforms.frozenNormalMatrix.value =
+						normalMatrix;
 
 					object.isTrigger = true;
 					object.visible = this.options.triggers;
@@ -1254,6 +1260,8 @@ class LevelLoader {
 					let normalMatrix = new THREE.Matrix3();
 					normalMatrix.getNormalMatrix(worldMatrix);
 					newMaterial.uniforms.worldNormalMatrix.value = normalMatrix;
+					newMaterial.uniforms.frozenNormalMatrix.value =
+						normalMatrix;
 
 					object.isSound = true;
 					object.visible = this.options.sound;
@@ -1486,6 +1494,7 @@ function getMaterialForTexture(
 		tileFactor: { value: tileFactor },
 		diffuseColor: { value: [1.0, 1.0, 1.0] },
 		worldNormalMatrix: { value: new THREE.Matrix3() },
+		frozenNormalMatrix: { value: new THREE.Matrix3() },
 		worldMatrix: { value: new THREE.Matrix4() },
 		neonEnabled: { value: neonEnabled },
 		transparentEnabled: { value: 0.0 },
