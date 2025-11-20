@@ -92,23 +92,14 @@ export default {
 
 			if (object?.material?.uniforms?.worldMatrix) {
 				object.material.uniforms.worldMatrix = {
-					value: new THREE.Matrix4().copy(object.matrixWorld),
+					value: object.matrixWorld,
 				};
 			}
 
-			let targetVector = new THREE.Vector3();
-			let targetQuaternion = new THREE.Quaternion();
-			let worldMatrix = new THREE.Matrix4();
-			worldMatrix.compose(
-				object.getWorldPosition(targetVector),
-				object.getWorldQuaternion(targetQuaternion),
-				object.getWorldScale(targetVector),
-			);
-
-			let normalMatrix = new THREE.Matrix3();
-			normalMatrix.getNormalMatrix(worldMatrix);
-
 			if (object?.material?.uniforms?.worldNormalMatrix) {
+				const normalMatrix = new THREE.Matrix3();
+				normalMatrix.getNormalMatrix(object.matrixWorld);
+
 				object.material.uniforms.worldNormalMatrix = {
 					value: normalMatrix,
 				};
@@ -172,14 +163,6 @@ export default {
 				this.select_event,
 			);
 		},
-		moving_event(e) {
-			this.gizmo.selection.forEach((object) => {
-				this.update_node_shader(object);
-				this.validate_node(object);
-				this.update_animation_path_position(object);
-			});
-			this.update_trigger_path_positions(this.gizmo.selection);
-		},
 		reset_node_positions() {
 			this.level.meta.time = 0;
 			this.level.nodes.animated.forEach((node) => {
@@ -188,97 +171,23 @@ export default {
 				node.position.copy(node.initialPosition);
 			});
 		},
-		validate_node(object) {
-			const node = object?.userData?.node;
-			const axis = this.gizmo.controls.axis;
-			if (!node || !axis) return;
-			const mode = this.transform_mode;
-			const override_axis = axis.charAt(0).toLowerCase();
-
-			if (node.levelNodeStart || node.levelNodeFinish) {
-				if (mode === 'rotate') {
-					object.quaternion.x = 0;
-					object.quaternion.z = 0;
-				} else if (mode === 'scale') {
-					object.scale.z = object.scale[override_axis];
-					object.scale.x = object.scale[override_axis];
-					object.scale.y = 1;
-				}
-			}
-			if (node.levelNodeSign) {
-				if (node.levelNodeSign.hideModel) {
-					if (mode === 'scale') {
-						object.scale.x = object.scale[override_axis];
-						object.scale.y = object.scale[override_axis];
-						object.scale.z = object.scale[override_axis];
-					}
-				} else {
-					if (mode === 'scale') {
-						object.scale.x = 1;
-						object.scale.y = 1;
-						object.scale.z = 1;
-					}
-				}
-			}
-			if (node.levelNodeSound) {
-				if (mode === 'scale') {
-					object.scale.x = 1;
-					object.scale.y = 1;
-					object.scale.z = 1;
-				} else if (mode === 'rotate') {
-					object.quaternion.x = 0;
-					object.quaternion.y = 0;
-					object.quaternion.z = 0;
-					object.quaternion.w = 1;
-				}
-			}
-			object.quaternion.normalize();
+		moving_event(e) {
+			this.gizmo.selection.forEach((object) => {
+				this.update_node_shader(object);
+				this.update_animation_path_position(object);
+			});
+			this.update_trigger_path_positions(this.gizmo.selection);
+			this.dragging = true;
 		},
 		edit_event(e) {
 			this.controls.enabled = !e.value;
 			if (e.value) return;
-			if (this.gizmo.empty()) return;
 			this.dragging = true;
+
 			this.gizmo.selection.forEach((object) => {
-				this.validate_node(object);
-
-				const world_pos = new THREE.Vector3();
-				const world_quat = new THREE.Quaternion();
-				const world_scale = new THREE.Vector3();
-				object.updateMatrixWorld(true);
-				object.getWorldPosition(world_pos);
-				object.getWorldQuaternion(world_quat);
-				object.getWorldScale(world_scale);
-
-				const entries = Object.entries(object.userData.node);
-				const node = entries.find((e) => e[0].includes('levelNode'))[1];
-
-				if (node.position) {
-					node.position.x = world_pos.x;
-					node.position.y = world_pos.y;
-					node.position.z = world_pos.z;
-				}
-				if (node.scale && typeof node.scale === 'object') {
-					node.scale.x = Math.abs(world_scale.x);
-					node.scale.y = Math.abs(world_scale.y);
-					node.scale.z = Math.abs(world_scale.z);
-				}
-				if (node.scale && typeof node.scale === 'number') {
-					node.scale = Math.abs(world_scale.x);
-				}
-				if (node.radius) {
-					node.radius = Math.abs(world_scale.x) / 2;
-				}
-				if (node.rotation) {
-					node.rotation.x = world_quat.x;
-					node.rotation.y = world_quat.y;
-					node.rotation.z = world_quat.z;
-					node.rotation.w = world_quat.w;
-				}
-				object.initialPosition.copy(world_pos);
-				object.initialRotation.copy(world_quat);
 				this.update_node_shader(object);
 			});
+
 			this.update_trigger_path_positions(this.gizmo.selection);
 			this.changed();
 		},

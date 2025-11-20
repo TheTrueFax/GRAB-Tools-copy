@@ -1,11 +1,7 @@
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import * as THREE from 'three';
+import encoding from '@/assets/tools/encoding';
 
-/**
- * TransformControls wrapper
- * @param {Function<Event>} changing_event called as transform controls changes
- * @param {Function<Event>} changed_event called when starting or stopping using transform controls
- */
 class GizmoControls {
 	constructor(camera, domElement, scene, changing_event, changed_event) {
 		this.camera = camera;
@@ -13,73 +9,190 @@ class GizmoControls {
 		this.scene = scene;
 
 		this.selection = [];
+		this.dragData = null;
+
+		this.pivot = new THREE.Object3D();
+		this.scene.add(this.pivot);
+
 		this.group = new THREE.Group();
+		this.scene.add(this.group);
 
 		this.controls = new TransformControls(this.camera, this.domElement);
+		this.controls.setSize(1);
+		this.controls.enabled = true;
 
-		this.controls.addEventListener('change', changing_event);
-		this.controls.addEventListener('dragging-changed', changed_event);
+		this.controls.addEventListener('change', (e) => {
+			this.handle_transform_change();
+			if (typeof changing_event === 'function') {
+				changing_event(e);
+			}
+		});
 
-		this.scene.add(this.group);
+		this.controls.addEventListener('dragging-changed', (e) => {
+			this.handle_dragging_changed(e);
+			if (typeof changed_event === 'function') {
+				changed_event(e);
+			}
+		});
+
 		this.scene.add(this.controls);
 	}
 
-	/**
-	 * parent.attach(object) but handles non uniform scale better
-	 */
-	_attach(object, parent) {
-		object.updateWorldMatrix(true, false);
+	handle_dragging_changed(event) {
+		const isDragging = event.value;
 
-		const worldPosition = new THREE.Vector3();
-		const worldQuaternion = new THREE.Quaternion();
-		const worldScale = new THREE.Vector3();
+		if (isDragging) {
+			this.pivot.updateMatrixWorld(true);
 
-		object.getWorldPosition(worldPosition);
-		object.getWorldQuaternion(worldQuaternion);
-		object.getWorldScale(worldScale);
+			const pivotMatrix = this.pivot.matrixWorld.clone();
+			const pivotInverse = pivotMatrix.clone().invert();
 
-		object.parent?.remove?.(object);
-		parent.add(object);
+			this.dragData = {
+				pivotMatrix,
+				pivotInverse,
+				objects: [],
+			};
 
-		parent.updateWorldMatrix(true, false);
-		const parentInv = new THREE.Matrix4().copy(parent.matrixWorld).invert();
+			for (const obj of this.selection) {
+				obj.updateMatrixWorld(true);
+				this.dragData.objects.push({
+					object: obj,
+					parent: obj.parent,
+					originalMatrix: obj.matrixWorld.clone(),
+					originalQuaternion: obj.quaternion.clone(),
+				});
+			}
+		} else {
+			this.dragData = null;
+			this.update_node_data();
+		}
+	}
 
-		object.position.copy(worldPosition).applyMatrix4(parentInv);
+	update_node_data() {
+		this.selection.forEach((object) => {
+			object.updateMatrixWorld(true);
 
-		const parentQuat = new THREE.Quaternion();
-		parent.matrixWorld.decompose(
-			new THREE.Vector3(),
-			parentQuat,
-			new THREE.Vector3(),
-		);
-		object.quaternion
-			.copy(worldQuaternion)
-			.premultiply(parentQuat.invert());
+			const node = encoding.node_data(object);
+			if (!node) return;
 
-		const parentScale = new THREE.Vector3();
-		parent.matrixWorld.decompose(
-			new THREE.Vector3(),
-			new THREE.Quaternion(),
-			parentScale,
-		);
-		object.scale.set(
-			worldScale.x / parentScale.x,
-			worldScale.y / parentScale.y,
-			worldScale.z / parentScale.z,
-		);
+			if (node.position) {
+				node.position.x = object.position.x;
+				node.position.y = object.position.y;
+				node.position.z = object.position.z;
+			}
+			if (node.rotation) {
+				node.rotation.x = object.quaternion.x;
+				node.rotation.y = object.quaternion.y;
+				node.rotation.z = object.quaternion.z;
+				node.rotation.w = object.quaternion.w;
+			}
+			if (node.scale && typeof node.scale === 'object') {
+				node.scale.x = object.scale.x;
+				node.scale.y = object.scale.y;
+				node.scale.z = object.scale.z;
+			}
+			if (node.scale && typeof node.scale === 'number') {
+				node.scale = object.scale.x;
+			}
+			if (node.radius) {
+				node.radius = object.scale.x / 2;
+			}
 
-		object.updateMatrix();
-		object.updateMatrixWorld(true);
+			object.initialPosition.copy(object.position);
+			object.initialRotation.copy(object.quaternion);
+		});
+	}
+
+	handle_transform_change() {
+		if (!this.dragData || this.selection.length === 0) return;
+
+		this.pivot.updateMatrixWorld(true);
+		const currentPivotMatrix = this.pivot.matrixWorld;
+
+		const deltaMatrix = currentPivotMatrix
+			.clone()
+			.multiply(this.dragData.pivotInverse);
+
+		for (const item of this.dragData.objects) {
+			const obj = item.object;
+			const parent = item.parent;
+			const originalMatrix = item.originalMatrix;
+
+			const newWorldMatrix = deltaMatrix.clone().multiply(originalMatrix);
+
+			parent.updateMatrixWorld(true);
+			const parentInverse = parent.matrixWorld.clone().invert();
+			const localMatrix = parentInverse.multiply(newWorldMatrix);
+
+			localMatrix.decompose(obj.position, obj.quaternion, obj.scale);
+
+			if (this.controls.mode === 'scale') {
+				obj.quaternion.copy(item.originalQuaternion);
+			}
+
+			this.applyNodeConstraints(obj);
+
+			obj.updateMatrixWorld(true);
+		}
+	}
+
+	applyNodeConstraints(object) {
+		const node = object?.userData?.node;
+		const axis = this.controls.axis;
+		if (!node || !axis) return;
+
+		const mode = this.controls.mode;
+		const override_axis = axis.charAt(0).toLowerCase();
+
+		if (node.levelNodeStart || node.levelNodeFinish) {
+			if (mode === 'rotate') {
+				object.quaternion.x = 0;
+				object.quaternion.z = 0;
+			} else if (mode === 'scale') {
+				const s = object.scale[override_axis];
+				object.scale.x = s;
+				object.scale.z = s;
+				object.scale.y = 1;
+			}
+		}
+
+		if (node.levelNodeSign) {
+			if (node.levelNodeSign.hideModel) {
+				if (mode === 'scale') {
+					const s = object.scale[override_axis];
+					object.scale.x = s;
+					object.scale.y = s;
+					object.scale.z = s;
+				}
+			} else {
+				if (mode === 'scale') {
+					object.scale.x = 1;
+					object.scale.y = 1;
+					object.scale.z = 1;
+				}
+			}
+		}
+
+		if (node.levelNodeSound) {
+			if (mode === 'scale') {
+				object.scale.x = 1;
+				object.scale.y = 1;
+				object.scale.z = 1;
+			} else if (mode === 'rotate') {
+				object.quaternion.x = 0;
+				object.quaternion.y = 0;
+				object.quaternion.z = 0;
+				object.quaternion.w = 1;
+			}
+		}
+
+		object.quaternion.normalize();
 	}
 
 	recenter() {
 		if (this.selection.length === 0) {
 			this.controls.detach();
 			return;
-		}
-
-		for (const obj of this.selection) {
-			this._attach(obj, this.scene);
 		}
 
 		const box = new THREE.Box3();
@@ -89,21 +202,20 @@ class GizmoControls {
 		const center = new THREE.Vector3();
 		box.getCenter(center);
 
-		const first = this.selection[0];
-		first.updateMatrixWorld(true);
-		const quat = new THREE.Quaternion();
-		first.getWorldQuaternion(quat);
+		this.pivot.position.copy(center);
 
-		this.group.position.copy(center);
-		this.group.quaternion.copy(quat);
-		this.group.scale.set(1, 1, 1);
-		this.group.updateMatrixWorld(true);
+		const primary = this.selection[0];
 
-		for (const obj of this.selection) {
-			this._attach(obj, this.group);
+		if (this.controls.space === 'local' && primary) {
+			primary.getWorldQuaternion(this.pivot.quaternion);
+		} else {
+			this.pivot.quaternion.set(0, 0, 0, 1);
 		}
 
-		this.controls.attach(this.group);
+		this.pivot.scale.set(1, 1, 1);
+		this.pivot.updateMatrixWorld(true);
+
+		this.controls.attach(this.pivot);
 	}
 
 	add(object) {
@@ -111,37 +223,20 @@ class GizmoControls {
 		if (this.selection.includes(object)) return;
 
 		this.selection.push(object);
-
-		this._attach(object, this.group);
-
-		object.traverse((obj) => {
-			if (!obj.material?.uniforms) return;
-			if (!obj.userData?.node) return;
-			obj.material.uniforms.isSelected = {
-				value: true,
-			};
-		});
-
+		this.update_visuals(object, true);
 		this.recenter();
 	}
 
-	remove(object, parent = undefined) {
+	remove(object) {
 		if (!this.selection.includes(object)) return;
 
-		this.selection = this.selection.filter((obj) => obj !== object);
-
-		if (parent) this._attach(object, parent);
-		else object.removeFromParent();
-
-		object.traverse((obj) => {
-			if (!obj.material?.uniforms) return;
-			if (!obj.userData?.node) return;
-			obj.material.uniforms.isSelected = {
-				value: false,
-			};
-		});
-
+		this.selection = this.selection.filter((o) => o !== object);
+		this.update_visuals(object, false);
 		this.recenter();
+	}
+
+	clear() {
+		[...this.selection].forEach((obj) => this.remove(obj));
 	}
 
 	includes(object) {
@@ -152,14 +247,26 @@ class GizmoControls {
 		return this.selection.length === 0;
 	}
 
-	clear(parent = undefined) {
-		[...this.selection].forEach((object) => {
-			this.remove(object, parent);
+	update_visuals(object, isSelected) {
+		object.traverse((obj) => {
+			if (obj.material?.uniforms?.isSelected) {
+				obj.material.uniforms.isSelected.value = isSelected;
+			}
 		});
+	}
+
+	_attach(object, parent) {
+		if (!object || !parent) return;
+		if (object.parent !== parent) {
+			parent.add(object);
+		}
+		parent.updateMatrixWorld(true);
+		object.updateMatrixWorld(true);
 	}
 
 	set_mode(mode) {
 		this.controls.setMode(mode);
+		this.recenter();
 	}
 
 	get_mode() {
@@ -168,6 +275,7 @@ class GizmoControls {
 
 	set_space(space) {
 		this.controls.setSpace(space);
+		this.recenter();
 	}
 
 	get_space() {
