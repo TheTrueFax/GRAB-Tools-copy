@@ -860,6 +860,11 @@ export default {
 				scope.toggle_trigger_connections();
 			});
 		},
+		toggle_groups() {
+			this.$emit('viewport', (scope) => {
+				scope.toggle_groups();
+			});
+		},
 		toggle_animations() {
 			this.$emit('viewport', (scope) => {
 				scope.toggle_animations();

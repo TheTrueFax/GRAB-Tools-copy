@@ -26,7 +26,7 @@ export default {
 			editing_json: undefined,
 			dragging: false,
 			huge_far: false,
-			show_groups: false, // TODO:
+			show_groups: false,
 			show_animations: false,
 			show_triggers: true,
 			show_sound: true,
@@ -278,6 +278,7 @@ export default {
 			this.add_hitboxes();
 			this.add_trigger_connections();
 			this.add_animation_paths();
+			this.add_group_bounds();
 			this.scene.add(this.level.scene);
 			this.$emit('scope', (scope) => {
 				scope.$refs.statistics.set_level(this.level);
@@ -399,6 +400,7 @@ export default {
 			this.transform_space = this.gizmo.get_space();
 		},
 		select_nodes(nodes) {
+			this.is_animating = false;
 			this.gizmo.clear(this.level.scene);
 			nodes
 				.filter((obj) => obj.parent === this.level.scene)
@@ -463,6 +465,56 @@ export default {
 			this.show_trigger_connections = !this.show_trigger_connections;
 			this.update_connection_visibility();
 			this.update_trigger_path_positions();
+		},
+		toggle_groups() {
+			this.show_groups = !this.show_groups;
+			this.update_group_visibility();
+		},
+		update_group_visibility() {
+			this.level.nodes.levelNodeGroup.forEach((object) => {
+				object.userData.group_bounds.visible = this.show_groups;
+			});
+		},
+		add_group_bounds() {
+			if (this.level.nodes?.levelNodeGroup?.length) {
+				this.level.nodes.levelNodeGroup.forEach((object) => {
+					this.add_group_bound(object);
+				});
+			}
+		},
+		add_group_bound(object) {
+			const geometry = new THREE.BoxGeometry();
+			const edges = new THREE.EdgesGeometry(geometry);
+			const material = new THREE.LineBasicMaterial({
+				color: 0x009900,
+			});
+			const line = new THREE.LineSegments(edges, material);
+
+			const box = new THREE.Box3().setFromObject(object);
+			for (const obj of object.children) {
+				box.expandByObject(obj);
+			}
+			const size = new THREE.Vector3();
+			const center = new THREE.Vector3();
+			box.getSize(size);
+			box.getCenter(center);
+
+			object.worldToLocal(center);
+
+			const child = object.children[0];
+			const child_q = new THREE.Quaternion();
+			child.getWorldQuaternion(child_q);
+			const parent_q = new THREE.Quaternion();
+			object.getWorldQuaternion(parent_q);
+			const quat = parent_q.clone().invert().multiply(child_q);
+
+			line.quaternion.copy(quat.multiply(object.quaternion));
+			line.scale.copy(size);
+			line.position.copy(center);
+
+			line.visible = this.show_groups;
+			object.userData.group_bounds = line;
+			object.add(line);
 		},
 		toggle_animations() {
 			this.show_animations = !this.show_animations;
