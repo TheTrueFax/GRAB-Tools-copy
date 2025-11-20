@@ -119,7 +119,6 @@ export default {
 					},
 					Convert: { func: this.open_convert_menu },
 					Group: { func: this.group_level },
-					Ungroup: { func: this.ungroup_level },
 					Mirror: {
 						X: { func: this.mirror_x },
 						Y: { func: this.mirror_y },
@@ -815,6 +814,22 @@ export default {
 		group_level() {
 			this.$emit('modifier', (json) => {
 				json.levelNodes = [group.groupNodes(json.levelNodes)];
+				return json;
+			});
+		},
+		ungroup_all() {
+			this.$emit('modifier', (json) => {
+				let index = json.levelNodes.findIndex(
+					(node) => node.levelNodeGroup,
+				);
+				while (index !== -1) {
+					const [node] = json.levelNodes.splice(index, 1);
+					json.levelNodes.push(...group.ungroupNode(node));
+
+					index = json.levelNodes.findIndex(
+						(node) => node.levelNodeGroup,
+					);
+				}
 				return json;
 			});
 		},
