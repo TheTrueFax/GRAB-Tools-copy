@@ -1257,6 +1257,75 @@ export default {
 			this.controls.target.copy(center);
 			this.camera.lookAt(center);
 		},
+		mirror_x() {
+			this.level.nodes.all.forEach((object) => {
+				const node = object.userData.node;
+				const data = encoding.node_data(node);
+
+				const x = -object.initialPosition.x;
+				object.position.x = x;
+				object.initialPosition.x = x;
+				data.position.x = x;
+				if (node.animations) {
+					node.animations.forEach((animation) => {
+						if (animation.frames?.length) {
+							animation.frames.forEach((frame) => {
+								if (frame.position?.x) {
+									frame.position.x = -frame.position.x;
+								}
+							});
+						}
+					});
+				}
+			});
+			this.modifier((json) => json);
+		},
+		mirror_y() {
+			this.level.nodes.all.forEach((object) => {
+				const node = object.userData.node;
+				const data = encoding.node_data(node);
+
+				const y = -object.initialPosition.y;
+				object.position.y = y;
+				object.initialPosition.y = y;
+				data.position.y = y;
+				if (node.animations) {
+					node.animations.forEach((animation) => {
+						if (animation.frames?.length) {
+							animation.frames.forEach((frame) => {
+								if (frame.position?.y) {
+									frame.position.y = -frame.position.y;
+								}
+							});
+						}
+					});
+				}
+			});
+			this.modifier((json) => json);
+		},
+		mirror_z() {
+			this.level.nodes.all.forEach((object) => {
+				const node = object.userData.node;
+				const data = encoding.node_data(node);
+
+				const z = -object.initialPosition.z;
+				object.position.z = z;
+				object.initialPosition.z = z;
+				data.position.z = z;
+				if (node.animations) {
+					node.animations.forEach((animation) => {
+						if (animation.frames?.length) {
+							animation.frames.forEach((frame) => {
+								if (frame.position?.z) {
+									frame.position.z = -frame.position.z;
+								}
+							});
+						}
+					});
+				}
+			});
+			this.modifier((json) => json);
+		},
 		run_in_scope(func) {
 			func(this);
 		},

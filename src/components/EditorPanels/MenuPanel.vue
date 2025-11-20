@@ -295,6 +295,21 @@ export default {
 				scope.select_by_color();
 			});
 		},
+		mirror_x() {
+			this.$emit('viewport', (scope) => {
+				scope.mirror_x();
+			});
+		},
+		mirror_y() {
+			this.$emit('viewport', (scope) => {
+				scope.mirror_y();
+			});
+		},
+		mirror_z() {
+			this.$emit('viewport', (scope) => {
+				scope.mirror_z();
+			});
+		},
 		select_all() {
 			this.$emit('viewport', (scope) => {
 				scope.select_all();
