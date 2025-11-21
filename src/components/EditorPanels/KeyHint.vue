@@ -24,7 +24,7 @@ export default {
 	font-family: Menlo, Monaco, Consolas, 'Andale Mono', 'Ubuntu Mono',
 		'Courier New', monospace;
 	padding: 0.25rem;
-	color: var(--fg);
+	color: #cdcdcd;
 	vertical-align: middle;
 	border: solid 1px #303841;
 	box-shadow: inset 0 -1px 0 #303841;
