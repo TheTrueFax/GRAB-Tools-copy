@@ -6,6 +6,7 @@ import RocketIcon from '@/icons/RocketIcon.vue';
 import DiscordIcon from '@/icons/DiscordIcon.vue';
 import GlobeIcon from '@/icons/GlobeIcon.vue';
 import LoginButton from '@/components/LoginButton.vue';
+import DarkModeToggle from './DarkModeToggle.vue';
 
 export default {
 	components: {
@@ -16,6 +17,7 @@ export default {
 		DiscordIcon,
 		GlobeIcon,
 		LoginButton,
+		DarkModeToggle,
 	},
 
 	mounted() {
@@ -58,6 +60,7 @@ export default {
 			<span>Wiki</span>
 			<GlobeIcon class="nav-hideable" />
 		</a>
+		<DarkModeToggle />
 		<LoginButton />
 	</nav>
 </template>

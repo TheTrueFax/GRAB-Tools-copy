@@ -1,15 +1,20 @@
 <script>
 import NavMenu from '@/components/NavMenu.vue';
+import { useConfigStore } from '@/stores/config';
+import { mapState } from 'pinia';
 
 export default {
 	components: {
 		NavMenu,
 	},
+	computed: {
+		...mapState(useConfigStore, ['dark_mode']),
+	},
 };
 </script>
 
 <template>
-	<div class="main-layout">
+	<div :class="'main-layout' + (dark_mode ? ' dark-mode' : '')">
 		<NavMenu />
 		<router-view />
 		<footer class="footer">
@@ -20,8 +25,8 @@ export default {
 
 <style>
 html:has(.main-layout) {
-	background-color: #5f8bc2;
-	background-image: linear-gradient(#5f8bc2, #cfe0ea, #5f8bc2);
+	background-color: var(--background);
+	background-image: var(--gradient);
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-attachment: fixed;

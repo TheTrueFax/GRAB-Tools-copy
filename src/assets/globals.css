@@ -11,6 +11,8 @@
 	--text-color-link: #2f81f7;
 	--border-color: #5b5f6488;
 	--bg: #1d1d1d;
+	--gradient: linear-gradient(#5f8bc2, #cfe0ea, #5f8bc2);
+	--background: #5f8bc2;
 	--font-weight-default: 400;
 	--font-weight-bold: 600;
 	--font-family-default: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana,
@@ -36,6 +38,22 @@
 	--green: #09974c;
 	--blue: #275db4;
 	--yellow: #ffae00;
+
+	&:has(.dark-mode) {
+		--text-color-default: #eaeaea;
+		--text-color-alt: #c1c1c1;
+		--text-color-accent: #dddddd;
+		--background-color-default: #222222;
+		--background-color-alt: #363636;
+		--text-color-link: #1e54a0;
+		--border-color: #eaeaea20;
+		--gradient: linear-gradient(#050505, #091421, #050505);
+		--background: #050505;
+
+		--first-color: #d4982933;
+		--second-color: #81818133;
+		--third-color: #dd710d33;
+	}
 }
 
 * {
