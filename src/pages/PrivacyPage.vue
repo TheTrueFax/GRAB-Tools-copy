@@ -49,4 +49,8 @@ export default {
 	</main>
 </template>
 
-<style scoped></style>
+<style scoped>
+h3 {
+	margin-block: 1rem 0.1rem;
+}
+</style>

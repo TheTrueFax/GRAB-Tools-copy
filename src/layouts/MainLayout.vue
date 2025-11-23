@@ -19,6 +19,7 @@ export default {
 		<router-view />
 		<footer class="footer">
 			<span><a href="https://twhlynch.me">twhlynch</a></span
+			><span>•</span><span><a href="/privacy">privacy</a></span
 			><span>•</span
 			><span><a href="https://github.com/twhlynch">.index</a></span>
 		</footer>
@@ -149,7 +150,7 @@ body:has(.main-layout) {
 		height: 100px;
 		display: grid;
 		place-items: center;
-		grid-template-columns: 1fr 0.1fr 1fr;
+		grid-template-columns: 1fr 0.1fr 1fr 0.1fr 1fr;
 		gap: var(--padding-secondary);
 		a {
 			color: inherit;
@@ -166,6 +167,12 @@ body:has(.main-layout) {
 		text-align: center;
 	}
 	.footer span:nth-child(3) {
+		text-align: center;
+	}
+	.footer span:nth-child(4) {
+		text-align: center;
+	}
+	.footer span:nth-child(5) {
 		text-align: left;
 	}
 }
