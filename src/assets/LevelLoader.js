@@ -1550,6 +1550,7 @@ function updateObjectAnimation(object, time) {
 	let animation = object.userData.animation;
 	if (!animation) return;
 	const animationFrames = animation.frames;
+	if (!animationFrames) return;
 	const relativeTime =
 		(time * (animation.speed ?? 0)) %
 		(animationFrames[animationFrames.length - 1].time ?? 0);

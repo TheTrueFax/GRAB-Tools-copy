@@ -646,6 +646,7 @@ export default {
 			object.getWorldPosition(position);
 
 			object.userData.node.animations.forEach((animation, i) => {
+				if (!animation.frames) return;
 				const points = animation.frames.map(
 					(frame) =>
 						new THREE.Vector3(
