@@ -116,7 +116,10 @@ export default {
 						Random: { func: this.ambience_random },
 						Default: { func: this.ambience_default },
 					},
-					Convert: { func: this.open_convert_menu },
+					Convert: {
+						Material: { func: this.open_material_convert_menu },
+						Shape: { func: this.open_shape_convert_menu },
+					},
 					Group: { func: this.group_level },
 					Mirror: {
 						X: { func: this.mirror_x },
@@ -848,6 +851,91 @@ export default {
 				json.levelNodes = [group_node];
 				return json;
 			});
+		},
+		open_material_convert_menu() {
+			this.$emit(
+				'popup',
+				[
+					{
+						type: 'option',
+						options: [
+							'from',
+							...Object.values(encoding.materials()),
+						],
+					},
+					{
+						type: 'option',
+						options: ['to', ...Object.values(encoding.materials())],
+					},
+				],
+				async (from, to) => {
+					if (from === 'from' || to === 'to') {
+						window.toast('Nothing selected', 'error');
+						return;
+					}
+
+					from = parseInt(from);
+					to = parseInt(to);
+
+					this.$emit('modifier', (json) => {
+						json.levelNodes.forEach((node) => {
+							encoding.traverse_node(node, (child) => {
+								const data = encoding.node_data(child);
+								if (
+									child.levelNodeStatic &&
+									(data.material ?? 0) === from
+								)
+									data.material = to;
+							});
+						});
+						return json;
+					});
+				},
+			);
+		},
+		open_shape_convert_menu() {
+			this.$emit(
+				'popup',
+				[
+					{
+						type: 'option',
+						options: [
+							'from',
+							...Object.values(encoding.shapes()).slice(
+								encoding.shapes().__END_OF_SPECIAL_PARTS__ + 1,
+							),
+						],
+					},
+					{
+						type: 'option',
+						options: [
+							'to',
+							...Object.values(encoding.shapes()).slice(
+								encoding.shapes().__END_OF_SPECIAL_PARTS__ + 1,
+							),
+						],
+					},
+				],
+				async (from, to) => {
+					if (from === 'from' || to === 'to') {
+						window.toast('Nothing selected', 'error');
+						return;
+					}
+
+					from = parseInt(from);
+					to = parseInt(to);
+
+					this.$emit('modifier', (json) => {
+						json.levelNodes.forEach((node) => {
+							encoding.traverse_node(node, (child) => {
+								const data = encoding.node_data(child);
+								if (data.shape === from) data.shape = to;
+							});
+						});
+						return json;
+					});
+				},
+			);
 		},
 		group_level() {
 			this.$emit('modifier', (json) => {
