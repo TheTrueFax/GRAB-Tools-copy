@@ -333,6 +333,7 @@ class LevelLoader {
 				shape: {},
 				defaultSpawn: undefined,
 			},
+			sun: undefined,
 			complexity: 0,
 			scene: new THREE.Scene(),
 			update: () => {},
@@ -346,6 +347,7 @@ class LevelLoader {
 			level.scene.add(ambientLight);
 
 			const sunLight = new THREE.DirectionalLight(0xffffff, 0.5);
+			level.sun = sunLight;
 			level.scene.add(sunLight);
 		}
 
@@ -446,6 +448,11 @@ class LevelLoader {
 
 		const sunDirection = new THREE.Vector3(0, 0, 1);
 		sunDirection.applyEuler(sunAngle);
+
+		const distance = 1000;
+		level.sun.position.copy(sunDirection.clone().multiplyScalar(-distance));
+		level.sun.target.position.set(0, 0, 0);
+		level.sun.userData.direction = sunDirection.clone();
 
 		const skySunDirection = sunDirection.clone();
 
@@ -1513,6 +1520,7 @@ function getMaterialForTexture(
 	material.vertexShader = vertexShader;
 	material.fragmentShader = fragmentShader;
 	material.flatShading = true;
+	material.lights = true;
 
 	material.uniforms = {
 		colorTexture: { value: null },
@@ -1534,6 +1542,11 @@ function getMaterialForTexture(
 	material.uniforms.colorTexture.value.wrapS =
 		material.uniforms.colorTexture.value.wrapT = THREE.RepeatWrapping;
 	material.uniforms.colorTexture.value.colorSpace = THREE.SRGBColorSpace;
+
+	material.uniforms = THREE.UniformsUtils.merge([
+		THREE.ShaderLib.standard.uniforms,
+		material.uniforms,
+	]);
 
 	return material;
 }

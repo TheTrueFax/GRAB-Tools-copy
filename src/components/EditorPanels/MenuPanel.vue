@@ -236,6 +236,11 @@ export default {
 					},
 					'Save Config': { func: this.save_config },
 					'Edit Protobuf': { func: this.edit_protobuf },
+					Experimental: {
+						'Toggle Shadows': {
+							func: this.toggle_shadows,
+						},
+					},
 				},
 				Help: {
 					Tutorial: { href: 'https://youtube.com/@dotindex' },
@@ -1183,6 +1188,11 @@ export default {
 		toggle_animations() {
 			this.$emit('viewport', (scope) => {
 				scope.toggle_animations();
+			});
+		},
+		toggle_shadows() {
+			this.$emit('viewport', (scope) => {
+				scope.toggle_shadows();
 			});
 		},
 		save_config() {

@@ -43,6 +43,7 @@ export default {
 			show_mini_editor: false,
 			show_keybinds: true,
 			show_key_hints: true,
+			show_shadows: false,
 		};
 	},
 	components: {
@@ -294,12 +295,66 @@ export default {
 			this.add_trigger_connections();
 			this.add_animation_paths();
 			this.add_group_bounds();
+			if (this.show_shadows) this.update_shadows();
 			this.scene.add(this.level.scene);
 			this.$emit('scope', (scope) => {
 				scope.$refs.statistics.set_level(this.level);
 			});
 			this.$refs.animation_panel.set_level(this.level);
 			console.log(this.level);
+		},
+		configure_shadow_camera() {
+			const sun = this.level.sun;
+
+			sun.castShadow = this.show_shadows;
+
+			const bbox = new THREE.Box3();
+			this.level.nodes.all.forEach((obj) => bbox.expandByObject(obj));
+			const center = bbox.getCenter(new THREE.Vector3());
+			const size = bbox.getSize(new THREE.Vector3());
+
+			const margin = 0.1;
+			const maxDim = Math.max(size.x, size.y, size.z);
+			const halfSize = maxDim * 0.5 * (1 + margin);
+
+			sun.shadow.camera.left = -halfSize;
+			sun.shadow.camera.right = halfSize;
+			sun.shadow.camera.top = halfSize;
+			sun.shadow.camera.bottom = -halfSize;
+
+			sun.shadow.camera.near = 0.1;
+			sun.shadow.camera.far = size.length() * 2;
+
+			const sunDirection = sun.userData.direction.clone();
+			const distance = size.length();
+			sun.position.copy(sunDirection.multiplyScalar(-distance));
+			sun.target.position.copy(center);
+
+			sun.shadow.mapSize.width = 10000;
+			sun.shadow.mapSize.height = 10000;
+
+			sun.shadow.camera.updateProjectionMatrix();
+		},
+		toggle_shadows() {
+			this.show_shadows = !this.show_shadows;
+			this.update_shadows();
+		},
+		update_shadows() {
+			this.renderer.shadowMap.enabled = this.show_shadows;
+			this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+			const shadow_nodes = [
+				...this.level.nodes.levelNodeStatic,
+				...this.level.nodes.levelNodeCrumbling,
+				...this.level.nodes.levelNodeSign,
+			];
+
+			shadow_nodes.forEach((object) => {
+				object.castShadow = this.show_shadows;
+				object.receiveShadow = this.show_shadows;
+			});
+
+			this.configure_shadow_camera();
 		},
 		add_hitboxes() {
 			const geometry = new THREE.BoxGeometry();

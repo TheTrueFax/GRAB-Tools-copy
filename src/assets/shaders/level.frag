@@ -22,6 +22,12 @@ uniform vec4 specularColor;
 
 uniform bool isSelected;
 
+#include <common>
+#include <packing>
+#include <lights_pars_begin>
+#include <shadowmap_pars_fragment>
+#include <shadowmask_pars_fragment>
+
 void main()
 {
     vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
@@ -62,6 +68,11 @@ void main()
 
         float light = dot(normalize(vNormal), lightDirection);
         float finalLight = clamp(light, 0.0, 1.0);
+
+        // Shadows
+        float shadow = getShadowMask();
+        finalLight *= shadow;
+
         float lightFactor = finalLight;
         lightFactor -= clamp(-light * 0.15, 0.0, 1.0);
 
