@@ -448,6 +448,7 @@ class LevelLoader {
 
 		const sunDirection = new THREE.Vector3(0, 0, 1);
 		sunDirection.applyEuler(sunAngle);
+		sunDirection.normalize();
 
 		const distance = 1000;
 		level.sun.position.copy(sunDirection.clone().multiplyScalar(-distance));
