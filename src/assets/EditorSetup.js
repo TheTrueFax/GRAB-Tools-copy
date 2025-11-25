@@ -46,8 +46,7 @@ const themeOptions = {
 		color: colors.floatBorder,
 	},
 	'&.cm-editor .cm-scroller': {
-		fontFamily:
-			'Menlo, Monaco, Consolas, "Andale Mono", "Ubuntu Mono", "Courier New", monospace',
+		fontFamily: 'var(--font-family-alt)',
 	},
 	'.cm-content': {
 		caretColor: colors.fg,

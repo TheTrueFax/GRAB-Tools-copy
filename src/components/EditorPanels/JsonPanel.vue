@@ -112,8 +112,7 @@ section {
 		overflow-x: scroll;
 		background-color: var(--red);
 		color: white;
-		font-family: Menlo, Monaco, Consolas, 'Andale Mono', 'Ubuntu Mono',
-			'Courier New', monospace;
+		font-family: var(--font-family-alt);
 		white-space: nowrap;
 	}
 }

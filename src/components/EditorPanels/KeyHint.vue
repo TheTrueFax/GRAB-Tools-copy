@@ -21,8 +21,7 @@ export default {
 	background-color: #151b23;
 	border-radius: 6px;
 	font-size: 11px;
-	font-family: Menlo, Monaco, Consolas, 'Andale Mono', 'Ubuntu Mono',
-		'Courier New', monospace;
+	font-family: var(--font-family-alt);
 	padding: 0.25rem;
 	color: #cdcdcd;
 	vertical-align: middle;
