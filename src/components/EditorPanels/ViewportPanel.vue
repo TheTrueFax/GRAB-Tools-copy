@@ -84,6 +84,7 @@ export default {
 		});
 		observer.observe(this.$refs.viewport);
 		window.addEventListener('keydown', this.keydown);
+		window.addEventListener('keyup', this.keyup);
 		await this.set_json(this.json);
 
 		this.$refs.resize.size(
@@ -94,6 +95,7 @@ export default {
 	},
 	unmounted() {
 		window.removeEventListener('keydown', this.keydown);
+		window.removeEventListener('keyup', this.keyup);
 	},
 	methods: {
 		update_node_shader(object, position = true, light = true) {
@@ -902,9 +904,23 @@ export default {
 				return json;
 			});
 		},
+		keyup(e) {
+			switch (e.code) {
+				case 'ShiftLeft':
+					this.gizmo.set_snapping(false);
+					break;
+
+				default:
+					break;
+			}
+		},
 		keydown(e) {
 			if (e.target === this.renderer.domElement) {
 				switch (e.code) {
+					case 'ShiftLeft':
+						this.gizmo.set_snapping(true);
+						break;
+
 					case 'KeyQ':
 						this.toggle_transform_space();
 						break;

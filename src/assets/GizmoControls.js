@@ -322,6 +322,14 @@ class GizmoControls {
 	get_space() {
 		return this.controls.space;
 	}
+
+	set_snapping(enabled) {
+		this.controls.setRotationSnap(
+			enabled ? 5 * THREE.MathUtils.DEG2RAD : null,
+		);
+		this.controls.setScaleSnap(enabled ? 0.25 : null);
+		this.controls.setTranslationSnap(enabled ? 0.25 : null);
+	}
 }
 
 export default GizmoControls;
