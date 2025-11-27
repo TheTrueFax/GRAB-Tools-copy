@@ -44,6 +44,7 @@ export default {
 			show_keybinds: true,
 			show_key_hints: true,
 			show_shadows: false,
+			group_depth: 0,
 		};
 	},
 	components: {
@@ -300,7 +301,7 @@ export default {
 			this.add_group_bounds();
 			if (this.show_shadows) this.update_shadows();
 			this.scene.add(this.level.scene);
-			this.editing_parent = this.level.scene;
+			this.enter_specific_group(this.level.scene);
 			this.$emit('scope', (scope) => {
 				scope.$refs.statistics.set_level(this.level);
 			});
@@ -1002,7 +1003,21 @@ export default {
 		},
 		enter_specific_group(object) {
 			this.gizmo.clear(this.editing_parent);
+			if (this.editing_parent?.isGroup) {
+				this.editing_parent.userData.group_bounds.material.color =
+					new THREE.Color(0x009900);
+			}
 			this.editing_parent = object;
+			if (this.editing_parent.isGroup) {
+				this.editing_parent.userData.group_bounds.material.color =
+					new THREE.Color(0x99ff00);
+			}
+			this.group_depth = 0;
+			let parent = this.editing_parent;
+			while (parent !== this.level.scene) {
+				this.group_depth++;
+				parent = parent.parent;
+			}
 		},
 		close_mini_editor() {
 			if (this.show_mini_editor)
@@ -1500,6 +1515,9 @@ export default {
 				>
 					Save
 				</button>
+				<div class="group-depth" v-show="group_depth">
+					<span>Depth: {{ group_depth }}</span>
+				</div>
 				<div class="modes">
 					<div>
 						<label for="modes-translate">
@@ -1666,6 +1684,15 @@ canvas {
 }
 .viewport {
 	position: relative;
+}
+.group-depth {
+	position: absolute;
+	left: 50%;
+	top: 0.5rem;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 .controls,
 .modes {
