@@ -231,7 +231,7 @@ export default {
 			let intersect = undefined;
 			if (intersects.length) {
 				intersect = intersects[0].object;
-				while (intersect.parent !== this.level.scene) {
+				while (intersect && intersect.parent !== this.editing_parent) {
 					intersect = intersect.parent;
 				}
 			}
@@ -243,7 +243,7 @@ export default {
 			if (intersect) {
 				if (!this.gizmo.includes(intersect)) {
 					if (!e.shiftKey) {
-						this.gizmo.clear(this.level.scene);
+						this.gizmo.clear(this.editing_parent);
 					}
 
 					if (this.is_animating) this.reset_node_positions();
@@ -251,7 +251,7 @@ export default {
 					this.is_animating = false;
 				} else {
 					if (e.shiftKey) {
-						this.gizmo.remove(intersect, this.level.scene);
+						this.gizmo.remove(intersect, this.editing_parent);
 
 						if (this.gizmo.empty()) {
 							this.is_animating =
@@ -261,7 +261,7 @@ export default {
 				}
 			} else {
 				if (!this.dragging) {
-					this.gizmo.clear(this.level.scene);
+					this.gizmo.clear(this.editing_parent);
 					this.is_animating = this.$refs.animation_panel.playing;
 				}
 			}
@@ -300,6 +300,7 @@ export default {
 			this.add_group_bounds();
 			if (this.show_shadows) this.update_shadows();
 			this.scene.add(this.level.scene);
+			this.editing_parent = this.level.scene;
 			this.$emit('scope', (scope) => {
 				scope.$refs.statistics.set_level(this.level);
 			});
@@ -429,7 +430,7 @@ export default {
 					this.renderer.domElement,
 				);
 				this.controls.eulerVector.set(pitch, yaw, 0);
-				this.gizmo.clear(this.level.scene);
+				this.gizmo.clear(this.editing_parent);
 			} else {
 				const direction = new THREE.Vector3();
 				this.camera.getWorldDirection(direction);
@@ -485,9 +486,9 @@ export default {
 		select_nodes(nodes) {
 			if (this.free_movement) return;
 			this.is_animating = false;
-			this.gizmo.clear(this.level.scene);
+			this.gizmo.clear(this.editing_parent);
 			nodes
-				.filter((obj) => obj.parent === this.level.scene)
+				.filter((obj) => obj.parent === this.editing_parent)
 				.forEach((obj) => this.gizmo.add(obj));
 		},
 		select_by_material(material) {
@@ -841,69 +842,63 @@ export default {
 
 			this.level.scene.add(line);
 		},
-		clone_selection() {
+		modify_selection(func) {
 			if (this.gizmo.empty()) return;
 			this.modifier((json) => {
-				json.levelNodes.push(
-					...this.gizmo.selection.map((object) => {
-						return encoding.deepClone(object.userData.node);
-					}),
-				);
+				const node_list =
+					this.editing_parent.userData?.node?.levelNodeGroup
+						?.childNodes ?? json.levelNodes;
+
+				const new_list = func(node_list);
+
+				node_list.length = 0;
+				node_list.push(...new_list);
+
 				return json;
 			});
+		},
+		clone_selection() {
+			this.modify_selection((node_list) => [
+				...node_list,
+				...this.gizmo.selection.map((object) => {
+					return encoding.deepClone(object.userData.node);
+				}),
+			]);
 		},
 		delete_selection() {
-			if (this.gizmo.empty()) return;
-			this.modifier((json) => {
-				json.levelNodes = json.levelNodes.filter(
+			this.modify_selection((node_list) => [
+				...node_list.filter(
 					(n) =>
 						!this.gizmo.selection.find(
-							(o) =>
-								n ===
-								this.level.nodes.all[o.userData.id - 1].userData
-									.node,
+							(o) => n === o.userData.node,
 						),
-				);
-				return json;
-			});
+				),
+			]);
 		},
 		group_selection() {
-			if (this.gizmo.empty()) return;
-			this.modifier((json) => {
-				json.levelNodes = json.levelNodes.filter(
+			this.modify_selection((node_list) => [
+				...node_list.filter(
 					(n) =>
 						!this.gizmo.selection.find(
-							(o) =>
-								n ===
-								this.level.nodes.all[o.userData.id - 1].userData
-									.node,
+							(o) => n === o.userData.node,
 						),
-				);
-				json.levelNodes.push(
-					group.groupNodes(
-						this.gizmo.selection.map((o) => o.userData.node),
-					),
-				);
-				return json;
-			});
+				),
+				group.groupNodes(
+					this.gizmo.selection.map((o) => o.userData.node),
+				),
+			]);
 		},
 		ungroup_selection() {
 			if (this.gizmo.selection.length !== 1) return;
-			this.modifier((json) => {
-				json.levelNodes = json.levelNodes.filter(
+			this.modify_selection((node_list) => [
+				...node_list.filter(
 					(n) =>
 						!this.gizmo.selection.find(
-							(o) =>
-								n ===
-								this.level.nodes.all[o.userData.id - 1].userData
-									.node,
+							(o) => n === o.userData.node,
 						),
-				);
-				json.levelNodes.push(
-					...group.ungroupNode(this.gizmo.selection[0].userData.node),
-				);
-				return json;
-			});
+				),
+				...group.ungroupNode(this.gizmo.selection[0].userData.node),
+			]);
 		},
 		keyup(e) {
 			switch (e.code) {
@@ -958,6 +953,14 @@ export default {
 						}
 						break;
 
+					case 'ArrowUp':
+						this.enter_group();
+						break;
+
+					case 'ArrowDown':
+						this.exit_group();
+						break;
+
 					case 'KeyZ':
 						if (e.ctrlKey || e.metaKey) {
 							e.preventDefault();
@@ -979,13 +982,27 @@ export default {
 					if (this.show_mini_editor) this.close_mini_editor();
 					else if (this.contextmenu) this.contextmenu = undefined;
 					else if (!this.gizmo.empty())
-						this.gizmo.clear(this.level.scene);
+						this.gizmo.clear(this.editing_parent);
 					this.is_animating = this.$refs.animation_panel.playing;
 					break;
 
 				default:
 					break;
 			}
+		},
+		enter_group() {
+			if (this.gizmo.selection.length !== 1) return;
+			const group = this.gizmo.selection[0];
+			if (!group.userData.node?.levelNodeGroup) return;
+			this.enter_specific_group(group);
+		},
+		exit_group() {
+			if (this.editing_parent === this.level.scene) return;
+			this.enter_specific_group(this.editing_parent.parent);
+		},
+		enter_specific_group(object) {
+			this.gizmo.clear(this.editing_parent);
+			this.editing_parent = object;
 		},
 		close_mini_editor() {
 			if (this.show_mini_editor)
@@ -1584,6 +1601,8 @@ export default {
 						<div><KeyHint :bind="'Shift'" />Sprint</div>
 						<div><KeyHint :bind="'WASD'" />Move</div>
 						<div><KeyHint :bind="'EQ'" />Up & Down</div>
+						<div><KeyHint :bind="'Up'" />Enter Group</div>
+						<div><KeyHint :bind="'Down'" />Exit Group</div>
 						<div><KeyHint :bind="'↑ G'" />Ungroup</div>
 						<div><KeyHint :bind="'G'" />Group</div>
 						<div><KeyHint :bind="'C'" />Clone</div>
