@@ -426,7 +426,7 @@ export default {
 						const data = node.levelNodeStatic;
 						data.shape = modded_shapes[i];
 						data.material = modded_materials[j];
-						data.position = { x: i, z: j };
+						data.position = { x: Number(i), z: Number(j) };
 						data.color1 = { r: 1, g: 1, b: 1 };
 						data.color2 = { r: 1, g: 1, b: 1 };
 						data.isNeon = true;
