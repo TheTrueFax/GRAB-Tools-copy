@@ -198,6 +198,7 @@ export default {
 			this.gizmo.selection.forEach((object) => {
 				this.update_node_shader(object);
 				this.update_animation_path_position(object);
+				this.update_group_bounds(object);
 			});
 			this.update_trigger_path_positions(this.gizmo.selection);
 		},
@@ -208,6 +209,7 @@ export default {
 
 			this.gizmo.selection.forEach((object) => {
 				this.update_node_shader(object);
+				this.update_group_bounds(object);
 			});
 
 			this.update_trigger_path_positions(this.gizmo.selection);
@@ -608,7 +610,7 @@ export default {
 			const geometry = new THREE.BoxGeometry();
 			const edges = new THREE.EdgesGeometry(geometry);
 			const material = new THREE.LineBasicMaterial({
-				color: 0x009900,
+				color: object === this.editing_parent ? 0x99ff00 : 0x009900,
 			});
 			const line = new THREE.LineSegments(edges, material);
 
@@ -637,6 +639,17 @@ export default {
 			line.visible = this.show_groups;
 			object.userData.group_bounds = line;
 			object.add(line);
+		},
+		update_group_bounds(object) {
+			let parent = object;
+			while (parent !== this.level.scene) {
+				const bounds = parent.userData.group_bounds;
+				if (bounds) {
+					parent.remove(bounds);
+					this.add_group_bound(parent);
+				}
+				parent = parent.parent;
+			}
 		},
 		toggle_animations() {
 			this.show_animations = !this.show_animations;
