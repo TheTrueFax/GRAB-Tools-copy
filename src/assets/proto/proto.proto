@@ -420,21 +420,18 @@ message LevelNodeSound {
 
 message LevelNodeGASM {
   message Connection {
-    int32 propertyIndex = 1;
-    int32 componentIndex = 2;
+    uint64 objectID = 1;
+    string name = 2;
+    repeated ProgrammablePropertyData properties = 3;
   }
 
   Vector position = 1;
 
   ProgramData program = 2;
 
-  repeated ProgrammablePropertyData inputProperties = 3;
-  repeated Connection inputConnections = 4;
+  repeated Connection connections = 3;
 
-  repeated ProgrammablePropertyData outputProperties = 5;
-  repeated Connection outputConnections = 6;
-
-  bool startActive = 7;
+  bool startActive = 4;
 }
 
 message AnimationFrame {
@@ -551,10 +548,16 @@ message ProgrammablePositionData {}
 message ProgrammableTriggerActive {}
 
 message ProgrammablePropertyData {
+  message Component {
+    int32 inputRegisterIndex = 1;
+    int32 outputRegisterIndex = 2;
+  }
+
   uint64 objectID = 1;
+  repeated Component components = 2;
 
   oneof content {
-    ProgrammablePositionData position = 2;
-    ProgrammableTriggerActive triggerActive = 3;
+    ProgrammablePositionData position = 3;
+    ProgrammableTriggerActive triggerActive = 4;
   }
 }

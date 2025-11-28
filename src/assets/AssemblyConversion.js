@@ -39,13 +39,13 @@ function preprocess_functions(lines) {
 				`RAND ${reg} ${reg}`,
 				`ADD ${reg} ${reg} ${from}`,
 			];
-		} else if (line.startsWith('#FLOOR')) {
-			const [_, out, reg] = line.split(/\s+/);
-			return [`OR ${out} ${reg} 0`];
 		} else if (
 			line.startsWith('#EQUAL') ||
 			line.startsWith('#LESS') ||
-			line.startsWith('#GREATER')
+			line.startsWith('#GREATER') ||
+			line.startsWith('#AND') ||
+			line.startsWith('#NOT') ||
+			line.startsWith('#OR')
 		) {
 			const [ins, out, reg, cmp, label] = line.split(/\s+/);
 			return [

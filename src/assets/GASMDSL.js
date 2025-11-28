@@ -9,7 +9,7 @@ export const gasm = StreamLanguage.define({
 		// macro
 		if (
 			stream.match(
-				/#(FOR|IF|END|RAND|FLOOR|EQUAL|LESS|GREATER|MIN|MAX)/,
+				/#(FOR|IF|END|RAND|EQUAL|LESS|GREATER|AND|NOT|OR|MIN|MAX)/,
 				true,
 			)
 		)
