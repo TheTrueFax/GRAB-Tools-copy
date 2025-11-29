@@ -146,7 +146,7 @@ export default {
 					<YoutubeIcon />
 					<span> @dotindex </span>
 				</a>
-				<a href="mailto:tom@twhlynch.me" class="social">
+				<a href="mailto:support@grabvr.tools" class="social">
 					<MailIcon />
 					<span> Email </span>
 				</a>
@@ -155,7 +155,7 @@ export default {
 				If you need help with anything, you should join the
 				<a href="http://discord.grabvr.quest">discord server</a>, but
 				feel free to contact me on any of my socials, or if you prefer,
-				you can email me at tom@twhlynch.me.
+				you can email me at support@grabvr.tools.
 			</p>
 		</section>
 	</main>
