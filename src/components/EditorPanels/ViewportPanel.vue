@@ -1419,7 +1419,7 @@ export default {
 			}
 
 			this.camera.position.copy(view_position);
-			this.controls.target.copy(center);
+			this.controls.target?.copy(center);
 			this.camera.lookAt(center);
 		},
 		mirror_x() {
