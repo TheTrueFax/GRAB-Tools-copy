@@ -27,16 +27,17 @@ export default {
 			console.error('Bookmarklet not found:', path);
 		}
 	},
+
+	methods: {
+		click(e) {
+			e.preventDefault();
+		},
+	},
 };
 </script>
 
 <template>
-	<a class="bookmarklet" :href="`javascript:${bookmarklet}`">
+	<a class="bookmarklet" :href="`javascript:${bookmarklet}`" @click="click">
 		<span>{{ name }}</span>
 	</a>
 </template>
-
-<style scoped>
-.bookmarklet {
-}
-</style>
