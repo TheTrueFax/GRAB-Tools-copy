@@ -220,7 +220,7 @@ export default {
 
 			this.current_data = [];
 			if (this.current_list?.generator) {
-				this.current_data = await this.current_list.generator();
+				this.current_data = (await this.current_list.generator()) ?? [];
 				console.log(this.current_data);
 			}
 		},
