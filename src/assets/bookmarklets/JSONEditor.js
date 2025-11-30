@@ -1,8 +1,7 @@
 (() => {
-	const params = new URLSearchParams(window.location.search);
-	const id = params.get('level');
-	if (id) {
-		let newUrl = 'https://grabvr.tools/editor?level=' + id;
-		window.location.href = newUrl;
+	if (location.hostname === 'grabvr.quest') {
+		location.hostname = 'grabvr.tools';
+	} else if (location.hostname === 'grabvr.tools') {
+		window.toast('Use in the level viewer (grabvr.quest)');
 	}
 })();

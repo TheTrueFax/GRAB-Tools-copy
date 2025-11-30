@@ -1,5 +1,10 @@
 (() => {
-	let popupContainer = document.createElement('div');
+	if (location.hostname === 'grabvr.tools') {
+		window.toast('Use in the level viewer (grabvr.quest)');
+		return;
+	}
+
+	const popupContainer = document.createElement('div');
 	popupContainer.style.position = 'fixed';
 	popupContainer.style.borderRadius = '10px';
 	popupContainer.style.top = '50%';
@@ -9,14 +14,14 @@
 	popupContainer.style.background = '#c3d7e6';
 	popupContainer.style.border = 'solid 2px #4683ce70';
 	popupContainer.style.zIndex = '9999';
-	let colorPicker = document.createElement('input');
+	const colorPicker = document.createElement('input');
 	colorPicker.type = 'color';
 	colorPicker.value = '#010101';
 	colorPicker.style.marginBottom = '10px';
 	colorPicker.style.background = '#c3d7e6';
 	colorPicker.style.border = 'solid 2px #4683ce70';
 	colorPicker.style.borderRadius = '10px';
-	let colorPicker2 = document.createElement('input');
+	const colorPicker2 = document.createElement('input');
 	colorPicker2.type = 'color';
 	colorPicker2.value = '#010101';
 	colorPicker2.style.marginBottom = '10px';
@@ -24,7 +29,7 @@
 	colorPicker2.style.border = 'solid 2px #4683ce70';
 	colorPicker2.style.borderRadius = '10px';
 	colorPicker2.style.float = 'right';
-	let sendButton = document.createElement('button');
+	const sendButton = document.createElement('button');
 	sendButton.textContent = 'Send RGB Values';
 	sendButton.style.padding = '8px 16px';
 	sendButton.style.borderRadius = '10px';
