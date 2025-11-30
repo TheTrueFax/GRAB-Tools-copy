@@ -41,7 +41,25 @@ async function download_level(level_id) {
 	return level;
 }
 
+async function try_download_level(level_id) {
+	if (level_id.includes('level=')) {
+		const params = new URLSearchParams(level_id.split('?')[1]);
+		const level = params.get('level');
+		if (!level) {
+			window.toast('Invalid level url', 'warning');
+			return null;
+		}
+		level_id = level;
+	}
+
+	if (await can_download_level(level_id)) {
+		return await download_level(level_id);
+	}
+	return null;
+}
+
 export default {
 	download_level,
 	can_download_level,
+	try_download_level,
 };
