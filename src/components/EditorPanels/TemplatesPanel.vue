@@ -72,7 +72,7 @@ export default {
 		},
 		insert(json) {
 			this.$emit('modifier', (level) => {
-				level.levelNodes.push(...json.levelNodes);
+				encoding.add_nodes(level, json.levelNodes);
 				return level;
 			});
 		},

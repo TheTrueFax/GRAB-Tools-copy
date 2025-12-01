@@ -14,9 +14,11 @@ function traverseNode(node, func, parent = null) {
  * @returns {Array<Object>} - A list of level nodes
  */
 function compile(levels) {
-	const values = levels.map((level) => {
-		return group.groupNodes(level.levelNodes);
-	});
+	const values = levels
+		.filter((level) => level.levelNodes?.length)
+		.map((level) => {
+			return group.groupNodes(level.levelNodes);
+		});
 
 	let finalNodes = [];
 	let offset = 0;

@@ -562,6 +562,10 @@ function random_shape() {
 	return 1000 + Math.floor(Math.random() * length);
 }
 
+function add_nodes(level, nodes) {
+	(level.levelNodes ??= []).push(...(nodes ?? []));
+}
+
 export default {
 	load,
 	set_protobuf,
@@ -599,4 +603,5 @@ export default {
 	random_material,
 	random_shape,
 	ambienceSettings,
+	add_nodes,
 };

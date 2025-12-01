@@ -480,7 +480,7 @@ export default {
 			if (!new_json) return;
 
 			this.$emit('modifier', (json) => {
-				json.levelNodes = json.levelNodes.concat(new_json.levelNodes);
+				encoding.add_nodes(json, new_json.levelNodes);
 				return json;
 			});
 		},
@@ -493,9 +493,7 @@ export default {
 				const new_json = JSON.parse(await file.text());
 
 				this.$emit('modifier', (json) => {
-					json.levelNodes = json.levelNodes.concat(
-						new_json.levelNodes,
-					);
+					encoding.add_nodes(json, new_json.levelNodes);
 					return json;
 				});
 			} catch (e) {
@@ -510,7 +508,7 @@ export default {
 			const new_json = JSON.parse(await file.text());
 
 			this.$emit('modifier', (json) => {
-				json.levelNodes = json.levelNodes.concat(new_json);
+				encoding.add_nodes(json, new_json);
 				return json;
 			});
 		},
@@ -558,7 +556,7 @@ export default {
 					);
 
 					this.$emit('modifier', (json) => {
-						json.levelNodes.push(node);
+						encoding.add_nodes(json, [node]);
 						return json;
 					});
 				},
@@ -609,7 +607,7 @@ export default {
 					remove();
 
 					this.$emit('modifier', (json) => {
-						json.levelNodes = json.levelNodes.concat(nodes);
+						encoding.add_nodes(json, nodes);
 						return json;
 					});
 				},
@@ -639,7 +637,7 @@ export default {
 					const nodes = await obj.obj(file, mode);
 
 					this.$emit('modifier', (json) => {
-						json.levelNodes = json.levelNodes.concat(nodes);
+						encoding.add_nodes(json, nodes);
 						return json;
 					});
 				},
@@ -662,7 +660,7 @@ export default {
 					const nodes = signs.signs(text, mode === 'animated');
 
 					this.$emit('modifier', (json) => {
-						json.levelNodes = json.levelNodes.concat(nodes);
+						encoding.add_nodes(json, nodes);
 						return json;
 					});
 				},
@@ -693,7 +691,7 @@ export default {
 					const nodes = await svg.svg(file, detail);
 
 					this.$emit('modifier', (json) => {
-						json.levelNodes = json.levelNodes.concat(nodes);
+						encoding.add_nodes(json, nodes);
 						return json;
 					});
 				},
@@ -701,7 +699,7 @@ export default {
 		},
 		insert_node_wrapper(func) {
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(func());
+				encoding.add_nodes(json, [func()]);
 				return json;
 			});
 		},
@@ -710,7 +708,7 @@ export default {
 			delete node.levelNodeStatic.color1;
 			delete node.levelNodeStatic.color2;
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(node);
+				encoding.add_nodes(json, [node]);
 				return json;
 			});
 		},
@@ -724,7 +722,7 @@ export default {
 			animation.frames.push(frame);
 			node.animations.push(animation);
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(node);
+				encoding.add_nodes(json, [node]);
 				return json;
 			});
 		},
@@ -732,7 +730,7 @@ export default {
 			const node = encoding.levelNodeStatic();
 			node.levelNodeStatic.material = 8;
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(node);
+				encoding.add_nodes(json, [node]);
 				return json;
 			});
 		},
@@ -763,7 +761,7 @@ export default {
 			node.levelNodeStatic.color1.r = 1;
 			node.levelNodeStatic.color2.b = 1;
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(node);
+				encoding.add_nodes(json, [node]);
 				return json;
 			});
 		},
@@ -776,7 +774,7 @@ export default {
 				encoding.triggerTargetAmbience(),
 			);
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(trigger);
+				encoding.add_nodes(json, [trigger]);
 				return json;
 			});
 		},
@@ -789,7 +787,7 @@ export default {
 				encoding.triggerTargetAnimation(),
 			);
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(trigger);
+				encoding.add_nodes(json, [trigger]);
 				return json;
 			});
 		},
@@ -802,7 +800,7 @@ export default {
 				encoding.triggerTargetSound(),
 			);
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(trigger);
+				encoding.add_nodes(json, [trigger]);
 				return json;
 			});
 		},
@@ -815,7 +813,7 @@ export default {
 				encoding.triggerTargetSubLevel(),
 			);
 			this.$emit('modifier', (json) => {
-				json.levelNodes.push(trigger);
+				encoding.add_nodes(json, [trigger]);
 				return json;
 			});
 		},
@@ -841,6 +839,7 @@ export default {
 		},
 		unlock_all() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes.forEach((node) => {
 					encoding.traverse_node(node, (n) => {
 						n.isLocked = false;
@@ -851,6 +850,7 @@ export default {
 		},
 		lock_all() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes.forEach((node) => {
 					encoding.traverse_node(node, (n) => {
 						n.isLocked = true;
@@ -861,6 +861,7 @@ export default {
 		},
 		pixelate_effect() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				const group_node = group.groupNodes(json.levelNodes);
 				group_node.levelNodeGroup.position = {
 					x: 900000,
@@ -905,6 +906,7 @@ export default {
 					to = parseInt(to);
 
 					this.$emit('modifier', (json) => {
+						if (!json.levelNodes?.length) return json;
 						json.levelNodes.forEach((node) => {
 							encoding.traverse_node(node, (child) => {
 								const data = encoding.node_data(child);
@@ -953,6 +955,7 @@ export default {
 					to = parseInt(to);
 
 					this.$emit('modifier', (json) => {
+						if (!json.levelNodes?.length) return json;
 						json.levelNodes.forEach((node) => {
 							encoding.traverse_node(node, (child) => {
 								const data = encoding.node_data(child);
@@ -990,12 +993,14 @@ export default {
 		},
 		group_level() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes = [group.groupNodes(json.levelNodes)];
 				return json;
 			});
 		},
 		ungroup_all() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				let index = json.levelNodes.findIndex(
 					(node) => node.levelNodeGroup,
 				);
@@ -1012,20 +1017,23 @@ export default {
 		},
 		duplicate_level() {
 			this.$emit('modifier', (json) => {
-				json.levelNodes = json.levelNodes.concat(
-					encoding.deepClone(json.levelNodes),
+				encoding.add_nodes(
+					json,
+					encoding.deepClone(json.levelNodes ?? []),
 				);
 				return json;
 			});
 		},
 		monochrome_level() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes = monochrome.monochrome(json.levelNodes);
 				return json;
 			});
 		},
 		randomize_materials() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes.forEach((node) => {
 					encoding.traverse_node(node, (child) => {
 						if (child.levelNodeStatic) {
@@ -1039,6 +1047,7 @@ export default {
 		},
 		randomize_shapes() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes.forEach((node) => {
 					encoding.traverse_node(node, (child) => {
 						const data = encoding.node_data(child);
@@ -1052,6 +1061,7 @@ export default {
 		},
 		randomize_positions() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes.forEach((node) => {
 					encoding.traverse_node(node, (child) => {
 						const data = encoding.node_data(child);
@@ -1068,6 +1078,7 @@ export default {
 		},
 		randomize_rotations() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes.forEach((node) => {
 					encoding.traverse_node(node, (child) => {
 						const data = encoding.node_data(child);
@@ -1091,6 +1102,7 @@ export default {
 		},
 		randomize_scales() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes.forEach((node) => {
 					encoding.traverse_node(node, (child) => {
 						const data = encoding.node_data(child);
@@ -1115,6 +1127,7 @@ export default {
 		},
 		randomize_colors() {
 			this.$emit('modifier', (json) => {
+				if (!json.levelNodes?.length) return json;
 				json.levelNodes.forEach((node) => {
 					encoding.traverse_node(node, (child) => {
 						const data = encoding.node_data(child);
