@@ -534,7 +534,9 @@ export default {
 			camera_state += `&camera_rotation=`;
 			camera_state += `${this.camera.rotation.x},${this.camera.rotation.y},${this.camera.rotation.z}`;
 			camera_state += `&control_target=`;
-			camera_state += `${this.controls.target.x},${this.controls.target.y},${this.controls.target.z}`;
+			camera_state += `${this.controls.target?.x ?? 0},${
+				this.controls.target?.y ?? 0
+			},${this.controls.target?.z ?? 0}`;
 
 			navigator.clipboard.writeText(camera_state);
 		},
