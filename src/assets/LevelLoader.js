@@ -528,6 +528,7 @@ class LevelLoader {
 
 		const loadLevelNodes = (nodes, parentNode) => {
 			for (let node of nodes ?? []) {
+				if (!node) continue;
 				let object = undefined;
 				if (node.levelNodeGroup) {
 					object = new THREE.Object3D();
