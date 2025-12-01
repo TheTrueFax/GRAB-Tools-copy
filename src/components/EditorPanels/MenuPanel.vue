@@ -335,6 +335,7 @@ export default {
 
 			const file = files[0];
 			const json = await encoding.decodeLevel(file);
+			if (!json) return;
 
 			this.$emit('modifier', (_) => {
 				return json;
@@ -472,6 +473,7 @@ export default {
 
 			const file = files[0];
 			const new_json = await encoding.decodeLevel(file);
+			if (!new_json) return;
 
 			this.$emit('modifier', (json) => {
 				json.levelNodes = json.levelNodes.concat(new_json.levelNodes);

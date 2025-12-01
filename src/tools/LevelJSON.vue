@@ -24,6 +24,7 @@ export default {
 				.filter((file) => file.name.endsWith('.level'))
 				.forEach(async (file) => {
 					const json = await encoding.decodeLevel(file);
+					if (!json) return;
 					encoding.downloadJSON(
 						json,
 						file.name.replace(/\.(json|level)/, ''),

@@ -73,18 +73,23 @@ function shapes() {
  * @returns {Promise<Object>} - A level decoded to json
  */
 async function decodeLevel(buffer) {
-	const data = await new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = () => resolve(reader.result);
-		reader.onerror = reject;
-		reader.readAsArrayBuffer(buffer);
-	});
+	try {
+		const data = await new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = reject;
+			reader.readAsArrayBuffer(buffer);
+		});
 
-	const root = load();
-	const message = root.lookupType('COD.Level.Level');
-	const decoded = message.decode(new Uint8Array(data));
+		const root = load();
+		const message = root.lookupType('COD.Level.Level');
+		const decoded = message.decode(new Uint8Array(data));
 
-	return message.toObject(decoded);
+		return message.toObject(decoded);
+	} catch (e) {
+		window.toast('Invalid level data: ' + e, 'error');
+		return null;
+	}
 }
 
 /**

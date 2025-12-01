@@ -66,7 +66,8 @@ export default {
 					const blob = new Blob([level], {
 						type: 'application/octet-stream',
 					});
-					this.json = await encoding.decodeLevel(blob);
+					const data = await encoding.decodeLevel(blob);
+					this.json = data ?? encoding.createLevel();
 				}
 			} else {
 				this.json = this.default_level
@@ -134,9 +135,15 @@ export default {
 				e.preventDefault();
 				const file = files[0];
 				if (file.name.endsWith('.level')) {
-					this.set_json(await encoding.decodeLevel(file));
+					const data = await encoding.decodeLevel(file);
+					if (data) this.set_json(data);
 				} else if (file.name.endsWith('.json')) {
-					this.set_json(JSON.parse(await file.text()));
+					try {
+						const json = JSON.parse(await file.text());
+						if (json) this.set_json(json);
+					} catch (e) {
+						window.toast('Invalid JSON: ' + e, 'error');
+					}
 				}
 			}
 
@@ -151,7 +158,7 @@ export default {
 					type: 'application/octet-stream',
 				});
 				const json = await encoding.decodeLevel(blob);
-				this.set_json(json);
+				if (json) this.set_json(json);
 			}
 		},
 	},

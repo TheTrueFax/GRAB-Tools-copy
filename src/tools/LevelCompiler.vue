@@ -32,7 +32,7 @@ export default {
 				files.map(async (file) => await encoding.decodeLevel(file)),
 			);
 
-			let compiledNodes = compiler.compile(groups);
+			let compiledNodes = compiler.compile(groups.filter(Boolean));
 
 			const obj = encoding.createLevel(
 				compiledNodes,

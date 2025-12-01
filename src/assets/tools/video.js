@@ -193,6 +193,10 @@ async function fallback_video(file) {
 
 	const result = await response.arrayBuffer();
 	const level = await encoding.decodeLevel(result);
+	if (!level) {
+		window.toast('Invalid level', 'error');
+		return null;
+	}
 
 	if (!level.levelNodes?.length) {
 		window.toast('Video returned has no nodes', 'error');
