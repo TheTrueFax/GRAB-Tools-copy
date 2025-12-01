@@ -25,6 +25,7 @@ async function video(file, width, height, callback = (_) => {}) {
 }
 
 async function read_video(file, callback) {
+	console.log(file);
 	const buffer = await new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = async () => {
