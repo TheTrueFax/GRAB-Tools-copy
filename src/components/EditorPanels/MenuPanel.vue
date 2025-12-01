@@ -505,12 +505,16 @@ export default {
 			if (!files.length) return;
 
 			const file = files[0];
-			const new_json = JSON.parse(await file.text());
+			try {
+				const new_json = JSON.parse(await file.text());
 
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, new_json);
-				return json;
-			});
+				this.$emit('modifier', (json) => {
+					encoding.add_nodes(json, new_json);
+					return json;
+				});
+			} catch (e) {
+				window.toast('Invalid JSON: ' + e, 'error');
+			}
 		},
 		insert_image() {
 			this.$emit(
