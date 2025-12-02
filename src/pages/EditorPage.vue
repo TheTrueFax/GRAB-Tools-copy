@@ -138,12 +138,8 @@ export default {
 					const data = await encoding.decodeLevel(file);
 					if (data) this.set_json(data);
 				} else if (file.name.endsWith('.json')) {
-					try {
-						const json = JSON.parse(await file.text());
-						if (json) this.set_json(json);
-					} catch (e) {
-						window.toast('Invalid JSON: ' + e, 'error');
-					}
+					const json = encoding.json_parse(await file.text());
+					if (json) this.set_json(json);
 				}
 			}
 

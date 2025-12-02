@@ -346,15 +346,12 @@ export default {
 			if (!files.length) return;
 
 			const file = files[0];
-			try {
-				const json = JSON.parse(await file.text());
+			const json = encoding.json_parse(await file.text());
+			if (!json) return;
 
-				this.$emit('modifier', (_) => {
-					return json;
-				});
-			} catch (e) {
-				window.toast('Invalid JSON: ' + e, 'error');
-			}
+			this.$emit('modifier', (_) => {
+				return json;
+			});
 		},
 		save_level() {
 			this.$emit('function', async (json) => {
