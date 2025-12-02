@@ -566,6 +566,15 @@ function add_nodes(level, nodes) {
 	(level.levelNodes ??= []).push(...(nodes ?? []));
 }
 
+function json_parse(text) {
+	try {
+		return JSON.parse(text);
+	} catch (e) {
+		window.toast('Invalid JSON: ' + e, 'error');
+		return null;
+	}
+}
+
 export default {
 	load,
 	set_protobuf,
@@ -604,4 +613,5 @@ export default {
 	random_shape,
 	ambienceSettings,
 	add_nodes,
+	json_parse,
 };

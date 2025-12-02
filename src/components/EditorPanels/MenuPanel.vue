@@ -476,45 +476,36 @@ export default {
 			if (!files.length) return;
 
 			const file = files[0];
-			const new_json = await encoding.decodeLevel(file);
-			if (!new_json) return;
-
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, new_json.levelNodes);
-				return json;
-			});
+			const json = await encoding.decodeLevel(file);
+			this.insert_selection_nodes(json?.levelNodes);
 		},
 		async insert_json(e) {
 			const files = Array.from(e.target.files);
 			if (!files.length) return;
 
 			const file = files[0];
-			try {
-				const new_json = JSON.parse(await file.text());
-
+			const json = encoding.json_parse(await file.text());
+			this.insert_selection_nodes(json?.levelNodes);
+		},
+		insert_selection_nodes(nodes) {
+			if (!nodes) return;
+			this.$emit('viewport', (scope) => {
 				this.$emit('modifier', (json) => {
-					encoding.add_nodes(json, new_json.levelNodes);
+					const node_list =
+						scope.editing_parent.userData?.node?.levelNodeGroup
+							?.childNodes ?? (json.levelNodes ??= []);
+					node_list.push(...nodes);
 					return json;
 				});
-			} catch (e) {
-				window.toast('Invalid JSON: ' + e, 'error');
-			}
+			});
 		},
 		async insert_nodes(e) {
 			const files = Array.from(e.target.files);
 			if (!files.length) return;
 
 			const file = files[0];
-			try {
-				const new_json = JSON.parse(await file.text());
-
-				this.$emit('modifier', (json) => {
-					encoding.add_nodes(json, new_json);
-					return json;
-				});
-			} catch (e) {
-				window.toast('Invalid JSON: ' + e, 'error');
-			}
+			const json = encoding.json_parse(await file.text());
+			this.insert_selection_nodes(json);
 		},
 		insert_image() {
 			this.$emit(
@@ -559,10 +550,7 @@ export default {
 						shape,
 					);
 
-					this.$emit('modifier', (json) => {
-						encoding.add_nodes(json, [node]);
-						return json;
-					});
+					this.insert_selection_nodes([node]);
 				},
 			);
 		},
@@ -610,10 +598,7 @@ export default {
 					);
 					remove();
 
-					this.$emit('modifier', (json) => {
-						encoding.add_nodes(json, nodes);
-						return json;
-					});
+					this.insert_selection_nodes(nodes);
 				},
 			);
 		},
@@ -637,13 +622,9 @@ export default {
 					}
 
 					const file = files[0];
-
 					const nodes = await obj.obj(file, mode);
 
-					this.$emit('modifier', (json) => {
-						encoding.add_nodes(json, nodes);
-						return json;
-					});
+					this.insert_selection_nodes(nodes);
 				},
 			);
 		},
@@ -662,11 +643,7 @@ export default {
 				],
 				async (text, mode) => {
 					const nodes = signs.signs(text, mode === 'animated');
-
-					this.$emit('modifier', (json) => {
-						encoding.add_nodes(json, nodes);
-						return json;
-					});
+					this.insert_selection_nodes(nodes);
 				},
 			);
 		},
@@ -693,28 +670,15 @@ export default {
 					detail = parseInt(detail) || 600;
 
 					const nodes = await svg.svg(file, detail);
-
-					this.$emit('modifier', (json) => {
-						encoding.add_nodes(json, nodes);
-						return json;
-					});
+					this.insert_selection_nodes(nodes);
 				},
 			);
-		},
-		insert_node_wrapper(func) {
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [func()]);
-				return json;
-			});
 		},
 		insert_static() {
 			const node = encoding.levelNodeStatic();
 			delete node.levelNodeStatic.color1;
 			delete node.levelNodeStatic.color2;
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [node]);
-				return json;
-			});
+			this.insert_selection_nodes([node]);
 		},
 		insert_animated() {
 			const node = encoding.levelNodeStatic();
@@ -725,101 +689,80 @@ export default {
 			frame.position.y = 1;
 			animation.frames.push(frame);
 			node.animations.push(animation);
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [node]);
-				return json;
-			});
+			this.insert_selection_nodes([node]);
 		},
 		insert_colored() {
 			const node = encoding.levelNodeStatic();
 			node.levelNodeStatic.material = 8;
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [node]);
-				return json;
-			});
+			this.insert_selection_nodes([node]);
 		},
 		insert_sign() {
-			this.insert_node_wrapper(encoding.levelNodeSign);
+			this.insert_selection_nodes([encoding.levelNodeSign()]);
 		},
 		insert_start() {
-			this.insert_node_wrapper(encoding.levelNodeStart);
+			this.insert_selection_nodes([encoding.levelNodeStart()]);
 		},
 		insert_finish() {
-			this.insert_node_wrapper(encoding.levelNodeFinish);
+			this.insert_selection_nodes([encoding.levelNodeFinish()]);
 		},
 		insert_gravity() {
-			this.insert_node_wrapper(encoding.levelNodeGravity);
+			this.insert_selection_nodes([encoding.levelNodeGravity()]);
 		},
 		insert_particle() {
-			this.insert_node_wrapper(encoding.levelNodeParticleEmitter);
+			this.insert_selection_nodes([encoding.levelNodeParticleEmitter()]);
 		},
 		insert_trigger() {
-			this.insert_node_wrapper(encoding.levelNodeTrigger);
+			this.insert_selection_nodes([encoding.levelNodeTrigger()]);
 		},
 		insert_sound() {
-			this.insert_node_wrapper(encoding.levelNodeSound);
+			this.insert_selection_nodes([encoding.levelNodeSound()]);
 		},
 		insert_colored_lava() {
 			const node = encoding.levelNodeStatic();
 			node.levelNodeStatic.material = 3;
 			node.levelNodeStatic.color1.r = 1;
 			node.levelNodeStatic.color2.b = 1;
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [node]);
-				return json;
-			});
+			this.insert_selection_nodes([node]);
 		},
 		insert_ambience_trigger() {
-			const trigger = encoding.levelNodeTrigger();
-			trigger.levelNodeTrigger.triggerSources.push(
+			const node = encoding.levelNodeTrigger();
+			node.levelNodeTrigger.triggerSources.push(
 				encoding.triggerSourceBasic(),
 			);
-			trigger.levelNodeTrigger.triggerTargets.push(
+			node.levelNodeTrigger.triggerTargets.push(
 				encoding.triggerTargetAmbience(),
 			);
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [trigger]);
-				return json;
-			});
+			this.insert_selection_nodes([node]);
 		},
 		insert_animation_trigger() {
-			const trigger = encoding.levelNodeTrigger();
-			trigger.levelNodeTrigger.triggerSources.push(
+			const node = encoding.levelNodeTrigger();
+			node.levelNodeTrigger.triggerSources.push(
 				encoding.triggerSourceBasic(),
 			);
-			trigger.levelNodeTrigger.triggerTargets.push(
+			node.levelNodeTrigger.triggerTargets.push(
 				encoding.triggerTargetAnimation(),
 			);
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [trigger]);
-				return json;
-			});
+			this.insert_selection_nodes([node]);
 		},
 		insert_sound_trigger() {
-			const trigger = encoding.levelNodeTrigger();
-			trigger.levelNodeTrigger.triggerSources.push(
+			const node = encoding.levelNodeTrigger();
+			node.levelNodeTrigger.triggerSources.push(
 				encoding.triggerSourceBasic(),
 			);
-			trigger.levelNodeTrigger.triggerTargets.push(
+			node.levelNodeTrigger.triggerTargets.push(
 				encoding.triggerTargetSound(),
 			);
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [trigger]);
-				return json;
-			});
+			this.insert_selection_nodes([node]);
 		},
 		insert_sublevel_trigger() {
-			const trigger = encoding.levelNodeTrigger();
-			trigger.levelNodeTrigger.triggerSources.push(
+			const node = encoding.levelNodeTrigger();
+			node.levelNodeTrigger.triggerSources.push(
 				encoding.triggerSourceBasic(),
 			);
-			trigger.levelNodeTrigger.triggerTargets.push(
+			node.levelNodeTrigger.triggerTargets.push(
 				encoding.triggerTargetSubLevel(),
 			);
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(json, [trigger]);
-				return json;
-			});
+			this.insert_selection_nodes([node]);
 		},
 		teleport_start() {
 			this.$emit('viewport', (scope) => {
@@ -842,32 +785,24 @@ export default {
 			});
 		},
 		unlock_all() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes.forEach((node) => {
-					encoding.traverse_node(node, (n) => {
-						n.isLocked = false;
-					});
-				});
-				return json;
+			this.modify_selectable_nodes((node) => {
+				node.isLocked = false;
 			});
 		},
 		lock_all() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes.forEach((node) => {
-					encoding.traverse_node(node, (n) => {
-						n.isLocked = true;
-					});
-				});
-				return json;
+			this.modify_selectable_nodes((node) => {
+				node.isLocked = true;
 			});
 		},
 		pixelate_effect() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				const group_node = group.groupNodes(json.levelNodes);
-				group_node.levelNodeGroup.position = {
+			this.set_selectable_nodes((nodes) => {
+				if (!nodes?.length) return;
+
+				const node = group.groupNodes([...nodes]);
+				nodes.length = 0;
+				nodes.push(node);
+
+				node.levelNodeGroup.position = {
 					x: 900000,
 					y: 900000,
 					z: 900000,
@@ -879,9 +814,7 @@ export default {
 					y: -900000,
 					z: -900000,
 				};
-				group_node.animations.push(animation);
-				json.levelNodes = [group_node];
-				return json;
+				node.animations.push(animation);
 			});
 		},
 		open_material_convert_menu() {
@@ -909,19 +842,13 @@ export default {
 					from = parseInt(from);
 					to = parseInt(to);
 
-					this.$emit('modifier', (json) => {
-						if (!json.levelNodes?.length) return json;
-						json.levelNodes.forEach((node) => {
-							encoding.traverse_node(node, (child) => {
-								const data = encoding.node_data(child);
-								if (
-									child.levelNodeStatic &&
-									(data.material ?? 0) === from
-								)
-									data.material = to;
-							});
-						});
-						return json;
+					this.modify_selectable_nodes((node) => {
+						const data = encoding.node_data(node);
+						if (
+							node.levelNodeStatic &&
+							(data.material ?? 0) === from
+						)
+							data.material = to;
 					});
 				},
 			);
@@ -958,15 +885,9 @@ export default {
 					from = parseInt(from);
 					to = parseInt(to);
 
-					this.$emit('modifier', (json) => {
-						if (!json.levelNodes?.length) return json;
-						json.levelNodes.forEach((node) => {
-							encoding.traverse_node(node, (child) => {
-								const data = encoding.node_data(child);
-								if (data.shape === from) data.shape = to;
-							});
-						});
-						return json;
+					this.modify_selectable_nodes((node) => {
+						const data = encoding.node_data(node);
+						if (data.shape === from) data.shape = to;
 					});
 				},
 			);
@@ -996,158 +917,122 @@ export default {
 			});
 		},
 		group_level() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes = [group.groupNodes(json.levelNodes)];
-				return json;
+			this.set_selectable_nodes((nodes) => {
+				const node = group.groupNodes([...nodes]);
+				nodes.length = 0;
+				nodes.push(node);
 			});
 		},
 		ungroup_all() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				let index = json.levelNodes.findIndex(
-					(node) => node.levelNodeGroup,
-				);
-				while (index !== -1) {
-					const [node] = json.levelNodes.splice(index, 1);
-					json.levelNodes.push(...group.ungroupNode(node));
-
-					index = json.levelNodes.findIndex(
-						(node) => node.levelNodeGroup,
-					);
-				}
-				return json;
+			this.set_selectable_nodes((nodes) => {
+				group.recursiveUngroup(nodes);
 			});
 		},
 		duplicate_level() {
-			this.$emit('modifier', (json) => {
-				encoding.add_nodes(
-					json,
-					encoding.deepClone(json.levelNodes ?? []),
-				);
-				return json;
+			this.set_selectable_nodes((nodes) => {
+				nodes.push(...encoding.deepClone(nodes));
 			});
 		},
 		monochrome_level() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes = monochrome.monochrome(json.levelNodes);
-				return json;
+			this.set_selectable_nodes((nodes) => {
+				monochrome.monochrome(nodes);
 			});
 		},
 		randomize_materials() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes.forEach((node) => {
-					encoding.traverse_node(node, (child) => {
-						if (child.levelNodeStatic) {
-							child.levelNodeStatic.material =
-								encoding.random_material();
-						}
-					});
-				});
-				return json;
+			this.modify_selectable_nodes((node) => {
+				if (node.levelNodeStatic) {
+					node.levelNodeStatic.material = encoding.random_material();
+				}
 			});
 		},
 		randomize_shapes() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes.forEach((node) => {
-					encoding.traverse_node(node, (child) => {
-						const data = encoding.node_data(child);
-						if (data.shape) {
-							data.shape = encoding.random_shape();
-						}
-					});
-				});
-				return json;
+			this.modify_selectable_nodes((node) => {
+				const data = encoding.node_data(node);
+				if (data.shape) {
+					data.shape = encoding.random_shape();
+				}
 			});
 		},
 		randomize_positions() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes.forEach((node) => {
-					encoding.traverse_node(node, (child) => {
-						const data = encoding.node_data(child);
-						data.position.x =
-							Math.random() - 0.5 + (data.position?.x ?? 0);
-						data.position.y =
-							Math.random() - 0.5 + (data.position?.y ?? 0);
-						data.position.z =
-							Math.random() - 0.5 + (data.position?.z ?? 0);
-					});
-				});
-				return json;
+			this.modify_selectable_nodes((node) => {
+				const data = encoding.node_data(node);
+				data.position.x = Math.random() - 0.5 + (data.position?.x ?? 0);
+				data.position.y = Math.random() - 0.5 + (data.position?.y ?? 0);
+				data.position.z = Math.random() - 0.5 + (data.position?.z ?? 0);
 			});
 		},
 		randomize_rotations() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes.forEach((node) => {
-					encoding.traverse_node(node, (child) => {
-						const data = encoding.node_data(child);
-						if (data.rotation) {
-							const quat = new THREE.Quaternion(
-								Math.random(),
-								Math.random(),
-								Math.random(),
-								Math.random(),
-							);
-							quat.normalize();
-							data.rotation.x = quat.x;
-							data.rotation.y = quat.y;
-							data.rotation.z = quat.z;
-							data.rotation.w = quat.w;
-						}
-					});
-				});
-				return json;
+			this.modify_selectable_nodes((node) => {
+				const data = encoding.node_data(node);
+				if (data.rotation) {
+					const quat = new THREE.Quaternion(
+						Math.random(),
+						Math.random(),
+						Math.random(),
+						Math.random(),
+					);
+					quat.normalize();
+					data.rotation.x = quat.x;
+					data.rotation.y = quat.y;
+					data.rotation.z = quat.z;
+					data.rotation.w = quat.w;
+				}
 			});
 		},
 		randomize_scales() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes.forEach((node) => {
-					encoding.traverse_node(node, (child) => {
-						const data = encoding.node_data(child);
-						if (data.scale && typeof data.scale === 'object') {
-							data.scale.x =
-								Math.random() - 0.5 + (data.scale?.x ?? 0);
-							data.scale.y =
-								Math.random() - 0.5 + (data.scale?.y ?? 0);
-							data.scale.z =
-								Math.random() - 0.5 + (data.scale?.z ?? 0);
-						}
-						if (data.scale && typeof data.scale === 'number') {
-							data.scale = Math.random() - 0.5 + data.scale;
-						}
-						if (data.radius) {
-							data.radius = Math.random() - 0.5 + data.radius;
-						}
-					});
-				});
-				return json;
+			this.modify_selectable_nodes((node) => {
+				const data = encoding.node_data(node);
+				if (data.scale && typeof data.scale === 'object') {
+					data.scale.x = Math.random() - 0.5 + (data.scale?.x ?? 0);
+					data.scale.y = Math.random() - 0.5 + (data.scale?.y ?? 0);
+					data.scale.z = Math.random() - 0.5 + (data.scale?.z ?? 0);
+				}
+				if (data.scale && typeof data.scale === 'number') {
+					data.scale = Math.random() - 0.5 + data.scale;
+				}
+				if (data.radius) {
+					data.radius = Math.random() - 0.5 + data.radius;
+				}
 			});
 		},
 		randomize_colors() {
-			this.$emit('modifier', (json) => {
-				if (!json.levelNodes?.length) return json;
-				json.levelNodes.forEach((node) => {
-					encoding.traverse_node(node, (child) => {
-						const data = encoding.node_data(child);
-						if (data.color1) {
-							data.color1.r = Math.random();
-							data.color1.g = Math.random();
-							data.color1.b = Math.random();
-						}
-						if (data.color2) {
-							data.color2.r = Math.random();
-							data.color2.g = Math.random();
-							data.color2.b = Math.random();
-						}
+			this.modify_selectable_nodes((node) => {
+				const data = encoding.node_data(node);
+				if (data.color1) {
+					data.color1.r = Math.random();
+					data.color1.g = Math.random();
+					data.color1.b = Math.random();
+				}
+				if (data.color2) {
+					data.color2.r = Math.random();
+					data.color2.g = Math.random();
+					data.color2.b = Math.random();
+				}
+			});
+		},
+		modify_selectable_nodes(func) {
+			this.$emit('viewport', (scope) => {
+				this.$emit('modifier', (json) => {
+					const node_list =
+						scope.editing_parent.userData?.node?.levelNodeGroup
+							?.childNodes ?? (json.levelNodes ??= []);
+					node_list.forEach((node) => {
+						encoding.traverse_node(node, func);
 					});
+					return json;
 				});
-				return json;
+			});
+		},
+		set_selectable_nodes(func) {
+			this.$emit('viewport', (scope) => {
+				this.$emit('modifier', (json) => {
+					const node_list =
+						scope.editing_parent.userData?.node?.levelNodeGroup
+							?.childNodes ?? (json.levelNodes ??= []);
+					func(node_list);
+					console.log(json);
+					return json;
+				});
 			});
 		},
 		ambience_min() {

@@ -112,7 +112,22 @@ function ungroupNode(group) {
 	return child_nodes;
 }
 
+function recursiveUngroup(nodes) {
+	if (!nodes?.length) return nodes;
+
+	let index = nodes.findIndex((node) => node.levelNodeGroup);
+	while (index !== -1) {
+		const [node] = nodes.splice(index, 1);
+		nodes.push(...ungroupNode(node));
+
+		index = nodes.findIndex((node) => node.levelNodeGroup);
+	}
+
+	return nodes;
+}
+
 export default {
 	groupNodes,
 	ungroupNode,
+	recursiveUngroup,
 };
