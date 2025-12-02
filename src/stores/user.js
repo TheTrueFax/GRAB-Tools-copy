@@ -2,6 +2,7 @@ import { SERVER_URL } from '@/config';
 import { defineStore } from 'pinia';
 import { LogEvent } from '@/requests/LogEvent';
 import * as Sentry from '@sentry/vue';
+import { useCookiesStore } from './cookies';
 
 export const useUserStore = defineStore('user', {
 	state: () => ({
@@ -53,7 +54,11 @@ export const useUserStore = defineStore('user', {
 			}
 			// TODO: load user info
 			LogEvent('LOGIN');
-			Sentry.setUser({ username: this.user_name });
+
+			const cookies = useCookiesStore();
+			if (cookies.allow_cookies) {
+				Sentry.setUser({ username: this.user_name });
+			}
 		},
 		async logout() {
 			this.$reset();

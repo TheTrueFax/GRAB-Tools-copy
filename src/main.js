@@ -24,16 +24,6 @@ Sentry.init({
 	sendDefaultPii: true,
 	enableLogs: true,
 	release: config.VERSION,
-	beforeSend(event) {
-		const cookies = useCookiesStore();
-		const user = useUserStore();
-
-		if (cookies.allow_cookies && user.user_name) {
-			(event.user ??= {}).username = user.user_name;
-		}
-
-		return event;
-	},
 	enabled: !(
 		window.location.hostname === 'localhost' ||
 		window.location.hostname === '127.0.0.1'
@@ -45,5 +35,11 @@ app.use(router);
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
+
+const cookies = useCookiesStore();
+const user = useUserStore();
+if (user.user_name && cookies.allow_cookies) {
+	Sentry.setUser({ username: user.user_name });
+}
 
 app.mount('#app');
