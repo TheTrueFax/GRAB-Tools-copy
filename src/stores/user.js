@@ -1,6 +1,7 @@
 import { SERVER_URL } from '@/config';
 import { defineStore } from 'pinia';
 import { LogEvent } from '@/requests/LogEvent';
+import * as Sentry from '@sentry/vue';
 
 export const useUserStore = defineStore('user', {
 	state: () => ({
@@ -52,9 +53,11 @@ export const useUserStore = defineStore('user', {
 			}
 			// TODO: load user info
 			LogEvent('LOGIN');
+			Sentry.setUser({ username: this.user_name });
 		},
 		async logout() {
 			this.$reset();
+			Sentry.setUser({ username: null });
 		},
 	},
 	persist: true,
