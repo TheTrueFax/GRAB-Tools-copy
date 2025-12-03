@@ -19,6 +19,8 @@ import LevelJSON from '@/tools/LevelJSON.vue';
 import PointCloud from '@/tools/PointCloud.vue';
 import LevelDownloader from '@/tools/LevelDownloader.vue';
 import TextSigns from '@/tools/TextSigns.vue';
+import AudioImporter from '@/tools/AudioImporter.vue';
+import MusicIcon from '@/icons/MusicIcon.vue';
 
 export default {
 	components: {
@@ -40,6 +42,8 @@ export default {
 		CubeIcon,
 		PlayIcon,
 		PencilIcon,
+		AudioImporter,
+		MusicIcon,
 	},
 	methods: {
 		setTab(tab) {
@@ -163,6 +167,14 @@ export default {
 				Point Cloud
 				<CubeIcon />
 			</button>
+			<button
+				class="button"
+				id="audio-importer-tool-button"
+				@click="selectTool('audio-importer')"
+			>
+				Audio
+				<MusicIcon />
+			</button>
 		</section>
 		<section id="tools">
 			<LevelCompiler id="level-compiler-tool" />
@@ -173,6 +185,7 @@ export default {
 			<PointCloud id="point-cloud-tool" />
 			<LevelDownloader id="download-tool" />
 			<TextSigns id="text-signs-tool" />
+			<AudioImporter id="audio-importer-tool" />
 			<div id="custom-colors-tool">
 				<h2>Custom Colors</h2>
 				<p>
