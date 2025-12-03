@@ -812,6 +812,7 @@ export default {
 				path_target.getWorldPosition(position);
 
 				const points = [trigger_position, position];
+				line.geometry.dispose();
 				line.geometry = new THREE.BufferGeometry().setFromPoints(
 					points,
 				);
