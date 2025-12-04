@@ -59,23 +59,3 @@ npm install
 ```sh
 npm run dev
 ```
-
-### Build website
-```sh
-npm run build
-```
-
-### Test application
-```sh
-npm run tauri dev
-```
-
-### Build application
-```sh
-npm run tauri build
-```
-
-### Build Android application
-```sh
-npm run tauri android build
-```
