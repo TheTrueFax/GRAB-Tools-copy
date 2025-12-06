@@ -51,6 +51,9 @@ async function read_video(file, callback) {
 	const processor = new MediaStreamTrackProcessor(track); // fuck firefox
 	const video_reader = processor.readable.getReader();
 
+	const canvas = document.createElement('canvas');
+	const ctx = canvas.getContext('2d');
+
 	const frames = [];
 
 	let finished = false;
@@ -58,11 +61,19 @@ async function read_video(file, callback) {
 		const { done, value } = await video_reader.read();
 		finished = done;
 
-		if (value) {
-			frames.push(await createImageBitmap(value));
-			callback((video.currentTime / video.duration) * 90);
-			value.close();
-		}
+		if (!value) return;
+
+		canvas.width = value.displayWidth;
+		canvas.height = value.displayHeight;
+
+		ctx.drawImage(value, 0, 0);
+
+		const bitmap = await createImageBitmap(canvas);
+		frames.push(bitmap);
+
+		callback((video.currentTime / video.duration) * 90);
+
+		value.close();
 	}
 
 	return frames;
