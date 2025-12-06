@@ -1,13 +1,15 @@
 <script>
 import Toast from '@/components/Toast.vue';
 import CookiesPopup from './components/CookiesPopup.vue';
+import Panic from '@/components/Panic.vue';
 export default {
-	components: { Toast, CookiesPopup },
+	components: { Toast, CookiesPopup, Panic },
 };
 </script>
 
 <template>
 	<router-view></router-view>
+	<Panic />
 	<Toast />
 	<CookiesPopup />
 </template>
