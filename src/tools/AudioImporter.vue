@@ -19,6 +19,7 @@ export default {
 				parseInt(getByID(`${toolID}-pitch-samples`).value) || 40;
 
 			const node = await audio.audio(file, samples);
+			if (!node) return;
 
 			const obj = encoding.createLevel(
 				[node],

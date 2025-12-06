@@ -11,9 +11,13 @@ import { ComplexArray } from 'jsfft';
  */
 async function audio(file, samples) {
 	const volume_samples = 2;
-	const level_nodes = await generate(samples, volume_samples, file);
-
-	return group.groupNodes(level_nodes);
+	try {
+		const level_nodes = await generate(samples, volume_samples, file);
+		return group.groupNodes(level_nodes);
+	} catch (e) {
+		window.toast(e, 'error');
+		return null;
+	}
 }
 
 // FFT helpers

@@ -532,6 +532,7 @@ export default {
 					const file = files[0];
 
 					const node = await audio.audio(file, samples);
+					if (!node) return;
 
 					this.insert_selection_nodes([node]);
 				},
