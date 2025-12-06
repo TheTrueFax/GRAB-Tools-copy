@@ -74,6 +74,19 @@ export default {
 		}
 
 		this.setup_renderer();
+		if (!this.renderer) return;
+
+		this.renderer.domElement.addEventListener('webglcontextlost', (e) => {
+			e.preventDefault();
+			window.toast('WebGL context lost, reload recommended', 'error');
+		});
+		this.renderer.domElement.addEventListener(
+			'webglcontextrestored',
+			() => {
+				window.toast('WebGL context restored', 'info');
+			},
+		);
+
 		const observer = new ResizeObserver((entries) => {
 			for (const entry of entries) {
 				if (entry.target === this.$refs.viewport) {
@@ -131,11 +144,19 @@ export default {
 		},
 		setup_renderer() {
 			// renderer
+			try {
+				this.renderer = new THREE.WebGLRenderer({
+					antialias: true,
+					preserveDrawingBuffer: true,
+				});
+			} catch (e) {
+				e.message =
+					'Browser failed to create WebGL context: ' + e.message;
+				window.panic(e);
+				return;
+			}
+
 			THREE.ColorManagement.enabled = true;
-			this.renderer = new THREE.WebGLRenderer({
-				antialias: true,
-				preserveDrawingBuffer: true,
-			});
 			this.renderer.setSize(
 				this.$refs.viewport.clientWidth,
 				this.$refs.viewport.clientHeight,
