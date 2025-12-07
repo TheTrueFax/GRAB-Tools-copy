@@ -3,6 +3,14 @@ import encoding from '@/assets/tools/encoding';
 const instruction_map = encoding.load().COD.Level.InstructionData.Type;
 const operand_map = encoding.load().COD.Level.OperandData.Type;
 
+const special_registers = [
+	'ProgramCounter', // index of instruction
+	'Halt', // boolean that halts the program
+	'HaltFrame', // boolean that skips a frame. equivelant to SLEEP 0
+	'SleepTimer', // idk time sleeping maybe but that seems wrong
+	'DeltaTime', // time since last frame
+];
+
 // asm to json
 function asm_to_json(asm, old_json) {
 	old_json.levelNodeGASM.program.labels = [];
@@ -174,12 +182,17 @@ function instruction_asm_to_json(instruction, old_json) {
 function operand_asm_to_json(operand, old_json) {
 	const labels = old_json.levelNodeGASM.program.labels;
 
-	if (/^-?\d+(\.\d+)?$/.test(operand)) {
+	if (special_registers.includes(operand)) {
+		return {
+			type: operand_map['OpSpecialRegister'],
+			index: special_registers.indexOf(operand),
+		};
+	} else if (/^-?\d+(\.\d+)?$/.test(operand)) {
 		return {
 			type: operand_map['OpConstant'],
 			value: parseFloat(operand),
 		};
-	} else if (/^((R|IN|OUT)\d+)$/.test(operand)) {
+	} else if (/^((R|IN|OUT|INOUT)\d+)$/.test(operand)) {
 		const match = operand.match(/^([A-Za-z]+)(\d+)$/);
 		const op = operand_map[dirty_operand(match[1])];
 		const index = match[2];
@@ -227,6 +240,8 @@ function operand_json_to_asm(operand, json) {
 		return `${operand.value}`;
 	} else if (op === `OpLabel`) {
 		return `${labels[operand.index].name}`;
+	} else if (op === 'OpSpecialRegister') {
+		return `${special_registers[operand.index]}`;
 	}
 	return `${clean_operand(op)}${operand.index}`;
 }
@@ -236,6 +251,7 @@ function clean_operand(name) {
 		OpInputRegister: 'IN',
 		OpOutputRegister: 'OUT',
 		OpWorkingRegister: 'R',
+		OpInOutRegister: 'INOUT',
 	}[name];
 }
 
@@ -243,6 +259,7 @@ function dirty_operand(name) {
 	return {
 		IN: 'OpInputRegister',
 		OUT: 'OpOutputRegister',
+		INOUT: 'OpInOutRegister',
 		R: 'OpWorkingRegister',
 	}[name];
 }

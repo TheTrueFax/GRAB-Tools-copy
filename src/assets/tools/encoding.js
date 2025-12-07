@@ -502,6 +502,15 @@ function triggerTargetSubLevel() {
 	});
 }
 
+function triggerTargetGASM() {
+	return triggerTarget({
+		triggerTargetGASM: {
+			objectID: 0,
+			mode: 3,
+		},
+	});
+}
+
 function triggerTargetSound() {
 	return triggerTarget({
 		triggerTargetSound: {
@@ -552,35 +561,42 @@ function levelNodeGASM() {
 	return levelNode({
 		levelNodeGASM: {
 			position: vec3(),
+			scale: vec3(1, 1, 1),
+			rotation: quat(),
 			program: {
-				inputRegisters: [
-					{ name: 'IN0' },
-					{ name: 'IN1' },
-					{ name: 'IN2' },
-					{ name: 'IN3' },
-					{ name: 'IN4' },
-				],
-				outputRegisters: [
-					{ name: 'OUT0' },
-					{ name: 'OUT1' },
-					{ name: 'OUT2' },
-					{ name: 'OUT3' },
-					{ name: 'OUT4' },
-				],
+				inoutRegisters: [{ name: 'Obj.Pos.X' }],
 				workingRegisters: [
 					{ name: 'R0' },
 					{ name: 'R1' },
 					{ name: 'R2' },
 					{ name: 'R3' },
 					{ name: 'R4' },
+					{ name: 'R5' },
+					{ name: 'R6' },
+					{ name: 'R7' },
 				],
 				labels: [],
 				instructions: [],
 			},
-			inputProperties: [],
-			inputConnections: [],
-			outputProperties: [],
-			outputConnections: [],
+			connections: [
+				{
+					objectID: 0,
+					name: 'Obj',
+					properties: [
+						{
+							objectID: 0,
+							components: [
+								{
+									inputRegisterIndex: -1,
+									outputRegisterIndex: -1,
+									inoutRegisterIndex: 0,
+								},
+							],
+							position: {},
+						},
+					],
+				},
+			],
 			startActive: false,
 		},
 	});
@@ -653,6 +669,7 @@ export default {
 	triggerTargetSubLevel,
 	triggerTargetSound,
 	triggerTargetAmbience,
+	triggerTargetGASM,
 	triggerSourceBasic,
 	triggerSourceBlockNames,
 	traverse_node,

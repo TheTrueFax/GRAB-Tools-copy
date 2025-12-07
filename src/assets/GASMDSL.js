@@ -21,16 +21,22 @@ export const gasm = StreamLanguage.define({
 		// keywords
 		if (
 			stream.match(
-				/(?:NOOP|SET|SWAP|ADD|SUB|MUL|DIV|EQUAL|LESS|GREATER|AND|OR|NOT|LABEL|GOTO|IF|SLEEP|END|RAND)\b/,
+				/(?:NOOP|SET|SWAP|ADD|SUB|MUL|DIV|EQUAL|LESS|GREATER|AND|OR|NOT|LABEL|GOTO|IF|SLEEP|END|RAND|FLOOR|MOD|SIN|COS)\b/,
 				true,
 			)
 		)
 			return 'keyword';
 
 		// registers
-		if (stream.match(/R\d*\b/, true)) return 'variableName';
-		if (stream.match(/IN\d*\b/, true)) return 'variableName';
-		if (stream.match(/OUT\d*\b/, true)) return 'variableName';
+		if (stream.match(/(R|IN|OUT|INOUT)\d*\b/, true)) return 'variableName';
+		// special registers
+		if (
+			stream.match(
+				/(ProgramCounter|Halt|HaltFrame|SleepTimer|DeltaTime)\b/,
+				true,
+			)
+		)
+			return 'propertyName';
 
 		// numbers
 		if (stream.match(/\d+(?:\.\d+)?\b/, true)) return 'number';

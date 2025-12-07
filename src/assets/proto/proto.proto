@@ -426,6 +426,8 @@ message LevelNodeGASM {
   }
 
   Vector position = 1;
+  Vector scale = 5;
+  Quaternion rotation = 6;
 
   ProgramData program = 2;
 
@@ -481,7 +483,7 @@ message LevelNode {
   bool wantsCreationHistory = 17;
 }
 
-// gasm.proto
+// MARK: gasm.proto
 
 message OperandData {
   enum Type {
@@ -491,6 +493,7 @@ message OperandData {
     OpSpecialRegister = 3;
     OpConstant = 4;
     OpLabel = 5;
+    OpInOutRegister = 6;
   }
   Type type = 1;
   oneof content {
@@ -520,6 +523,10 @@ message InstructionData {
     InSleep = 16;
     InEnd = 17;
     InRand = 18;
+    InFloor = 19;
+    InMod = 20;
+    InSin = 21;
+    InCos = 22;
   }
   Type type = 1;
   repeated OperandData operands = 2;
@@ -537,6 +544,7 @@ message ProgramData {
   repeated RegisterData inputRegisters = 1;
   repeated RegisterData outputRegisters = 2;
   repeated RegisterData workingRegisters = 3;
+  repeated RegisterData inoutRegisters = 6;
 
   repeated LabelData labels = 4;
 
@@ -545,12 +553,15 @@ message ProgramData {
 
 message ProgrammablePositionData {}
 
+message ProgrammableRotationData {}
+
 message ProgrammableTriggerActive {}
 
 message ProgrammablePropertyData {
   message Component {
     int32 inputRegisterIndex = 1;
     int32 outputRegisterIndex = 2;
+    int32 inoutRegisterIndex = 3;
   }
 
   uint64 objectID = 1;
@@ -559,5 +570,6 @@ message ProgrammablePropertyData {
   oneof content {
     ProgrammablePositionData position = 3;
     ProgrammableTriggerActive triggerActive = 4;
+    ProgrammableRotationData rotation = 5;
   }
 }

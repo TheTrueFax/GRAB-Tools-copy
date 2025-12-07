@@ -1287,6 +1287,15 @@ class LevelLoader {
 					object.position.y = node.levelNodeGASM.position?.y ?? 0;
 					object.position.z = node.levelNodeGASM.position?.z ?? 0;
 
+					object.scale.x = node.levelNodeGASM.scale?.x ?? 0;
+					object.scale.y = node.levelNodeGASM.scale?.y ?? 0;
+					object.scale.z = node.levelNodeGASM.scale?.z ?? 0;
+
+					object.quaternion.x = node.levelNodeGASM.rotation?.x ?? 0;
+					object.quaternion.y = node.levelNodeGASM.rotation?.y ?? 0;
+					object.quaternion.z = node.levelNodeGASM.rotation?.z ?? 0;
+					object.quaternion.w = node.levelNodeGASM.rotation?.w ?? 0;
+
 					object.initialPosition = object.position.clone();
 					object.initialRotation = object.quaternion.clone();
 
