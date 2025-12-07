@@ -750,7 +750,7 @@ export default {
 			this.insert_selection_nodes([encoding.levelNodeSound()]);
 		},
 		insert_gasm() {
-			this.insert_node_wrapper(encoding.levelNodeGASM);
+			this.insert_selection_nodes([encoding.levelNodeGASM()]);
 		},
 		insert_colored_lava() {
 			const node = encoding.levelNodeStatic();
