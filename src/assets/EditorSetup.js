@@ -56,7 +56,9 @@ const themeOptions = {
 	},
 	'&.cm-focused .cm-selectionBackground, & .cm-line::selection, & .cm-selectionLayer .cm-selectionBackground, .cm-content ::selection':
 		{
-			background: colors.visual + ' !important',
+			// Safari doesn't fully apply a solid background-color to ::selection element unless the color includes an alpha value.
+			// https://github.com/w3c/csswg-drafts/issues/6853
+			background: colors.visual + 'FE !important',
 		},
 	'& .cm-selectionMatch, & .cm-searchMatch': {
 		backgroundColor: colors.search,
