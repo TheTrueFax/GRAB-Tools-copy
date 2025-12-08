@@ -11,7 +11,7 @@ export const LOGGING_URL = 'https://gt-logs.twhlynch.workers.dev';
 
 export const GOOGLE_TAG_ID = 'G-BDS57RBQ3Q';
 
-export const FORMAT_VERSION = 17;
+export const FORMAT_VERSION = 18;
 
 import pkg from '../package.json';
 export const VERSION = pkg.version;
