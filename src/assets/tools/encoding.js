@@ -178,7 +178,14 @@ function createLevel(
 		unlisted: false,
 		showReplays: true,
 		complexity: 0,
-		ambienceSettings: ambienceSettings(),
+		ambienceSettings: ambienceSettings(
+			horizon,
+			zenith,
+			sunAltitude,
+			sunAzimuth,
+			sunSize,
+			fogDensity,
+		),
 		levelNodes: nodes,
 	};
 }

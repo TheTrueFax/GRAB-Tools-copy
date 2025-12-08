@@ -349,7 +349,7 @@ export default {
 						>
 						<div class="list-chart">
 							<div
-								v-for="(pos, key) in this.metrics[item[0]]
+								v-for="(_, key) in this.metrics[item[0]]
 									.positions"
 								:key="key + '-'"
 								class="metric-bar"
@@ -397,7 +397,7 @@ export default {
 						<div class="list-item-expanded-content">
 							<div class="list-chart">
 								<template
-									v-for="(pos, key) in this.metrics[item[0]]
+									v-for="(_, key) in this.metrics[item[0]]
 										.positions"
 									:key="key + item[0]"
 								>

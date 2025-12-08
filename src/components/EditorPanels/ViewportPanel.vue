@@ -215,7 +215,7 @@ export default {
 				this.update_node_shader(node);
 			});
 		},
-		moving_event(e) {
+		moving_event(_) {
 			this.gizmo.selection.forEach((object) => {
 				this.update_node_shader(object);
 				this.update_animation_path_position(object);
@@ -484,7 +484,7 @@ export default {
 				this.show_keybinds = false;
 			}
 		},
-		mouseup(e) {
+		mouseup(_) {
 			this.controls.isMouseActive = false;
 		},
 		set_transform_mode(mode) {

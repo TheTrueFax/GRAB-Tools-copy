@@ -378,7 +378,7 @@ export default {
 			});
 		},
 		load_default_level() {
-			this.$emit('modifier', (json) => {
+			this.$emit('modifier', (_) => {
 				const configStore = useConfigStore();
 				return configStore.default_level
 					? encoding.deepClone(configStore.default_level)

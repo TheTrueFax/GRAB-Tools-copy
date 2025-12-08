@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import * as Sentry from '@sentry/vue';
 import KeyHint from './EditorPanels/KeyHint.vue';

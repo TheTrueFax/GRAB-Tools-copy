@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { reactive } from 'vue';
 import * as Sentry from '@sentry/vue';

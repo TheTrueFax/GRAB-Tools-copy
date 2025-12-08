@@ -5,9 +5,6 @@ import { useConfigStore } from '@/stores/config';
 
 import encoding from '@/assets/tools/encoding';
 import downloads from '@/assets/tools/downloads';
-import { user_info_request } from '@/requests/UserInfoRequest';
-import { download_level_request } from '@/requests/DownloadLevelRequest';
-import { level_details_request } from '@/requests/LevelDetailsRequest';
 
 import MenuPanel from '@/components/EditorPanels/MenuPanel.vue';
 import ViewportPanel from '@/components/EditorPanels/ViewportPanel.vue';
