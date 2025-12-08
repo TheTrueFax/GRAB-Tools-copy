@@ -28,7 +28,9 @@ export const gasm = StreamLanguage.define({
 			return 'keyword';
 
 		// registers
-		if (stream.match(/(R|IN|OUT|INOUT)\d*\b/, true)) return 'variableName';
+		if (stream.match(/[A-Za-z_][A-Za-z0-9_]*\.[.A-Za-z0-9_]*\b/, true))
+			return 'variableName';
+		if (stream.match(/(R|IN|OUT)\d*\b/, true)) return 'variableName';
 		// special registers
 		if (
 			stream.match(
@@ -42,7 +44,7 @@ export const gasm = StreamLanguage.define({
 		if (stream.match(/\d+(?:\.\d+)?\b/, true)) return 'number';
 
 		// labels
-		if (stream.match(/[A-Za-z_][A-Za-z0-9_]*/, true)) return 'string';
+		if (stream.match(/[A-Za-z_][A-Za-z0-9_]*\b/, true)) return 'string';
 
 		stream.next();
 		return null;

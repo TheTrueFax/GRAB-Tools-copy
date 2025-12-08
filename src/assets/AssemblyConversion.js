@@ -181,6 +181,7 @@ function instruction_asm_to_json(instruction, old_json) {
 
 function operand_asm_to_json(operand, old_json) {
 	const labels = old_json.levelNodeGASM.program.labels;
+	const inoutRegisters = old_json.levelNodeGASM.program.inoutRegisters ?? [];
 
 	if (special_registers.includes(operand)) {
 		return {
@@ -192,7 +193,14 @@ function operand_asm_to_json(operand, old_json) {
 			type: operand_map['OpConstant'],
 			value: parseFloat(operand),
 		};
-	} else if (/^((R|IN|OUT|INOUT)\d+)$/.test(operand)) {
+	} else if (inoutRegisters.map((r) => r.name).includes(operand)) {
+		const index = inoutRegisters.map((r) => r.name).indexOf(operand);
+		const op = operand_map['OpInOutRegister'];
+		return {
+			type: op,
+			index: index,
+		};
+	} else if (/^((R|IN|OUT)\d+)$/.test(operand)) {
 		const match = operand.match(/^([A-Za-z]+)(\d+)$/);
 		const op = operand_map[dirty_operand(match[1])];
 		const index = match[2];
@@ -234,6 +242,7 @@ function instruction_json_to_asm(instruction, json) {
 
 function operand_json_to_asm(operand, json) {
 	const labels = json.levelNodeGASM.program.labels;
+	const inoutRegisters = json.levelNodeGASM.program.inoutRegisters ?? [];
 
 	const op = operand_map[operand.type ?? 0];
 	if (op === 'OpConstant') {
@@ -242,6 +251,8 @@ function operand_json_to_asm(operand, json) {
 		return `${labels[operand.index].name}`;
 	} else if (op === 'OpSpecialRegister') {
 		return `${special_registers[operand.index]}`;
+	} else if (op === 'OpInOutRegister') {
+		return inoutRegisters[operand.index].name;
 	}
 	return `${clean_operand(op)}${operand.index}`;
 }
@@ -251,7 +262,6 @@ function clean_operand(name) {
 		OpInputRegister: 'IN',
 		OpOutputRegister: 'OUT',
 		OpWorkingRegister: 'R',
-		OpInOutRegister: 'INOUT',
 	}[name];
 }
 
@@ -259,7 +269,6 @@ function dirty_operand(name) {
 	return {
 		IN: 'OpInputRegister',
 		OUT: 'OpOutputRegister',
-		INOUT: 'OpInOutRegister',
 		R: 'OpWorkingRegister',
 	}[name];
 }
