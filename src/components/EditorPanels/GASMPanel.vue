@@ -2,11 +2,18 @@
 import build_editor from '@/assets/EditorSetup';
 import { foldGutter } from '@codemirror/language';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
-import { EditorSelection } from '@codemirror/state';
+import { EditorSelection, StateEffect } from '@codemirror/state';
 import AssemblyConversion from '@/assets/AssemblyConversion';
 import { gasm } from '@/assets/GASMDSL';
 import { vim } from '@replit/codemirror-vim';
 import { basicSetup } from 'codemirror';
+import {
+	gasmCompletion,
+	update_json_completions,
+	update_text_completions,
+} from '@/assets/GASMCompletion';
+import { mapState } from 'pinia';
+import { useConfigStore } from '@/stores/config';
 
 export default {
 	data() {
@@ -14,16 +21,28 @@ export default {
 			json: undefined,
 		};
 	},
+	computed: {
+		...mapState(useConfigStore, ['vim_enabled']),
+	},
 	mounted() {
-		this.view = build_editor(
-			this.$refs.code_container,
-			' ',
-			gasm,
-			[foldGutter(), highlightSelectionMatches(), vim(), basicSetup],
-			[...searchKeymap],
-		);
+		this.create_editor();
 	},
 	methods: {
+		create_editor() {
+			this.view = build_editor(
+				this.$refs.code_container,
+				' ',
+				gasm,
+				[
+					foldGutter(),
+					highlightSelectionMatches(),
+					...(this.vim_enabled ? [vim()] : []),
+					basicSetup,
+					...gasmCompletion(),
+				],
+				[...searchKeymap],
+			);
+		},
 		set_json(json) {
 			this.json = json;
 			const asm = AssemblyConversion.json_to_asm(json);
@@ -34,6 +53,9 @@ export default {
 					insert: asm,
 				},
 			});
+
+			update_json_completions(json);
+			update_text_completions('');
 		},
 		save() {
 			let data;
@@ -62,6 +84,27 @@ export default {
 		},
 	},
 	emits: ['set'],
+	watch: {
+		vim_enabled() {
+			const asm = this.view.state.doc.toString();
+
+			this.view.dom.parentNode.removeChild(this.view.dom);
+			this.view.destroy();
+
+			this.create_editor();
+
+			this.view.dispatch({
+				changes: {
+					from: 0,
+					to: this.view.state.doc.length,
+					insert: asm,
+				},
+			});
+
+			update_json_completions(this.json);
+			update_text_completions('');
+		},
+	},
 };
 </script>
 

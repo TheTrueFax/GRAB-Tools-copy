@@ -5,10 +5,14 @@ export const useConfigStore = defineStore('config', {
 		editor_config: undefined,
 		default_level: undefined,
 		dark_mode: false,
+		vim_enabled: false,
 	}),
 	actions: {
 		set_dark_mode(value) {
 			this.dark_mode = value;
+		},
+		set_vim(value) {
+			this.vim_enabled = value;
 		},
 	},
 	persist: true,

@@ -11,6 +11,7 @@ import signs from '@/assets/tools/signs';
 import svg from '@/assets/tools/svg';
 import audio from '@/assets/tools/audio';
 import * as THREE from 'three';
+import { mapActions, mapState } from 'pinia';
 
 export default {
 	data() {
@@ -250,6 +251,9 @@ export default {
 					Controls: {
 						'Fly Speed': {
 							func: this.set_fly_speed,
+						},
+						'Vim Mode': {
+							func: this.toggle_vim_mode,
 						},
 					},
 					Experimental: {
@@ -930,6 +934,9 @@ export default {
 				},
 			);
 		},
+		toggle_vim_mode() {
+			this.set_vim(!this.vim_enabled);
+		},
 		set_fly_speed() {
 			this.$emit('viewport', (scope) => {
 				if (!scope.controls.movementSpeed) {
@@ -1215,6 +1222,10 @@ export default {
 				scope.open_protobuf();
 			});
 		},
+		...mapActions(useConfigStore, ['set_vim']),
+	},
+	computed: {
+		...mapState(useConfigStore, ['vim_enabled']),
 	},
 	mounted() {
 		const buttons = document.querySelectorAll('.menu-btn');
