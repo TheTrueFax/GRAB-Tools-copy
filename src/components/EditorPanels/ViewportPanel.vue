@@ -1203,24 +1203,34 @@ export default {
 			prop.objectID = objectID; // redundant??
 			prop[type] = {};
 
-			const x_comp = encoding.programmablePropertyDataComponent();
-			const y_comp = encoding.programmablePropertyDataComponent();
-			const z_comp = encoding.programmablePropertyDataComponent();
-			x_comp.inoutRegisterIndex = node.program.inoutRegisters.length;
-			y_comp.inoutRegisterIndex = x_comp.inoutRegisterIndex + 1;
-			z_comp.inoutRegisterIndex = y_comp.inoutRegisterIndex + 1;
-			prop.components = [x_comp, y_comp, z_comp];
+			if (type === 'active') {
+				const comp = encoding.programmablePropertyDataComponent();
+				comp.inoutRegisterIndex = node.program.inoutRegisters.length;
+				prop.components = [comp];
 
-			const x_reg = encoding.registerData();
-			const y_reg = encoding.registerData();
-			const z_reg = encoding.registerData();
+				const act_reg = encoding.registerData();
+				act_reg.name = `${connection.name}.Act`;
+				node.program.inoutRegisters.push(act_reg);
+			} else {
+				const x_comp = encoding.programmablePropertyDataComponent();
+				const y_comp = encoding.programmablePropertyDataComponent();
+				const z_comp = encoding.programmablePropertyDataComponent();
+				x_comp.inoutRegisterIndex = node.program.inoutRegisters.length;
+				y_comp.inoutRegisterIndex = x_comp.inoutRegisterIndex + 1;
+				z_comp.inoutRegisterIndex = x_comp.inoutRegisterIndex + 2;
+				prop.components = [x_comp, y_comp, z_comp];
 
-			const type_spec = type.charAt(0).toUpperCase() + type.slice(1, 3);
-			x_reg.name = `${connection.name}.${type_spec}.X`;
-			y_reg.name = `${connection.name}.${type_spec}.Y`;
-			z_reg.name = `${connection.name}.${type_spec}.Z`;
+				const x_reg = encoding.registerData();
+				const y_reg = encoding.registerData();
+				const z_reg = encoding.registerData();
+				const type_spec =
+					type.charAt(0).toUpperCase() + type.slice(1, 3);
+				x_reg.name = `${connection.name}.${type_spec}.X`;
+				y_reg.name = `${connection.name}.${type_spec}.Y`;
+				z_reg.name = `${connection.name}.${type_spec}.Z`;
 
-			node.program.inoutRegisters.push(...[x_reg, y_reg, z_reg]);
+				node.program.inoutRegisters.push(...[x_reg, y_reg, z_reg]);
+			}
 
 			connection.properties.push(prop);
 			if (!existing_connection) {
@@ -1561,6 +1571,17 @@ export default {
 										);
 									},
 								},
+								...(clicked_is_trigger && {
+									Active: {
+										func: () => {
+											this.add_code_connection(
+												selected_object,
+												clicked_object,
+												'active',
+											);
+										},
+									},
+								}),
 							},
 						}),
 					...(clicked_is_selected && {
