@@ -493,7 +493,8 @@ message OperandData {
     OpSpecialRegister = 3;
     OpConstant = 4;
     OpLabel = 5;
-    OpInOutRegister = 6;
+    OpJumpAddress = 6;
+    OpInOutRegister = 7;
   }
   Type type = 1;
   oneof content {
@@ -527,6 +528,7 @@ message InstructionData {
     InMod = 20;
     InSin = 21;
     InCos = 22;
+    InSqrt = 23;
   }
   Type type = 1;
   repeated OperandData operands = 2;
