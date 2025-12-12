@@ -12,6 +12,7 @@ import svg from '@/assets/tools/svg';
 import audio from '@/assets/tools/audio';
 import * as THREE from 'three';
 import { mapActions, mapState } from 'pinia';
+import gun from '@/assets/tools/gun';
 
 export default {
 	data() {
@@ -129,6 +130,9 @@ export default {
 						X: { func: this.mirror_x },
 						Y: { func: this.mirror_y },
 						Z: { func: this.mirror_z },
+					},
+					Programs: {
+						'Make Gun (unfinished)': { func: this.make_gun },
 					},
 				},
 				Select: {
@@ -959,6 +963,11 @@ export default {
 						});
 					},
 				);
+			});
+		},
+		make_gun() {
+			this.set_selectable_nodes((nodes) => {
+				gun.makeGun(nodes);
 			});
 		},
 		group_level() {

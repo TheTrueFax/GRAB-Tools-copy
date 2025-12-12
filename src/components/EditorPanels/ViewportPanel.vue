@@ -1153,90 +1153,22 @@ export default {
 				this.mini_editor_changed(this.$refs.mini_editor.json);
 			this.show_mini_editor = false;
 		},
-		get_new_connection_name(object, target) {
-			const names = object.levelNodeGASM.connections.map(
-				(conn) => conn.name,
-			);
-			let name =
-				target.levelNodeGroup?.name ?? target.levelNodeStart?.name;
-			if (name?.length) {
-				if (!names.includes(name)) {
-					return name;
-				}
-				let index = 0;
-				while (names.includes(`${name}${index}`)) {
-					index++;
-				}
-				name = `${name}${index}`;
-				return name;
-			}
-
-			let index = 0;
-			while (names.includes(`Obj${index}`)) {
-				index++;
-			}
-			name = `Obj${index}`;
-			return name;
-		},
 		add_code_connection(object, target, type) {
-			const node = object?.userData?.node?.levelNodeGASM;
-			if (!node) return;
-			(node.program ??= {}).inoutRegisters ??= [];
-			node.connections ??= [];
-
-			const objectID = target?.userData?.id ?? 0;
-			const existing_connection = node.connections.find(
-				(conn) => conn.objectID === objectID,
+			const object_node = object.userData.node;
+			const target_node = target.userData.node;
+			const name = encoding.get_new_connection_name(
+				object_node,
+				target_node,
+			);
+			const id = target?.userData?.id ?? 0;
+			const is_new = encoding.add_code_connection(
+				object_node,
+				type,
+				name,
+				id,
 			);
 
-			let connection = existing_connection;
-			if (!connection) {
-				connection = encoding.gasmConnection();
-				connection.objectID = objectID;
-				connection.name = this.get_new_connection_name(
-					object.userData.node,
-					target.userData.node,
-				);
-			}
-
-			const prop = encoding.programmablePropertyData();
-			prop.objectID = objectID; // redundant??
-			prop[type] = {};
-
-			if (type === 'active') {
-				const comp = encoding.programmablePropertyDataComponent();
-				comp.inoutRegisterIndex = node.program.inoutRegisters.length;
-				prop.components = [comp];
-
-				const act_reg = encoding.registerData();
-				act_reg.name = `${connection.name}.Act`;
-				node.program.inoutRegisters.push(act_reg);
-			} else {
-				const x_comp = encoding.programmablePropertyDataComponent();
-				const y_comp = encoding.programmablePropertyDataComponent();
-				const z_comp = encoding.programmablePropertyDataComponent();
-				x_comp.inoutRegisterIndex = node.program.inoutRegisters.length;
-				y_comp.inoutRegisterIndex = x_comp.inoutRegisterIndex + 1;
-				z_comp.inoutRegisterIndex = x_comp.inoutRegisterIndex + 2;
-				prop.components = [x_comp, y_comp, z_comp];
-
-				const x_reg = encoding.registerData();
-				const y_reg = encoding.registerData();
-				const z_reg = encoding.registerData();
-				const type_spec =
-					type.charAt(0).toUpperCase() + type.slice(1, 3);
-				x_reg.name = `${connection.name}.${type_spec}.X`;
-				y_reg.name = `${connection.name}.${type_spec}.Y`;
-				z_reg.name = `${connection.name}.${type_spec}.Z`;
-
-				node.program.inoutRegisters.push(...[x_reg, y_reg, z_reg]);
-			}
-
-			connection.properties.push(prop);
-			if (!existing_connection) {
-				node.connections.push(connection);
-				this.add_gasm_path(object, target);
-			}
+			if (is_new) this.add_gasm_path(object, target);
 
 			this.changed();
 		},
