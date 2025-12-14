@@ -42,6 +42,7 @@ function makeCar(nodes) {
 
 	// create code block
 	const code_node = encoding.levelNodeGASM();
+	code_node.levelNodeGASM.startActive = true;
 
 	encoding.add_code_connection(code_node, 'position', 'Str', group_id);
 	encoding.add_code_connection(code_node, 'rotation', 'Str', group_id);
