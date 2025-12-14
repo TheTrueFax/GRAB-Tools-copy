@@ -101,8 +101,10 @@ export default {
 				},
 			});
 
-			update_json_completions(this.json);
-			update_text_completions('');
+			if (this.json) {
+				update_json_completions(this.json);
+				update_text_completions('');
+			}
 		},
 	},
 };
