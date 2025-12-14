@@ -10,6 +10,8 @@ import { ComplexArray } from 'jsfft';
  * @returns {Promise<Object>} - A group level node
  */
 async function audio(file, samples) {
+	console.log(file);
+
 	const volume_samples = 2;
 	try {
 		const level_nodes = await generate(samples, volume_samples, file);

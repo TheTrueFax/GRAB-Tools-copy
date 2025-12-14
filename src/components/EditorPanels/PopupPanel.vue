@@ -18,6 +18,7 @@ export default {
 				return this.$refs[`input-${index}`][0].value;
 			});
 			this.visible = false;
+			console.log(...data);
 			this.func(...data);
 		},
 		click(e) {
