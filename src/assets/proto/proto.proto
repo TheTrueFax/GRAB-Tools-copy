@@ -529,6 +529,7 @@ message InstructionData {
     InSin = 21;
     InCos = 22;
     InSqrt = 23;
+    InAtan2 = 24;
   }
   Type type = 1;
   repeated OperandData operands = 2;
