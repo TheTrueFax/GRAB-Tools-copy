@@ -13,6 +13,7 @@ import audio from '@/assets/tools/audio';
 import * as THREE from 'three';
 import { mapActions, mapState } from 'pinia';
 import gun from '@/assets/tools/gun';
+import car from '@/assets/tools/car';
 
 export default {
 	data() {
@@ -133,6 +134,7 @@ export default {
 					},
 					Programs: {
 						'Make Gun (unfinished)': { func: this.make_gun },
+						'Make Car (unfinished)': { func: this.make_car },
 					},
 				},
 				Select: {
@@ -968,6 +970,11 @@ export default {
 		make_gun() {
 			this.set_selectable_nodes((nodes) => {
 				gun.makeGun(nodes);
+			});
+		},
+		make_car() {
+			this.set_selectable_nodes((nodes) => {
+				car.makeCar(nodes);
 			});
 		},
 		group_level() {
