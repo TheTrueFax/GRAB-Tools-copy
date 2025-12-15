@@ -66,7 +66,7 @@ export default {
 				I use cookies for analytics and error tracking. You can accept
 				or reject non-essential cookies.
 			</p>
-			<IdnexCookieIcon title="Art by B34.TR1X" />
+			<IdnexCookieIcon alt="Cookie idnex" title="Art by B34.TR1X" />
 		</div>
 		<div class="buttons">
 			<button class="reject" @click="reject">No thanks, starve</button>

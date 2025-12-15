@@ -31,7 +31,11 @@ export default {
 							>
 						</div>
 					</div>
-					<img src="/images/games/grab.png" alt="" />
+					<img
+						src="/images/games/grab.png"
+						alt="The GRAB logo"
+						title="GRAB"
+					/>
 				</div>
 			</div>
 			<div class="game">
@@ -52,7 +56,11 @@ export default {
 							>
 						</div>
 					</div>
-					<img src="/images/games/grab_2d.png" alt="" />
+					<img
+						src="/images/games/grab_2d.png"
+						alt="The GRAB 2D logo"
+						title="GRAB 2D"
+					/>
 				</div>
 			</div>
 			<div class="game">
@@ -73,7 +81,11 @@ export default {
 							>
 						</div>
 					</div>
-					<img src="/images/games/grab_guessr.png" alt="" />
+					<img
+						src="/images/games/grab_guessr.png"
+						alt="The GrabGuessr logo"
+						title="GrabGuessr"
+					/>
 				</div>
 			</div>
 		</section>

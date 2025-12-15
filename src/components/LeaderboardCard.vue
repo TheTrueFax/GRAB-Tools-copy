@@ -43,8 +43,17 @@ export default {
 
 <template>
 	<div class="leaderboard-item leaderboard-item-card">
-		<PreviewImagePlaceholderIcon v-if="image_error" />
-		<img v-else :src="image_url" @error="error" />
+		<PreviewImagePlaceholderIcon
+			v-if="image_error"
+			alt="Template thumbnail"
+			title="Thumbnail failed to load"
+		/>
+		<img
+			v-else
+			:src="image_url"
+			@error="error"
+			:alt="data.title + '\'s thumbnail'"
+		/>
 		<div class="leaderboard-item-info">
 			<a :href="level_url" target="_blank">{{ data.title }}</a
 			><br /><span>by </span

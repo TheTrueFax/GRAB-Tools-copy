@@ -119,7 +119,8 @@ export default {
 			</div>
 			<img
 				src="/images/thumbnails/json-editor.jpeg"
-				alt="The JSON Editor"
+				alt="An example of the JSON Editor being used"
+				title="The JSON Editor"
 			/>
 		</section>
 		<section id="state">
