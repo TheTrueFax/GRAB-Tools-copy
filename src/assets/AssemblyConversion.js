@@ -167,11 +167,20 @@ function preprocess_scopes(lines, context = {}) {
 			i = end;
 		} else if (directive === '#IF') {
 			const lhs = resolve(parts[1], context);
-			const rhs = resolve(parts[2], context);
+			const op = parts[2];
+			const rhs = resolve(parts[3], context);
 
 			const end = find_end(lines, i);
 
-			if (lhs === rhs) {
+			const cond =
+				(op === '==' && lhs == rhs) ||
+				(op === '>' && lhs > rhs) ||
+				(op === '>=' && lhs >= rhs) ||
+				(op === '<' && lhs < rhs) ||
+				(op === '<=' && lhs <= rhs) ||
+				(op === '!=' && lhs != rhs);
+
+			if (cond) {
 				const block = lines.slice(i + 1, end);
 				const block_output = preprocess_scopes(block, context);
 				output.push(...block_output);
