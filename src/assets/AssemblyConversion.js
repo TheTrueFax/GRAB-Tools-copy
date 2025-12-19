@@ -108,13 +108,13 @@ function preprocess_scopes(lines, context = {}) {
 		const parts = val.split(/[+-/*%]/);
 		if (val.includes('+'))
 			val = resolve(parts[0], context) + resolve(parts[1], context);
-		if (val.includes('-') && val.charAt(0) !== '-')
+		else if (val.includes('-') && val.charAt(0) !== '-')
 			val = resolve(parts[0], context) - resolve(parts[1], context);
-		if (val.includes('*'))
+		else if (val.includes('*'))
 			val = resolve(parts[0], context) * resolve(parts[1], context);
-		if (val.includes('/'))
+		else if (val.includes('/'))
 			val = resolve(parts[0], context) / resolve(parts[1], context);
-		if (val.includes('%'))
+		else if (val.includes('%'))
 			val = resolve(parts[0], context) % resolve(parts[1], context);
 		if (!isNaN(Number(val))) return Number(val);
 		return ctx[val] ?? val;
