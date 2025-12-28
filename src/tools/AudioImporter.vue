@@ -18,7 +18,10 @@ export default {
 			const samples =
 				parseInt(getByID(`${toolID}-pitch-samples`).value) || 40;
 
-			const node = await audio.audio(file, samples);
+			const sampleRateMs =
+				parseInt(getByID(`${toolID}-sample-rate`).value) || 10;
+
+			const node = await audio.audio(file, samples, sampleRateMs);
 			if (!node) return;
 
 			const obj = encoding.createLevel(
@@ -45,7 +48,12 @@ export default {
 			<input
 				type="number"
 				id="audio-tool-pitch-samples"
-				placeholder="samples (40)"
+				placeholder="Pitch Samples (40)"
+			/>
+			<input
+				type="number"
+				id="audio-tool-sample-rate"
+				placeholder="Sample rate (ms) (10)"
 			/>
 			<input type="file" id="audio-tool-file" accept="audio/*" />
 			<button class="button" id="audio-tool-btn" @click="run">
