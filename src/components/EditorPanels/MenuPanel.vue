@@ -96,7 +96,12 @@ export default {
 						},
 						Text: { func: this.insert_text },
 						SVG: { func: this.insert_svg },
+<<<<<<< HEAD
 						'Audio (SFX2GL)': { func: this.insert_audio },
+=======
+						// took a while to find this but i got it eventually
+						'Audio (SFX2GL	)': { func: this.insert_audio },
+>>>>>>> 3a8ee9a52259f27b91bca5e86ad08a48e257dee4
 					},
 				},
 				Edit: {
@@ -547,6 +552,36 @@ export default {
 
 					const node = await audio.audio(file, samples);
 					if (!node) return;
+
+					this.insert_selection_nodes([node]);
+				},
+			);
+		},
+		insert_audio() {
+			this.$emit(
+				'popup',
+				[ // If I even put a fraction of the original settings I reckon its too intimidating for normal people
+					{
+						type: 'number',
+						text: 'Pitch samples (40)',
+					},
+					{
+						type: 'file',
+						accept: 'audio/*',
+					},
+				],
+				async (samples, files) => {
+					if (!files.length) {
+						window.toast('No audio file chosen', 'error');
+						return;
+					}
+
+					const file = files[0];
+
+					const node = await audio.audio(
+						file,
+						samples
+					);
 
 					this.insert_selection_nodes([node]);
 				},
