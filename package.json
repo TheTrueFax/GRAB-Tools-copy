@@ -21,6 +21,7 @@
 		"@codemirror/lint": "^6.9.4",
 		"@replit/codemirror-vim": "^6.3.0",
 		"@sentry/vue": "^10.27.0",
+		"@tonejs/midi": "^2.0.28",
 		"codemirror": "^6.0.2",
 		"jsfft": "^0.0.4",
 		"pako": "^2.1.0",
