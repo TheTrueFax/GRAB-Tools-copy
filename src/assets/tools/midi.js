@@ -357,7 +357,7 @@ async function generate(file, node_count, start_active, loop, volume) {
 				current_trigger_animation.frames.push(frame);
 
 				let next_frame = animationFrame();
-				next_frame.time = notes[x].start + notes[x].duration + 0.05;
+				next_frame.time = notes[x].start + (notes[x].duration*2) + 0.05;
 				next_frame.position.x = 0;
 				current_trigger_animation.frames.push(next_frame);
 			}
@@ -369,7 +369,7 @@ async function generate(file, node_count, start_active, loop, volume) {
 
 		let wall_block = levelNodeWithStatic();
 		wall_block.levelNodeStatic.position = {
-			x: 0.55,
+			x: 1,
 			y: t,
 			z: (unique_pitches.length - 1) / 2,
 		};
