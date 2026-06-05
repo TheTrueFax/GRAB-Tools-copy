@@ -173,10 +173,13 @@ function parse_unparsed_tracks(tracks) {
 			: 1;
 
 		Object.keys(average_note_volumes).forEach((midi) => {
-			average_note_volumes[midi] = (average_note_volumes[midi] / average_note_volumes_count[midi]) * track_volume;
+			average_note_volumes[midi] =
+				(average_note_volumes[midi] /
+					average_note_volumes_count[midi]) *
+				track_volume;
 		});
 
-		console.log(average_note_volumes)
+		console.log(average_note_volumes);
 
 		new_tracks.push({
 			channel: track.channel,
@@ -336,7 +339,8 @@ function refactor_as_optimised(tracks) {
 			}
 		});
 		Object.keys(average_note_volumes).forEach((key) => {
-			average_note_volumes[key] = average_note_volumes[key] / average_note_volumes_count[key];
+			average_note_volumes[key] =
+				average_note_volumes[key] / average_note_volumes_count[key];
 		});
 		new_tracks.push({
 			channel: 0,
@@ -363,7 +367,8 @@ function refactor_as_optimised(tracks) {
 				}
 			});
 			Object.keys(average_note_volumes).forEach((key) => {
-				average_note_volumes[key] = average_note_volumes[key] / average_note_volumes_count[key];
+				average_note_volumes[key] =
+					average_note_volumes[key] / average_note_volumes_count[key];
 			});
 			new_tracks.push({
 				channel: 9,
@@ -424,7 +429,7 @@ async function generate(
 					tracks[t].note_volumes[String(hz)] * volume,
 					tracks[t].isDrums,
 				),
-			)
+			);
 		});
 
 		// Create triggers linked to each sound block
