@@ -15,8 +15,11 @@ export default {
 				if (input.type === 'file') {
 					return Array.from(this.$refs[`input-${index}`][0].files);
 				}
-				if (this.$refs[`input-${index}`][0].tagName === 'LABEL') { // Checkboxes are wrapped in a label
-					return this.$refs[`input-${index}`][0].querySelector("input[type='checkbox']").checked;
+				if (this.$refs[`input-${index}`][0].tagName === 'LABEL') {
+					// Checkboxes are wrapped in a label
+					return this.$refs[`input-${index}`][0].querySelector(
+						"input[type='checkbox']",
+					).checked;
 				}
 				return this.$refs[`input-${index}`][0].value;
 			});
@@ -99,10 +102,7 @@ export default {
 			/>
 			<label v-else-if="input.type === 'checkbox'" :ref="`input-${i}`">
 				{{ input.text }}
-				<input 
-					type="checkbox"
-					:checked="input.default"
-				>
+				<input type="checkbox" :checked="input.default" />
 			</label>
 			<input
 				v-else

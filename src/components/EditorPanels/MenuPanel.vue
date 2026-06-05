@@ -622,7 +622,7 @@ export default {
 						window.toast('No midi file chosen', 'error');
 						return;
 					}
-					
+
 					volume = (parseInt(volume) || 30) / 100;
 
 					const file = files[0];

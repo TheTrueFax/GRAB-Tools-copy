@@ -157,7 +157,9 @@ function parse_unparsed_tracks(tracks) {
 		average_velocity /= track.notes.length;
 
 		// Sometimes tracks can have a volume control on controlChanges[7]
-		const track_volume = (track.controlChanges[7]) ? track.controlChanges[7][0].value : 1;
+		const track_volume = track.controlChanges[7]
+			? track.controlChanges[7][0].value
+			: 1;
 
 		new_tracks.push({
 			channel: track.channel,
@@ -260,9 +262,12 @@ function split_overlapping_notes(track) {
 		while (i < new_tracks[splitted_index].length) {
 			let track = new_tracks[splitted_index];
 			origin.push(track[i]);
-			let scan_index = i+1;
+			let scan_index = i + 1;
 			//console.log(track[scan_index].start, (track[i].start + track[i].end));
-			while (scan_index < track.length - 1 && track[scan_index].start < (track[i].start + track[i].duration)) {
+			while (
+				scan_index < track.length - 1 &&
+				track[scan_index].start < track[i].start + track[i].duration
+			) {
 				if (track[scan_index].midi == track[i].midi) {
 					splitted.push(track[scan_index]);
 				} else {
@@ -270,7 +275,7 @@ function split_overlapping_notes(track) {
 				}
 				scan_index++;
 			}
-			i=scan_index;
+			i = scan_index;
 		}
 		if (splitted.length == 0) {
 			break;
@@ -283,8 +288,8 @@ function split_overlapping_notes(track) {
 }
 
 function refactor_as_optimised(tracks) {
-	const track_name_instrument = "Combined-";
-	const track_name_drums = "Combined-drums-";
+	const track_name_instrument = 'Combined-';
+	const track_name_drums = 'Combined-drums-';
 
 	let tracks_inst = [[]];
 	let tracks_drum = [[]];
@@ -331,7 +336,14 @@ function refactor_as_optimised(tracks) {
 	return new_tracks;
 }
 
-async function generate(file, node_count, start_active, loop, optimize, volume) {
+async function generate(
+	file,
+	node_count,
+	start_active,
+	loop,
+	optimize,
+	volume,
+) {
 	// Decode midi file into JSON
 	const m = await decode_midi_file_as_json(file);
 
@@ -340,7 +352,9 @@ async function generate(file, node_count, start_active, loop, optimize, volume) 
 
 	// Turn the units inside the note into useable units by GRAB
 	// Eg: turn the midi pitch value into hz
-	const tracks = (optimize) ? refactor_as_optimised(parse_unparsed_tracks(unparsed_tracks)) : parse_unparsed_tracks(unparsed_tracks);
+	const tracks = optimize
+		? refactor_as_optimised(parse_unparsed_tracks(unparsed_tracks))
+		: parse_unparsed_tracks(unparsed_tracks);
 	console.log(tracks, unparsed_tracks);
 
 	// Get duration of song in seconds

@@ -23,19 +23,18 @@ export default {
 			}
 
 			const file = files[0];
-			const start_active =
-				getByID(`${toolID}-start-active`).checked;
+			const start_active = getByID(`${toolID}-start-active`).checked;
 			const loop = getByID(`${toolID}-loop`).checked;
 			const optimize = getByID(`${toolID}-optimize`).checked;
 			const volume = parseInt(getByID(`${toolID}-volume`).value) || 40;
 
 			const node = await midi.midi(
-				file, 
-				0, 
-				start_active, 
-				loop, 
-				optimize, 
-				volume
+				file,
+				0,
+				start_active,
+				loop,
+				optimize,
+				volume,
 			);
 			if (!node) return;
 
@@ -62,31 +61,22 @@ export default {
 			Generate songs with triggers and sound blocks.
 		</template>
 		<input type="file" id="midi-tool-file" accept=".mid,.midi" />
-        <label>
-            Start active: <input
-                type="checkbox"
-                id="midi-tool-start-active"
-				checked="true"
-            />
-        </label>
-        <label>
-            Loop: <input
-                type="checkbox"
-                id="midi-tool-loop"
-				checked="true"
-            />
-        </label>
-        <label>
-            Optimize complexity: <input
-                type="checkbox"
-                id="midi-tool-optimize"
-            />
-        </label>
+		<label>
+			Start active:
+			<input type="checkbox" id="midi-tool-start-active" checked="true" />
+		</label>
+		<label>
+			Loop: <input type="checkbox" id="midi-tool-loop" checked="true" />
+		</label>
+		<label>
+			Optimize complexity:
+			<input type="checkbox" id="midi-tool-optimize" />
+		</label>
 		<input
 			type="number"
 			id="midi-tool-volume"
-            min="0"
-            max="100"
+			min="0"
+			max="100"
 			placeholder="Volume (0-100, default 30)"
 		/>
 		<button class="button" id="midi-tool-btn" @click="run">Generate</button>
