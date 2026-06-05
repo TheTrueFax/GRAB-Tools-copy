@@ -27,6 +27,7 @@ import { groupNodes } from '../encoding/group';
  */
 async function midi(file, node_count, start_active, loop, volume) {
 	if (start_active && !loop) {
+		// Can't make a non-looping start active animation in grab.
 		window.toast(
 			'Cannot make an animation start active and not looping.',
 			'error',
@@ -124,8 +125,8 @@ async function decode_midi_file_as_json(file) {
 function midi_to_hz(m) {
 	return 440 * Math.pow(2, (m - 69) / 12);
 }
-function get_useable_tracks(m) {
-	var tracks = [];
+function get_usable_tracks(m) {
+	let tracks = [];
 	m.tracks.forEach((track) => {
 		if (track.notes.length == 0) {
 			// No notes, no track
@@ -136,11 +137,11 @@ function get_useable_tracks(m) {
 	return tracks;
 }
 function parse_unparsed_tracks(tracks) {
-	var new_tracks = [];
+	let new_tracks = [];
 	tracks.forEach((track) => {
-		var notes = [];
+		let notes = [];
 
-		var average_velocity = 0;
+		let average_velocity = 0;
 
 		track.notes.forEach((note) => {
 			notes.push({
@@ -153,10 +154,7 @@ function parse_unparsed_tracks(tracks) {
 		});
 		average_velocity /= track.notes.length;
 
-		var track_volume = 1;
-		if (track.controlChanges[7]) {
-			track_volume = track.controlChanges[7][0].value;
-		}
+		const track_volume = (track.controlChanges[7]) ? track.controlChanges[7][0].value : 1;
 
 		new_tracks.push({
 			channel: track.channel,
@@ -170,7 +168,7 @@ function parse_unparsed_tracks(tracks) {
 	return new_tracks;
 }
 function get_unique_pitches(track) {
-	var unique_pitches = [];
+	let unique_pitches = [];
 	track.notes.forEach((note) => {
 		if (!unique_pitches.includes(note.frequency_hertz)) {
 			unique_pitches.push(note.frequency_hertz);
@@ -179,7 +177,7 @@ function get_unique_pitches(track) {
 	return unique_pitches;
 }
 function get_unique_pitches_tracks(tracks) {
-	var unique_pitches = [];
+	let unique_pitches = [];
 	tracks.forEach((track) => {
 		track.notes.forEach((note) => {
 			if (!unique_pitches.includes(note.frequency_hertz)) {
@@ -190,7 +188,7 @@ function get_unique_pitches_tracks(tracks) {
 	return unique_pitches;
 }
 function get_notes_by_pitch(track) {
-	var notes_by_pitch = {};
+	let notes_by_pitch = {};
 	track.notes.forEach((note) => {
 		let frequency_string = note.frequency_hertz.toString();
 		if (notes_by_pitch[frequency_string]) {
@@ -202,7 +200,7 @@ function get_notes_by_pitch(track) {
 	return notes_by_pitch;
 }
 function get_duration(tracks) {
-	var longest = 0;
+	let longest = 0;
 	tracks.forEach((track) => {
 		track.notes.forEach((note) => {
 			if (note.start + note.duration > longest) {
@@ -220,7 +218,7 @@ function make_connected_trigger(
 	target_mode,
 	do_loop,
 ) {
-	var trigger = levelNodeWithTrigger();
+	const trigger = levelNodeWithTrigger();
 	trigger.levelNodeTrigger.position = position;
 	trigger.levelNodeTrigger.scale = { x: 1, y: 1, z: 1 };
 
@@ -242,7 +240,7 @@ function make_connected_trigger(
 
 // This function isn't used yet, It has the capability to save complexity more than any other method, ill get it working later
 function combine_notes(tracks) {
-	var notes_by_time = [];
+	let notes_by_time = [];
 	tracks.forEach((track) => {
 		if (track.isDrums) return;
 		track.notes.forEach((note) => {
@@ -256,7 +254,7 @@ function combine_notes(tracks) {
 	});
 	notes_by_time = notes_by_time.toSorted((a, b) => a.start - b.start);
 	console.log(notes_by_time);
-	var pitches_left_to_merge = get_unique_pitches_tracks(tracks);
+	const pitches_left_to_merge = get_unique_pitches_tracks(tracks);
 	console.log(pitches_left_to_merge.length);
 	for (let i = 0; i < notes_by_time.length - 1; i++) {
 		let searchIndex = i + 1;
@@ -276,10 +274,10 @@ function combine_notes(tracks) {
 		}
 	}
 	console.log(pitches_left_to_merge);
-	var merged_track_notes = [];
+	let merged_track_notes = [];
 	tracks.forEach((track) => {
 		if (track.isDrums) return;
-		var new_notes = [];
+		let new_notes = [];
 		track.notes.forEach((note) => {
 			if (pitches_left_to_merge.includes(note.frequency_hertz)) {
 				merged_track_notes.push(note);
@@ -294,7 +292,7 @@ function combine_notes(tracks) {
 		instrument: 0,
 		isDrums: false,
 		name: 'Merged track',
-		volume: 0.7, // idk?
+		volume: 0.7, // TODO: Replace this magic number with a calculated average note volume
 		notes: merged_track_notes,
 	});
 	return tracks;
@@ -305,7 +303,8 @@ async function generate(file, node_count, start_active, loop, volume) {
 	const m = await decode_midi_file_as_json(file);
 
 	// Get the available tracks that can be parsed
-	const unparsed_tracks = get_useable_tracks(m);
+	const unparsed_tracks = get_usable_tracks
+(m);
 
 	// Turn the units inside the note into useable units by GRAB
 	// Eg: turn the midi pitch value into hz
@@ -315,9 +314,9 @@ async function generate(file, node_count, start_active, loop, volume) {
 	// Get duration of song in seconds
 	const duration = get_duration(tracks);
 
-	var sound_blocks = [];
-	var triggers = [];
-	var wall_blocks = [];
+	let sound_blocks = [];
+	let triggers = [];
+	let wall_blocks = [];
 
 	for (let t = 0; t < tracks.length; t++) {
 		// Get unique pitches to create sound blocks and triggers from
@@ -396,7 +395,7 @@ async function generate(file, node_count, start_active, loop, volume) {
 		wall_blocks.push(wall_block);
 	}
 
-	var trigger_stop = make_connected_trigger(
+	const trigger_stop = make_connected_trigger(
 		{ x: 0, y: 0, z: -3 },
 		sound_blocks.length,
 		triggers.length,
@@ -404,7 +403,7 @@ async function generate(file, node_count, start_active, loop, volume) {
 		TriggerTargetAnimationMode.STOP,
 		loop,
 	);
-	var trigger_start = make_connected_trigger(
+	const trigger_start = make_connected_trigger(
 		{ x: 0, y: 1, z: -3 },
 		sound_blocks.length,
 		triggers.length,
@@ -412,7 +411,7 @@ async function generate(file, node_count, start_active, loop, volume) {
 		TriggerTargetAnimationMode.START,
 		loop,
 	);
-	var trigger_restart = make_connected_trigger(
+	const trigger_restart = make_connected_trigger(
 		{ x: 0, y: 2, z: -3 },
 		sound_blocks.length,
 		triggers.length,
