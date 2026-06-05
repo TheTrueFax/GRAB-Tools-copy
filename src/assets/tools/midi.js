@@ -144,6 +144,8 @@ function parse_unparsed_tracks(tracks) {
 		let notes = [];
 
 		let average_velocity = 0;
+		let average_note_volumes = {};
+		let average_note_volumes_count = {};
 
 		track.notes.forEach((note) => {
 			notes.push({
@@ -151,8 +153,17 @@ function parse_unparsed_tracks(tracks) {
 				duration: note.duration,
 				frequency_hertz: midi_to_hz(note.midi),
 				midi: note.midi,
+				velocity: note.velocity,
 			});
 			average_velocity += note.velocity;
+			let hz = String(midi_to_hz(note.midi));
+			if (average_note_volumes[hz]) {
+				average_note_volumes[hz] += note.velocity;
+				average_note_volumes_count[hz]++;
+			} else {
+				average_note_volumes[hz] = note.velocity;
+				average_note_volumes_count[hz] = 1;
+			}
 		});
 		average_velocity /= track.notes.length;
 
@@ -161,9 +172,16 @@ function parse_unparsed_tracks(tracks) {
 			? track.controlChanges[7][0].value
 			: 1;
 
+		Object.keys(average_note_volumes).forEach((midi) => {
+			average_note_volumes[midi] = (average_note_volumes[midi] / average_note_volumes_count[midi]) * track_volume;
+		});
+
+		console.log(average_note_volumes)
+
 		new_tracks.push({
 			channel: track.channel,
 			volume: track_volume * average_velocity,
+			note_volumes: average_note_volumes,
 			instrument: track.instrument.number,
 			name: track.name,
 			notes: notes,
@@ -305,9 +323,25 @@ function refactor_as_optimised(tracks) {
 	let new_tracks = [];
 
 	tracks_inst.forEach((track, index) => {
+		let average_note_volumes = {};
+		let average_note_volumes_count = {};
+		track.forEach((note) => {
+			let hz = String(note.frequency_hertz);
+			if (average_note_volumes[hz]) {
+				average_note_volumes[hz] += note.velocity;
+				average_note_volumes_count[hz]++;
+			} else {
+				average_note_volumes[hz] = note.velocity;
+				average_note_volumes_count[hz] = 1;
+			}
+		});
+		Object.keys(average_note_volumes).forEach((key) => {
+			average_note_volumes[key] = average_note_volumes[key] / average_note_volumes_count[key];
+		});
 		new_tracks.push({
 			channel: 0,
 			volume: 1,
+			note_volumes: average_note_volumes,
 			instrument: 0,
 			name: track_name_instrument + index.toString(),
 			notes: track,
@@ -316,9 +350,25 @@ function refactor_as_optimised(tracks) {
 	});
 	if (tracks_drum[0].length > 0) {
 		tracks_drum.forEach((track, index) => {
+			let average_note_volumes = {};
+			let average_note_volumes_count = {};
+			track.forEach((note) => {
+				let hz = String(note.frequency_hertz);
+				if (average_note_volumes[hz]) {
+					average_note_volumes[hz] += note.velocity;
+					average_note_volumes_count[hz]++;
+				} else {
+					average_note_volumes[hz] = note.velocity;
+					average_note_volumes_count[hz] = 1;
+				}
+			});
+			Object.keys(average_note_volumes).forEach((key) => {
+				average_note_volumes[key] = average_note_volumes[key] / average_note_volumes_count[key];
+			});
 			new_tracks.push({
 				channel: 9,
 				volume: 1,
+				note_volumes: average_note_volumes,
 				instrument: 0,
 				name: track_name_drums + index.toString(),
 				notes: track,
@@ -366,16 +416,16 @@ async function generate(
 		let current_triggers = triggers.length;
 
 		// Make each sound block for each pitch
-		unique_pitches.forEach((hz) =>
+		unique_pitches.forEach((hz) => {
 			sound_blocks.push(
 				get_basic_sound_block(
 					{ x: 0, y: t, z: -1 },
 					hz * (tracks[t].isDrums ? 2.5 : 1), // Frequency is doubled for drum tracks (style choice, makes drums sound better)
-					tracks[t].volume * volume,
+					tracks[t].note_volumes[String(hz)] * volume,
 					tracks[t].isDrums,
 				),
-			),
-		);
+			)
+		});
 
 		// Create triggers linked to each sound block
 		for (let i = 0; i < unique_pitches.length; i++) {
