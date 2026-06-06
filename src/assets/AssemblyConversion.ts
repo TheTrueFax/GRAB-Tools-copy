@@ -602,6 +602,7 @@ function operand_asm_to_json(
 	const inoutRegisters = program.inoutRegisters.map((r) => r.name);
 	const inRegisters = program.inputRegisters.map((r) => r.name);
 	const outRegisters = program.outputRegisters.map((r) => r.name);
+	const workingRegisters = program.workingRegisters.map((r) => r.name);
 
 	const is_label =
 		(instruction === instruction_map.InLabel ||
@@ -642,6 +643,12 @@ function operand_asm_to_json(
 		return {
 			type: operand_map.OpOutputRegister,
 			index: outRegisters.indexOf(operand),
+		};
+	}
+	if (workingRegisters.includes(operand)) {
+		return {
+			type: operand_map.OpWorkingRegister,
+			index: workingRegisters.indexOf(operand),
 		};
 	}
 	if (/^R\d+$/.test(operand)) {
