@@ -60,19 +60,17 @@ function get_basic_sound_block(position, pitch, amplitude, isNoise) {
 	node.levelNodeSound.maxRangeFactor = 1000;
 	node.levelNodeSound.parameters = {
 		...node.levelNodeSound.parameters,
-		...{
-			waveType: isNoise
-				? SoundGeneratorParametersWaveType.Noise
-				: SoundGeneratorParametersWaveType.Sine,
-			envelopeAttack: 0,
-			envelopeSustain: 0,
-			envelopeRelease: isNoise ? 0.3 : 5,
-			envelopePunch: isNoise ? 100 : 0,
-			frequencyBase: pitch,
-			frequencyLimit: 35,
-			pitchJumpMod: 0.10000000149011612,
-			lowPassFilterFrequency: 10000,
-		},
+		waveType: isNoise
+			? SoundGeneratorParametersWaveType.Noise
+			: SoundGeneratorParametersWaveType.Sine,
+		envelopeAttack: 0,
+		envelopeSustain: 0,
+		envelopeRelease: isNoise ? 0.3 : 5,
+		envelopePunch: isNoise ? 100 : 0,
+		frequencyBase: pitch,
+		frequencyLimit: 35,
+		pitchJumpMod: 0.10000000149011612,
+		lowPassFilterFrequency: 10000,
 	};
 	return node;
 }
