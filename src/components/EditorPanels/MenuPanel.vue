@@ -24,6 +24,7 @@ import car from '@/assets/tools/car';
 import gun from '@/assets/tools/gun';
 import image from '@/assets/tools/image';
 import midi from '@/assets/tools/midi';
+import model from '@/assets/tools/model';
 import monochrome from '@/assets/tools/monochrome';
 import obj from '@/assets/tools/obj';
 import signs from '@/assets/tools/signs';
@@ -143,6 +144,7 @@ export default {
 						Text: { func: this.insert_text },
 						SVG: { func: this.insert_svg },
 						MIDI: { func: this.insert_midi },
+						Obj: { func: this.insert_obj },
 						// 'Audio (SFX2GL)': { func: this.insert_audio },
 					},
 				},
@@ -588,6 +590,30 @@ export default {
 			const file = files[0];
 			const json = json_parse(await file.text());
 			this.insert_selection_nodes(json?.levelNodes ?? json);
+		},
+		insert_obj() {
+			this.$emit(
+				'popup',
+				[
+					{
+						type: 'file',
+						accept: '.obj',
+					},
+				],
+				async (files) => {
+					if (!files.length) {
+						window.toast('No OBJ file chosen', 'error');
+						return;
+					}
+
+					const file = files[0];
+
+					const node = await model.model(file);
+					if (!node) return;
+
+					this.insert_selection_nodes([node]);
+				},
+			);
 		},
 		insert_midi() {
 			this.$emit(

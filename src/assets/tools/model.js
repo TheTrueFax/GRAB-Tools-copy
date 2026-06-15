@@ -16,7 +16,7 @@ async function model(file) {
 }
 
 async function generate(file) {
-	const arrayBuffer = file.arrayBuffer();
+	const arrayBuffer = await file.arrayBuffer();
 	const decoder = new TextDecoder('utf-8');
 
 	const loader = new OBJLoader();
