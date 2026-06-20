@@ -1,4 +1,6 @@
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import * as THREE from 'three';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
 /**
  * @param {File} file - A OBJ file
@@ -36,6 +38,33 @@ function mesh_to_triangles(mesh) {
     return triangles;
 }
 
+function dot(a, b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
+function sub(a, b) { return { x:a.x-b.x, y:a.y-b.y, z:a.z-b.z }; }
+
+// Inigo Quilez's Triangle Distance
+function udTriangle(p, a, b, c) {
+    var ba = sub(b, a), pa = sub(p, a);
+    var cb = sub(c, b), pb = sub(p, b);
+    var ac = sub(a, c), pc = sub(p, c);
+    
+    var d = Math.sqrt(
+        Math.max(dot(sub(pa, ba.map(t => t * Math.max(0, Math.min(1, dot(pa, ba)/dot(ba, ba))))), pa)),
+        dot(sub(pb, cb.map(t => t * Math.max(0, Math.min(1, dot(pb, cb)/dot(cb, cb))))), pb),
+        dot(sub(pc, ac.map(t => t * Math.max(0, Math.min(1, dot(pc, ac)/dot(ac, ac))))), pc)
+    );
+    
+    var nor = { 
+        x: ba.y * ac.z - ba.z * ac.y, 
+        y: ba.z * ac.x - ba.x * ac.z, 
+        z: ba.x * ac.y - ba.y * ac.x 
+    };
+    var inside = (dot(nor, pa) < 0.0) &&
+                 (dot(nor, pb) < 0.0) &&
+                 (dot(nor, pc) < 0.0);
+                 
+    return inside ? -d : d;
+}
+
 async function generate(file) {
 	const arrayBuffer = await file.arrayBuffer();
 	const decoder = new TextDecoder('utf-8');
@@ -56,7 +85,7 @@ async function generate(file) {
     if (triangles == null) {
         return null;
     }
-    
+
 	console.log(triangles);
 }
 
