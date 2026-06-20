@@ -29,6 +29,7 @@
 		"pinia-plugin-persistedstate": "^3.1.0",
 		"protobufjs": "^7.2.5",
 		"three": "^0.159.0",
+		"three-mesh-bvh": "^0.9.10",
 		"vue": "^3.4.30",
 		"vue-router": "^4.1.6"
 	},
