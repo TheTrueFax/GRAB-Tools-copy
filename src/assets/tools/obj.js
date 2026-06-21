@@ -231,10 +231,14 @@ async function parse_obj_nodes(obj_file, mtl_colors) {
 	object.traverse((child) => {
 		if (!child.isMesh) return;
 
-		const color1 = get_material_color(child.material, mtl_colors);
 		const posAttr = child.geometry.toNonIndexed().attributes.position;
+		const groups = child.geometry.groups || [{ start: 0, count: posAttr.count, materialIndex: 0 }];
 
-		for (let i = 0; i < posAttr.count; i += 3) {
+		for (const group of groups) {
+			const material = Array.isArray(child.material) ? child.material[group.materialIndex] : child.material;
+			const color1 = get_material_color(material, mtl_colors);
+
+			for (let i = group.start; i < group.start + group.count; i += 3) {
 			const A = new THREE.Vector3().fromBufferAttribute(posAttr, i);
 			const B = new THREE.Vector3().fromBufferAttribute(posAttr, i + 1);
 			const C = new THREE.Vector3().fromBufferAttribute(posAttr, i + 2);
@@ -273,6 +277,7 @@ async function parse_obj_nodes(obj_file, mtl_colors) {
 				);
 				if (node) nodes.push({ ...node, color1 });
 			});
+		}
 		}
 	});
 
