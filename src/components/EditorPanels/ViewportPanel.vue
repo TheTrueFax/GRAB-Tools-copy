@@ -36,8 +36,9 @@ import TranslateIcon from '@/icons/TranslateIcon.vue';
 import { useConfigStore } from '@/stores/config';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
 	data() {
 		return {
 			zoom_to_cursor: true,
@@ -65,6 +66,7 @@ export default {
 			show_key_hints: true,
 			show_shadows: false,
 			group_depth: 0,
+			active_tool: null,
 			hold: {
 				timeout: undefined,
 				x: 0,
@@ -292,6 +294,8 @@ export default {
 		},
 		select_event(e) {
 			if (this.free_movement) return;
+			if (this.active_tool?.on_click?.(e)) return;
+
 			const intersect = this.cast_for_node(e.clientX, e.clientY);
 			if (intersect) {
 				if (!this.gizmo.includes(intersect)) {
@@ -506,6 +510,8 @@ export default {
 			}
 		},
 		mousedown(e) {
+			if (this.active_tool?.on_mouse_down?.(e)) return;
+
 			if (
 				e.target !== this.$refs.contextmenu &&
 				!this.$refs.contextmenu?.$el?.contains(e.target)
@@ -517,7 +523,9 @@ export default {
 				this.show_keybinds = false;
 			}
 		},
-		mouseup(_) {
+		mouseup(e) {
+			if (this.active_tool?.on_mouse_up?.(e)) return;
+
 			this.controls.isMouseActive = false;
 		},
 		set_transform_mode(mode) {
@@ -1003,6 +1011,16 @@ export default {
 				}),
 			]);
 		},
+		activate_tool(tool) {
+			if (this.active_tool) this.deactivate_tool();
+			if (tool.activate(this)) this.active_tool = tool;
+		},
+		deactivate_tool() {
+			if (this.active_tool) {
+				this.active_tool.deactivate?.();
+				this.active_tool = null;
+			}
+		},
 		delete_selection() {
 			this.modify_selection((node_list) => [
 				...node_list.filter(
@@ -1037,6 +1055,8 @@ export default {
 			]);
 		},
 		keyup(e) {
+			if (this.active_tool?.on_key_up?.(e)) return;
+
 			switch (e.code) {
 				case 'ShiftLeft':
 					this.gizmo.set_snapping(false);
@@ -1047,6 +1067,8 @@ export default {
 			}
 		},
 		keydown(e) {
+			if (this.active_tool?.on_key_down?.(e)) return;
+
 			if (e.target === this.renderer.domElement) {
 				switch (e.code) {
 					case 'ShiftLeft':
@@ -1115,6 +1137,11 @@ export default {
 
 			switch (e.code) {
 				case 'Escape':
+					if (this.active_tool) {
+						this.deactivate_tool();
+						e.preventDefault();
+						return;
+					}
 					if (this.show_mini_editor) this.close_mini_editor();
 					else if (this.show_gasm_editor) this.close_gasm_editor();
 					else if (this.contextmenu) this.contextmenu = undefined;
@@ -1835,6 +1862,8 @@ export default {
 			clearTimeout(this.hold.timeout);
 		},
 		pointermove(e) {
+			if (this.active_tool?.on_mouse_move?.(e)) return;
+
 			const dx = Math.abs(e.clientX - this.hold.x);
 			const dy = Math.abs(e.clientY - this.hold.y);
 
@@ -1843,13 +1872,15 @@ export default {
 			}
 		},
 		rightmousedown(e) {
+			if (this.active_tool?.on_contextmenu?.(e)) return;
+
 			this.open_context_menu(e.clientX, e.clientY, e);
 		},
 		run_in_scope(func) {
 			func(this);
 		},
 	},
-};
+});
 </script>
 
 <template>
@@ -1901,6 +1932,12 @@ export default {
 				</button>
 				<div class="group-depth" v-show="group_depth">
 					<span>Depth: {{ group_depth }}</span>
+				</div>
+				<div class="tool-indicator" v-show="active_tool">
+					<span>
+						{{ active_tool?.name }} active
+						<KeyHint :bind="'Esc'" />
+					</span>
 				</div>
 				<div class="modes">
 					<div>
@@ -2136,6 +2173,28 @@ canvas {
 
 	i {
 		position: static;
+	}
+}
+
+.tool-indicator {
+	position: absolute;
+	left: 50%;
+	top: 0.5rem;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	padding: 0.25rem 1rem;
+	font-size: 0.85rem;
+	z-index: 2;
+	pointer-events: none;
+	background-color: #141415;
+	border-radius: 0.5rem;
+
+	.key-hint {
+		right: -0.5rem;
+		left: unset;
 	}
 }
 </style>

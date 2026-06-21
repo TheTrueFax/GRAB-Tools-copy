@@ -20,6 +20,7 @@ import {
 	traverse_node,
 } from '@/assets/encoding/utils';
 import audio from '@/assets/tools/audio';
+import BrushTool from '@/assets/tools/brush';
 import car from '@/assets/tools/car';
 import gun from '@/assets/tools/gun';
 import image from '@/assets/tools/image';
@@ -147,6 +148,11 @@ export default {
 					},
 				},
 				Edit: {
+					Tools: {
+						Brush: {
+							func: this.activate_brush,
+						},
+					},
 					Functions: {
 						Duplicate: { func: this.duplicate_level },
 						Monochrome: { func: this.monochrome_level },
@@ -579,6 +585,11 @@ export default {
 					node_list.push(...nodes);
 					return json;
 				});
+			});
+		},
+		activate_brush() {
+			this.$emit('viewport', (scope) => {
+				scope.activate_tool(new BrushTool());
 			});
 		},
 		async insert_nodes(e) {
