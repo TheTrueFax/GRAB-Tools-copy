@@ -36,8 +36,9 @@ import TranslateIcon from '@/icons/TranslateIcon.vue';
 import { useConfigStore } from '@/stores/config';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
 	data() {
 		return {
 			zoom_to_cursor: true,
@@ -65,11 +66,15 @@ export default {
 			show_key_hints: true,
 			show_shadows: false,
 			group_depth: 0,
+			active_tool: null,
 			hold: {
 				timeout: undefined,
 				x: 0,
 				y: 0,
 			},
+			mousedown_pos: null,
+			deferred_context_menu: null,
+			is_touch_interaction: false,
 		};
 	},
 	components: {
@@ -291,7 +296,16 @@ export default {
 			return intersect;
 		},
 		select_event(e) {
+			if (this.mousedown_pos) {
+				const dx = e.clientX - this.mousedown_pos.x;
+				const dy = e.clientY - this.mousedown_pos.y;
+				this.mousedown_pos = null;
+				if (dx * dx + dy * dy > 9) return;
+			}
+
 			if (this.free_movement) return;
+			if (this.active_tool?.on_click?.(e)) return;
+
 			const intersect = this.cast_for_node(e.clientX, e.clientY);
 			if (intersect) {
 				if (!this.gizmo.includes(intersect)) {
@@ -506,6 +520,12 @@ export default {
 			}
 		},
 		mousedown(e) {
+			this.deferred_context_menu = null;
+			if (e.target === this.renderer.domElement) {
+				this.mousedown_pos = { x: e.clientX, y: e.clientY };
+			}
+			if (this.active_tool?.on_mouse_down?.(e)) return;
+
 			if (
 				e.target !== this.$refs.contextmenu &&
 				!this.$refs.contextmenu?.$el?.contains(e.target)
@@ -517,7 +537,24 @@ export default {
 				this.show_keybinds = false;
 			}
 		},
-		mouseup(_) {
+		mouseup(e) {
+			if (e.button === 2) {
+				if (this.deferred_context_menu) {
+					const dx = e.clientX - this.deferred_context_menu.x;
+					const dy = e.clientY - this.deferred_context_menu.y;
+					if (
+						dx * dx + dy * dy <= 9 &&
+						this.deferred_context_menu.menu
+					) {
+						this.contextmenu = this.deferred_context_menu.menu;
+					}
+					this.deferred_context_menu = null;
+				}
+				this.mousedown_pos = null;
+			}
+
+			if (this.active_tool?.on_mouse_up?.(e)) return;
+
 			this.controls.isMouseActive = false;
 		},
 		set_transform_mode(mode) {
@@ -1003,6 +1040,16 @@ export default {
 				}),
 			]);
 		},
+		activate_tool(tool) {
+			if (this.active_tool) this.deactivate_tool();
+			if (tool.activate(this)) this.active_tool = tool;
+		},
+		deactivate_tool() {
+			if (this.active_tool) {
+				this.active_tool.deactivate?.();
+				this.active_tool = null;
+			}
+		},
 		delete_selection() {
 			this.modify_selection((node_list) => [
 				...node_list.filter(
@@ -1037,6 +1084,8 @@ export default {
 			]);
 		},
 		keyup(e) {
+			if (this.active_tool?.on_key_up?.(e)) return;
+
 			switch (e.code) {
 				case 'ShiftLeft':
 					this.gizmo.set_snapping(false);
@@ -1047,6 +1096,8 @@ export default {
 			}
 		},
 		keydown(e) {
+			if (this.active_tool?.on_key_down?.(e)) return;
+
 			if (e.target === this.renderer.domElement) {
 				switch (e.code) {
 					case 'ShiftLeft':
@@ -1115,6 +1166,11 @@ export default {
 
 			switch (e.code) {
 				case 'Escape':
+					if (this.active_tool) {
+						this.deactivate_tool();
+						e.preventDefault();
+						return;
+					}
 					if (this.show_mini_editor) this.close_mini_editor();
 					else if (this.show_gasm_editor) this.close_gasm_editor();
 					else if (this.contextmenu) this.contextmenu = undefined;
@@ -1314,13 +1370,7 @@ export default {
 				)
 				.join(' ');
 		},
-		open_context_menu(x, y, e) {
-			if (e?.target !== this.renderer.domElement) return;
-
-			this.contextmenu_position.x = x;
-			this.contextmenu_position.y = y;
-			this.contextmenu = undefined;
-
+		build_context_menu(x, y) {
 			const clicked_object = this.cast_for_node(x, y);
 			if (!clicked_object) return;
 			const clicked_node = clicked_object.userData?.node;
@@ -1363,7 +1413,7 @@ export default {
 				clicked_node.levelNodeStatic?.material === 3;
 			const clicked_is_sign = clicked_node.levelNodeSign;
 
-			this.contextmenu = {
+			const menu = {
 				...(clicked_is_selected && {
 					'Edit JSON': {
 						func: () => {
@@ -1637,12 +1687,16 @@ export default {
 				}),
 			};
 
-			if (
-				this.contextmenu &&
-				Object.keys(this.contextmenu).length === 0
-			) {
-				e?.preventDefault?.();
-			}
+			if (Object.keys(menu).length === 0) return;
+			return menu;
+		},
+		open_context_menu(x, y, e) {
+			if (e?.target !== this.renderer.domElement) return;
+			this.contextmenu_position.x = x;
+			this.contextmenu_position.y = y;
+			this.contextmenu = undefined;
+			const menu = this.build_context_menu(x, y);
+			if (menu) this.contextmenu = menu;
 		},
 		copy_object_id(object) {
 			const id = object?.userData?.id;
@@ -1816,25 +1870,41 @@ export default {
 				return json;
 			});
 		},
-		pointerstart(e) {
-			if (e.touches.length !== 1) return;
+		pointerdown(e) {
+			if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
 
+			this.is_touch_interaction = true;
 			this.hold.x = e.clientX;
 			this.hold.y = e.clientY;
 
 			clearTimeout(this.hold.timeout);
 
 			this.hold.timeout = setTimeout(() => {
-				this.open_context_menu(this.hold.x, this.hold.y, e);
+				if (this.is_touch_interaction) {
+					this.is_touch_interaction = false;
+					this.contextmenu = undefined;
+					this.contextmenu_position.x = this.hold.x;
+					this.contextmenu_position.y = this.hold.y;
+					const menu = this.build_context_menu(
+						this.hold.x,
+						this.hold.y,
+					);
+					if (menu) this.contextmenu = menu;
+				}
 			}, 600);
 		},
-		pointerend(e) {
+		pointerup(e) {
+			if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+			this.is_touch_interaction = false;
 			clearTimeout(this.hold.timeout);
 		},
 		pointercancel(e) {
+			this.is_touch_interaction = false;
 			clearTimeout(this.hold.timeout);
 		},
 		pointermove(e) {
+			if (this.active_tool?.on_mouse_move?.(e)) return;
+
 			const dx = Math.abs(e.clientX - this.hold.x);
 			const dy = Math.abs(e.clientY - this.hold.y);
 
@@ -1843,13 +1913,29 @@ export default {
 			}
 		},
 		rightmousedown(e) {
-			this.open_context_menu(e.clientX, e.clientY, e);
+			if (this.active_tool?.on_contextmenu?.(e)) return;
+			e.preventDefault();
+			this.contextmenu = undefined;
+			this.contextmenu_position.x = e.clientX;
+			this.contextmenu_position.y = e.clientY;
+			const menu = this.build_context_menu(e.clientX, e.clientY);
+			if (this.is_touch_interaction) {
+				this.is_touch_interaction = false;
+				clearTimeout(this.hold.timeout);
+				if (menu) this.contextmenu = menu;
+			} else {
+				this.deferred_context_menu = {
+					x: e.clientX,
+					y: e.clientY,
+					menu,
+				};
+			}
 		},
 		run_in_scope(func) {
 			func(this);
 		},
 	},
-};
+});
 </script>
 
 <template>
@@ -1861,8 +1947,8 @@ export default {
 				@mousedown="mousedown"
 				@mouseup="mouseup"
 				@contextmenu="rightmousedown"
-				@pointerstart="pointerstart"
-				@pointerend="pointerend"
+				@pointerdown="pointerdown"
+				@pointerup="pointerup"
 				@pointercancel="pointercancel"
 				@pointermove="pointermove"
 			>
@@ -1901,6 +1987,12 @@ export default {
 				</button>
 				<div class="group-depth" v-show="group_depth">
 					<span>Depth: {{ group_depth }}</span>
+				</div>
+				<div class="tool-indicator" v-show="active_tool">
+					<span>
+						{{ active_tool?.name }} active
+						<KeyHint :bind="'Esc'" />
+					</span>
 				</div>
 				<div class="modes">
 					<div>
@@ -2065,6 +2157,8 @@ canvas {
 	width: 100%;
 	height: 100%;
 	outline: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
 .viewport {
 	position: relative;
@@ -2136,6 +2230,28 @@ canvas {
 
 	i {
 		position: static;
+	}
+}
+
+.tool-indicator {
+	position: absolute;
+	left: 50%;
+	top: 0.5rem;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	padding: 0.25rem 1rem;
+	font-size: 0.85rem;
+	z-index: 2;
+	pointer-events: none;
+	background-color: #141415;
+	border-radius: 0.5rem;
+
+	.key-hint {
+		right: -0.5rem;
+		left: unset;
 	}
 }
 </style>
