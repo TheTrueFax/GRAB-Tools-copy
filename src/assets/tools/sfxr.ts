@@ -29,40 +29,42 @@ const PARAM_MAP: Record<string, string> = {
 };
 
 const CONVERSION_MAP: Record<string, (v: number) => number> = {
-	p_env_attack: (v) => clamp(v / 2.5, 0, 1),
-	p_env_sustain: (v) => clamp(v / 5.0, 0, 1),
-	p_env_punch: (v) => clamp(v / 10.0, 0, 1),
-	p_env_decay: (v) => clamp(v / 2.5, 0, 1),
-	p_base_freq: (v) => log_norm(v, 35, 3500),
-	p_freq_limit: (v) => log_norm(v, 35, 3500),
-	p_freq_ramp: (v) => clamp(v / 100, -1, 1),
-	p_freq_dramp: (v) => clamp(v / 100, -1, 1),
-	p_vib_strength: (v) => clamp(v / 0.5, 0, 1),
-	p_vib_speed: (v) => clamp(v / 400, 0, 1),
-	p_arp_mod: (v) => clamp((v - 1) / 9, -1, 1),
-	p_arp_speed: (v) => clamp(v / 2.5, 0, 1),
-	p_duty: (v) => clamp(v / 0.5, 0, 1),
-	p_duty_ramp: (v) => clamp(v, -1, 1),
-	p_repeat_speed: (v) => clamp(v / 2.5, 0, 1),
-	p_pha_offset: (v) => clamp(v / 100, 0, 1),
-	p_pha_ramp: (v) => clamp(v, 0, 1),
-	p_lpf_freq: (v) => log_norm(v, 1, 10000),
-	p_hpf_freq: (v) => log_norm(v, 1, 10000),
+	p_env_attack: (v) => clamp01(Math.sqrt(v * 0.441)),
+	p_env_sustain: (v) => clamp01(Math.sqrt(v * 0.441)),
+	p_env_punch: (v) => clamp01(v * 0.5),
+	p_env_decay: (v) => clamp01(Math.sqrt(v * 0.441)),
+	p_base_freq: (v) => clamp01(Math.sqrt(v / 3528)),
+	p_freq_limit: (v) => clamp01(Math.sqrt(v / 3528)),
+	p_freq_ramp: (v) => sign(v) * clamp01(Math.cbrt(Math.abs(v) / 100)),
+	p_freq_dramp: (v) => sign(v) * clamp01(Math.cbrt(Math.abs(v) / 100)),
+	p_vib_strength: (v) => clamp01(v / 0.5),
+	p_vib_speed: (v) => clamp01(Math.sqrt(v / 69)),
+	p_arp_mod: (v) =>
+		v >= 1
+			? clamp11(Math.sqrt((v - 1) / (0.9 * v)))
+			: clamp11(-Math.sqrt((1 - v) / (10 * Math.max(v, 0.001)))),
+	p_arp_speed: (v) => clamp01(Math.sqrt(v / 0.5)),
+	p_duty: (v) => clamp11(1 - v * 2),
+	p_duty_ramp: (v) => clamp11(v),
+	p_repeat_speed: (v) => clamp01(Math.sqrt(v / 0.5)),
+	p_pha_offset: (v) => clamp01(Math.sqrt(v / 100)),
+	p_pha_ramp: (v) => clamp01(v * 2),
+	p_lpf_freq: (v) => clamp01(Math.sqrt(v / 16000)),
+	p_hpf_freq: (v) => clamp01(Math.sqrt(v / 16000)),
 };
 
-export function clamp(value: number, min: number, max: number) {
-	return Math.min(max, Math.max(min, value));
-}
-
-export function log_norm(value: number, min: number, max: number) {
-	const safe_min = Math.max(min, 1e-8);
-	const safe_value = Math.max(value, safe_min);
-
-	const min_log = Math.log(safe_min);
-	const max_log = Math.log(max);
-
-	return clamp((Math.log(safe_value) - min_log) / (max_log - min_log), 0, 1);
-}
+const clamp = (v: number, min: number, max: number) => {
+	return Math.min(max, Math.max(min, v));
+};
+const clamp01 = (v: number) => {
+	return clamp(v, 0, 1);
+};
+const clamp11 = (v: number) => {
+	return clamp(v, -1, 1);
+};
+const sign = (v: number) => {
+	return v >= 0 ? 1 : -1;
+};
 
 export function play_sound(params: SoundGeneratorParameters) {
 	// prettier-ignore
