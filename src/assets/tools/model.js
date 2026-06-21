@@ -1,6 +1,10 @@
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import * as THREE from 'three';
-import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+import {
+	acceleratedRaycast,
+	computeBoundsTree,
+	disposeBoundsTree,
+} from 'three-mesh-bvh';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 
 /**
  * @param {File} file - A OBJ file
@@ -17,52 +21,21 @@ async function model(file) {
 	}
 }
 
-function mesh_to_triangles(mesh) {
-    const positionList = mesh.geometry.attributes.position.array;
-    //const normalList = mesh.geometry.attributes.normal.array;
-    let triangles = [];
+function getSDFValue(point, mesh, raycaster) {
+	const target = new THREE.Vector3();
 
-    if (mesh.geometry.indexed) {
-        window.toast('No current support for indexed obj files.', 'error');
-        return null;
-    } else {
-        for (let i = 0; i < positionList.length; i+=9) { // i+=9 (3 floats per position, 3 positions per triangle)
-            triangles.push({
-                a: {x: positionList[i], y: positionList[i + 1], z: positionList[i + 2]},
-                b: {x: positionList[i + 3], y: positionList[i + 4], z: positionList[i + 5]},
-                c: {x: positionList[i + 6], y: positionList[i + 7], z: positionList[i + 8]}
-            });
-        }
-    }
+	mesh.geometry.boundsTree.closestPointToPoint(point, target);
+	const unsignedDistance = point.distanceTo(target);
 
-    return triangles;
-}
+	raycaster.set(point, new THREE.Vector3(0, 1, 0));
+	const intersections = raycaster.intersectObject(mesh);
 
-function dot(a, b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
-function sub(a, b) { return { x:a.x-b.x, y:a.y-b.y, z:a.z-b.z }; }
+	let inside = false;
+	if (intersections.length > 0) {
+		inside = intersections[0].face.normal.dot(raycaster.ray.direction) > 0;
+	}
 
-// Inigo Quilez's Triangle Distance
-function udTriangle(p, a, b, c) {
-    var ba = sub(b, a), pa = sub(p, a);
-    var cb = sub(c, b), pb = sub(p, b);
-    var ac = sub(a, c), pc = sub(p, c);
-    
-    var d = Math.sqrt(
-        Math.max(dot(sub(pa, ba.map(t => t * Math.max(0, Math.min(1, dot(pa, ba)/dot(ba, ba))))), pa)),
-        dot(sub(pb, cb.map(t => t * Math.max(0, Math.min(1, dot(pb, cb)/dot(cb, cb))))), pb),
-        dot(sub(pc, ac.map(t => t * Math.max(0, Math.min(1, dot(pc, ac)/dot(ac, ac))))), pc)
-    );
-    
-    var nor = { 
-        x: ba.y * ac.z - ba.z * ac.y, 
-        y: ba.z * ac.x - ba.x * ac.z, 
-        z: ba.x * ac.y - ba.y * ac.x 
-    };
-    var inside = (dot(nor, pa) < 0.0) &&
-                 (dot(nor, pb) < 0.0) &&
-                 (dot(nor, pc) < 0.0);
-                 
-    return inside ? -d : d;
+	return inside ? -unsignedDistance : unsignedDistance;
 }
 
 async function generate(file) {
@@ -72,19 +45,28 @@ async function generate(file) {
 	const loader = new OBJLoader();
 	const parsedObject = loader.parse(decoder.decode(arrayBuffer)); // 😍❤️👌
 
-    if (parsedObject.children.length == 0) {
-        window.toast('Threejs parsed node has no children? Possibly invalid OBJ.', 'error');
-        return null;
-    }
-    if (parsedObject.children[0].type != "Mesh") {
-        window.toast('Threejs parsed node missing Mesh child?', 'error');
-        return null;
-    }
+	if (parsedObject.children.length == 0) {
+		window.toast(
+			'Threejs parsed node has no children? Possibly invalid OBJ.',
+			'error',
+		);
+		return null;
+	}
+	if (parsedObject.children[0].type != 'Mesh') {
+		window.toast('Threejs parsed node missing Mesh child?', 'error');
+		return null;
+	}
 
-    const triangles = mesh_to_triangles(parsedObject.children[0]);
-    if (triangles == null) {
-        return null;
-    }
+	THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+	THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+	THREE.Mesh.prototype.raycast = acceleratedRaycast;
+
+	// Compute bounds tree on extracted BufferGeometry
+	const geometry = parsedObject.children[0].geometry;
+	geometry.computeBoundsTree();
+
+	// Create raycaster
+	const raycaster = new THREE.Raycaster();
 
 	console.log(triangles);
 }
