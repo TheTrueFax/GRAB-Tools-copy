@@ -521,6 +521,7 @@ export default defineComponent({
 			}
 		},
 		mousedown(e) {
+			console.log('mouse down', e.button, e);
 			this.deferred_context_menu = null;
 			if (e.target === this.renderer.domElement) {
 				this.mousedown_pos = { x: e.clientX, y: e.clientY };
@@ -539,6 +540,7 @@ export default defineComponent({
 			}
 		},
 		mouseup(e) {
+			console.log('mouse up', e.button, e);
 			if (e.button === 2) {
 				if (this.deferred_context_menu) {
 					const dx = e.clientX - this.deferred_context_menu.x;
@@ -548,6 +550,7 @@ export default defineComponent({
 						this.deferred_context_menu.menu
 					) {
 						this.contextmenu = this.deferred_context_menu.menu;
+						console.log('context menu', this.contextmenu);
 					}
 					this.deferred_context_menu = null;
 				}
@@ -1927,12 +1930,15 @@ export default defineComponent({
 			}
 		},
 		rightmousedown(e) {
+			console.log('right click', e);
 			if (this.active_tool?.on_contextmenu?.(e)) return;
 			e.preventDefault();
+			console.log('right click preventDefault');
 			this.contextmenu = undefined;
 			this.contextmenu_position.x = e.clientX;
 			this.contextmenu_position.y = e.clientY;
 			const menu = this.build_context_menu(e.clientX, e.clientY);
+			console.log('menu', menu);
 			if (this.is_touch_interaction) {
 				this.is_touch_interaction = false;
 				clearTimeout(this.hold.timeout);
