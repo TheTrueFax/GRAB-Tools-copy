@@ -8,7 +8,7 @@ import { partition_into_isosceles, tri_to_node } from './triangle_partition';
  * @param {File} file - An obj file
  * @param {"spheres" | "particles" | "triangles"} mode - what is placed
  * @param {File} mtlFile- An optional mtl file for material colors
- * @returns {Promise<Array<Object>>} - A list of level nodes
+ * @returns {Promise<Array<import('@/types/levelNodes').LevelNodeWith<import('@/generated/proto').LevelNodeStatic>>>} - A list of level nodes
  */
 async function obj(file, mode, mtlFile) {
 	if (mode === 'triangles') {
