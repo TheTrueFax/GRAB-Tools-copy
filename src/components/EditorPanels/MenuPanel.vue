@@ -26,7 +26,7 @@ import gun from '@/assets/tools/gun';
 import image from '@/assets/tools/image';
 import midi from '@/assets/tools/midi';
 import monochrome from '@/assets/tools/monochrome';
-import obj from '@/assets/tools/obj';
+import { obj } from '@/assets/tools/obj';
 import signs from '@/assets/tools/signs';
 import svg from '@/assets/tools/svg';
 import video from '@/assets/tools/video';
@@ -813,7 +813,7 @@ export default {
 						return;
 					}
 
-					const nodes = await obj.obj(objFile, mode, mtlFile);
+					const nodes = await obj(objFile, mode, mtlFile);
 
 					this.insert_selection_nodes(nodes);
 				},

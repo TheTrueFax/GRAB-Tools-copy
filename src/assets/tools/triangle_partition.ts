@@ -123,7 +123,7 @@ interface Vec3 { x: number; y: number; z: number; }
 interface Vec4 { x: number; y: number; z: number; w: number; }
 
 // transform of LevelNodeStatic
-interface TriNode {
+export interface TriNode {
 	position: Vec3;
 	rotation: Vec4;
 	scale: Vec3;

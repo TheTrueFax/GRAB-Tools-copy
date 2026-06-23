@@ -1,4 +1,4 @@
-import obj from '@/assets/tools/obj.js';
+import { obj } from '@/assets/tools/obj.js';
 import { color } from '@/generated/helpers';
 import { describe, expect, it } from 'vitest';
 
@@ -15,7 +15,7 @@ function file(string: string) {
 
 describe('parse_obj_nodes', () => {
 	it('produces nodes from an OBJ without material groups', async () => {
-		const nodes = await obj.obj(
+		const nodes = await obj(
 			file(`
 				v 0 0 0
 				v 1 0 0
@@ -23,13 +23,12 @@ describe('parse_obj_nodes', () => {
 				f 1 2 3
 			`),
 			'triangles',
-			null,
 		);
 		expect(nodes.length).toBeGreaterThan(0);
 	});
 
 	it('produces nodes from an OBJ with material groups', async () => {
-		const nodes = await obj.obj(
+		const nodes = await obj(
 			file(`
 				v 0 0 0
 				v 1 0 0
@@ -41,13 +40,12 @@ describe('parse_obj_nodes', () => {
 				f 2 3 4
 			`),
 			'triangles',
-			null,
 		);
 		expect(nodes.length).toBeGreaterThan(0);
 	});
 
 	it('produces colored nodes from an OBJ with an MTL file', async () => {
-		const nodes = await obj.obj(
+		const nodes = await obj(
 			file(`
 				v 0 0 0
 				v 1 0 0
@@ -61,7 +59,7 @@ describe('parse_obj_nodes', () => {
 				Kd 1 0 0
 			`),
 		);
-		expect(nodes[0]!.levelNodeStatic.color1).toMatchObject(
+		expect(nodes[0]!.levelNodeStatic?.color1).toMatchObject(
 			color({ r: 1, g: 0, b: 0 }),
 		);
 	});

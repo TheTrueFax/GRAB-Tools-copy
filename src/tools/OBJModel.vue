@@ -4,7 +4,7 @@ import {
 	downloadLevel,
 	encodeLevel,
 } from '@/assets/encoding/levels';
-import obj from '@/assets/tools/obj';
+import { obj } from '@/assets/tools/obj';
 import ToolTemplate from '@/tools/ToolTemplate.vue';
 
 export default {
@@ -31,7 +31,7 @@ export default {
 				return;
 			}
 
-			let nodes = await obj.obj(objFile, mode, mtlFile);
+			let nodes = await obj(objFile, mode, mtlFile);
 
 			const level = createLevel(
 				nodes,
