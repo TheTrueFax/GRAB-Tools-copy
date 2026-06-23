@@ -239,9 +239,9 @@ async function parse_obj_nodes(
 		if (!is_mesh(child)) return;
 
 		const geometry = child.geometry;
-		const posAttr = geometry
-			.toNonIndexed()
-			.getAttribute('position') as THREE.BufferAttribute;
+		const posAttr = (
+			geometry.index !== null ? geometry.toNonIndexed() : geometry
+		).getAttribute('position') as THREE.BufferAttribute;
 		const groups = geometry.groups.length
 			? geometry.groups
 			: [{ start: 0, count: posAttr.count, materialIndex: 0 }];
