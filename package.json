@@ -33,7 +33,7 @@
 		"pinia": "^3.0.4",
 		"pinia-plugin-persistedstate": "^4.7.1",
 		"protobufjs": "^8.6.4",
-		"three": "^0.184.0",
+		"three": "^0.159.0",
 		"vue": "^3.5.38",
 		"vue-router": "^5.1.0"
 	},
@@ -41,7 +41,7 @@
 		"@eslint/js": "^10.0.1",
 		"@tauri-apps/cli": "^2.11.3",
 		"@types/node": "^26.0.0",
-		"@types/three": "^0.184.1",
+		"@types/three": "^0.181.0",
 		"@vitejs/plugin-vue": "^6.0.7",
 		"esbuild": "^0.28.1",
 		"eslint": "^10.5.0",
