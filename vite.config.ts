@@ -53,6 +53,7 @@ export default defineConfig({
 	assetsInclude: ['**/*.gltf', '**/*.glb'],
 	build: {
 		emptyOutDir: true,
+		chunkSizeWarningLimit: 800,
 		target:
 			process.env.TAURI_ENV_PLATFORM == 'windows'
 				? 'chrome105'
