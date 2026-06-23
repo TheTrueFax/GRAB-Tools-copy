@@ -1,8 +1,7 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"paths": {
-			"@/*": ["src/*"]
+			"@/*": ["./src/*"]
 		},
 
 		"target": "ES2020",
@@ -23,5 +22,5 @@
 		"allowJs": true,
 		"checkJs": false
 	},
-	"exclude": ["node_modules", "dist"]
+	"exclude": ["node_modules", "dist", "src-tauri"]
 }

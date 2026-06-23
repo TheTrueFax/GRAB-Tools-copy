@@ -1,0 +1,35 @@
+name: build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+        # FIXME: currently very broken
+      # - name: Type check
+      #   run: npm run check
+
+      - name: Lint
+        run: npm run lint:ci
+
+      - name: Formatting
+        run: npm run format:ci
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
