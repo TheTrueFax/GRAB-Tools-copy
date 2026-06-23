@@ -76,6 +76,8 @@ export default defineComponent({
 			mousedown_pos: null,
 			deferred_context_menu: null,
 			is_touch_interaction: false,
+			mouseup_fired: false,
+			right_click_dragged: false,
 		};
 	},
 	components: {
@@ -521,8 +523,9 @@ export default defineComponent({
 			}
 		},
 		mousedown(e) {
-			console.log('mouse down', e.button, e);
 			this.deferred_context_menu = null;
+			this.mouseup_fired = false;
+			this.right_click_dragged = false;
 			if (e.target === this.renderer.domElement) {
 				this.mousedown_pos = { x: e.clientX, y: e.clientY };
 			}
@@ -540,9 +543,10 @@ export default defineComponent({
 			}
 		},
 		mouseup(e) {
-			console.log('mouse up', e.button, e);
 			if (e.button === 2) {
+				this.mouseup_fired = true;
 				if (this.deferred_context_menu) {
+					// macos: rightmousedown fired before mouseup
 					const dx = e.clientX - this.deferred_context_menu.x;
 					const dy = e.clientY - this.deferred_context_menu.y;
 					if (
@@ -550,9 +554,17 @@ export default defineComponent({
 						this.deferred_context_menu.menu
 					) {
 						this.contextmenu = this.deferred_context_menu.menu;
-						console.log('context menu', this.contextmenu);
+						this.contextmenu_position.x =
+							this.deferred_context_menu.x;
+						this.contextmenu_position.y =
+							this.deferred_context_menu.y;
 					}
 					this.deferred_context_menu = null;
+				} else if (this.mousedown_pos) {
+					// windows/linux: rightmousedown not fired yet
+					const dx = e.clientX - this.mousedown_pos.x;
+					const dy = e.clientY - this.mousedown_pos.y;
+					this.right_click_dragged = dx * dx + dy * dy > 9;
 				}
 				this.mousedown_pos = null;
 			}
@@ -1930,20 +1942,28 @@ export default defineComponent({
 			}
 		},
 		rightmousedown(e) {
-			console.log('right click', e);
 			if (this.active_tool?.on_contextmenu?.(e)) return;
 			e.preventDefault();
-			console.log('right click preventDefault');
 			this.contextmenu = undefined;
-			this.contextmenu_position.x = e.clientX;
-			this.contextmenu_position.y = e.clientY;
 			const menu = this.build_context_menu(e.clientX, e.clientY);
-			console.log('menu', menu);
 			if (this.is_touch_interaction) {
 				this.is_touch_interaction = false;
 				clearTimeout(this.hold.timeout);
-				if (menu) this.contextmenu = menu;
+				if (menu) {
+					this.contextmenu = menu;
+					this.contextmenu_position.x = e.clientX;
+					this.contextmenu_position.y = e.clientY;
+				}
+			} else if (this.mouseup_fired) {
+				// windows/linux: mouseup already fired
+				if (!this.right_click_dragged && menu) {
+					this.contextmenu = menu;
+					this.contextmenu_position.x = e.clientX;
+					this.contextmenu_position.y = e.clientY;
+				}
+				this.mouseup_fired = false;
 			} else {
+				// macos: mouseup not fired yet
 				this.deferred_context_menu = {
 					x: e.clientX,
 					y: e.clientY,
