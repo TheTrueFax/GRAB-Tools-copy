@@ -14,6 +14,18 @@ export default [
 	js.configs.recommended,
 
 	...tseslint.configs.recommended,
+	...tseslint.configs.stylistic,
+
+	// TODO: add later
+	// ...tseslint.configs.recommendedTypeChecked.map((config) => ({
+	// 	...config,
+	// 	files: ['**/*.ts'],
+	// })),
+	// ...tseslint.configs.stylisticTypeChecked.map((config) => ({
+	// 	...config,
+	// 	files: ['**/*.ts'],
+	// })),
+
 	...vue.configs['flat/recommended'],
 
 	prettierConfig,
@@ -29,6 +41,7 @@ export default [
 				ecmaVersion: 'latest',
 				sourceType: 'module',
 				extraFileExtensions: ['.vue'],
+				projectService: true,
 			},
 
 			globals: {
@@ -40,14 +53,40 @@ export default [
 
 		rules: {
 			'no-unused-vars': 'off',
-			'@typescript-eslint/no-unused-vars': 'off',
-
 			'@typescript-eslint/no-unused-expressions': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'warn',
+				{
+					vars: 'all',
+					args: 'all',
+					caughtErrors: 'all',
+					varsIgnorePattern: '^_',
+					argsIgnorePattern: '^_',
+					caughtErrorsIgnorePattern: '^_',
+					destructuredArrayIgnorePattern: '^_',
+				},
+			],
+
+			'@typescript-eslint/no-empty-function': 'warn',
+
+			'no-shadow': 'warn',
+			'@typescript-eslint/no-shadow': 'warn',
+
+			'no-constant-binary-expression': 'warn',
+			'@typescript-eslint/prefer-for-of': 'warn',
 
 			'vue/multi-word-component-names': 'off',
+			'vue/require-default-prop': 'off',
+			'vue/prop-name-casing': 'off',
+		},
+	},
 
-			'no-shadow': 'error',
-			'@typescript-eslint/no-shadow': 'error',
+	{
+		files: ['**/*.ts'],
+
+		rules: {
+			'@typescript-eslint/no-unnecessary-condition': 'warn',
+			'@typescript-eslint/no-unnecessary-type-assertion': 'warn',
 		},
 	},
 ];
