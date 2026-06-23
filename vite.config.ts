@@ -37,7 +37,7 @@ export default defineConfig({
 					this.emitFile({
 						type: 'asset',
 						fileName: `bookmarklets/${entry.name}`,
-						source: result.code,
+						source: result.code!,
 					});
 				}
 			},
@@ -56,7 +56,7 @@ export default defineConfig({
 		target:
 			process.env.TAURI_ENV_PLATFORM == 'windows'
 				? 'chrome105'
-				: 'safari13',
+				: 'safari15',
 		minify: !process.env.TAURI_ENV_DEBUG ? 'esbuild' : false,
 		sourcemap: !!process.env.TAURI_ENV_DEBUG,
 		rollupOptions: {
@@ -89,7 +89,7 @@ export default defineConfig({
 		},
 	},
 	server: {
-		https: true,
+		https: {},
 		port: 5173,
 		strictPort: true,
 		host: host || false,
@@ -98,7 +98,7 @@ export default defineConfig({
 					protocol: 'ws',
 					host,
 					port: 1421,
-			  }
+				}
 			: undefined,
 		watch: {
 			ignored: ['**/src-tauri/**'],

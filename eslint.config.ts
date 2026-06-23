@@ -2,12 +2,13 @@ import js from '@eslint/js';
 import tsParser from '@typescript-eslint/parser';
 import prettierConfig from 'eslint-config-prettier';
 import vue from 'eslint-plugin-vue';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import vueParser from 'vue-eslint-parser';
 
 export default [
 	{
-		ignores: ['dist/**', 'node_modules/**'],
+		ignores: ['dist/**', 'node_modules/**', 'src-tauri/**'],
 	},
 
 	js.configs.recommended,
@@ -18,7 +19,7 @@ export default [
 	prettierConfig,
 
 	{
-		files: ['**/*.{js,ts,vue}'],
+		files: ['**/*.{js,ts,vue,mjs}'],
 
 		languageOptions: {
 			parser: vueParser,
@@ -31,10 +32,9 @@ export default [
 			},
 
 			globals: {
-				window: 'readonly',
-				document: 'readonly',
-				navigator: 'readonly',
-				process: 'readonly',
+				...globals.browser,
+				...globals.node,
+				...globals.es2021,
 			},
 		},
 
@@ -51,4 +51,3 @@ export default [
 		},
 	},
 ];
-
