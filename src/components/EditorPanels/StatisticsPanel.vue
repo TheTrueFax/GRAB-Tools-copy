@@ -1,5 +1,5 @@
 <script>
-import { materials, shapes } from '@/assets/encoding/utils';
+import { materials, shapes } from '@/common/utils';
 import StatsIcon from '@/icons/StatsIcon.vue';
 
 export default {

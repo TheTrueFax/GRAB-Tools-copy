@@ -1,5 +1,5 @@
-import { obj } from '@/assets/tools/obj';
 import { color } from '@/generated/helpers';
+import { obj } from '@/tools/obj';
 import { describe, expect, it } from 'vitest';
 
 function file(string: string) {

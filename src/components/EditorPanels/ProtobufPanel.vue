@@ -1,5 +1,5 @@
 <script>
-import build_editor from '@/assets/EditorSetup';
+import build_editor from '@/editor/EditorSetup';
 import { foldGutter, StreamLanguage } from '@codemirror/language';
 import { protobuf } from '@codemirror/legacy-modes/mode/protobuf';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';

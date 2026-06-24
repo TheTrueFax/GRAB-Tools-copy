@@ -1,6 +1,6 @@
 <script>
-import build_editor from '@/assets/EditorSetup';
-import encoding from '@/assets/encoding/encoding';
+import encoding from '@/common/encoding';
+import build_editor from '@/editor/EditorSetup';
 import { javascript } from '@codemirror/lang-javascript';
 import { EditorSelection } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';

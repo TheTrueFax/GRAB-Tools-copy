@@ -1,22 +1,16 @@
 <script>
-import { create_connection } from '@/assets/encoding/gasm/connections';
-import { groupNodes, ungroupNode } from '@/assets/encoding/group';
-import {
-	deepClone,
-	materials,
-	node_data,
-	shapes,
-} from '@/assets/encoding/utils';
-import { FreeControls } from '@/assets/FreeControls';
-import GizmoControls from '@/assets/GizmoControls';
-import { LevelLoader } from '@/assets/LevelLoader';
-import { play_sound } from '@/assets/tools/sfxr';
+import { create_connection } from '@/common/connections';
+import { groupNodes, ungroupNode } from '@/common/group';
+import { deepClone, materials, node_data, shapes } from '@/common/utils';
 import AnimationPanel from '@/components/EditorPanels/AnimationPanel.vue';
 import ContextMenu from '@/components/EditorPanels/ContextMenu.vue';
 import GASMPanel from '@/components/EditorPanels/GASMPanel.vue';
 import JsonPanel from '@/components/EditorPanels/JsonPanel.vue';
 import KeyHint from '@/components/EditorPanels/KeyHint.vue';
 import ResizableColPanel from '@/components/EditorPanels/ResizableColPanel.vue';
+import { FreeControls } from '@/editor/FreeControls';
+import GizmoControls from '@/editor/GizmoControls';
+import { LevelLoader } from '@/editor/LevelLoader';
 import { animation } from '@/generated/helpers';
 import {
 	triggerSourceWithBasic,
@@ -35,6 +29,7 @@ import ScaleIcon from '@/icons/ScaleIcon.vue';
 import SpaceIcon from '@/icons/SpaceIcon.vue';
 import TranslateIcon from '@/icons/TranslateIcon.vue';
 import { useConfigStore } from '@/stores/config';
+import { play_sound } from '@/tools/sfxr';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls';
 import { defineComponent } from 'vue';

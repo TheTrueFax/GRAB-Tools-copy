@@ -1,7 +1,7 @@
 <script>
-import StatsLoader from '@/assets/StatsLoader';
 import LeaderboardCard from '@/components/LeaderboardCard.vue';
 import ProgressBar from '@/components/ProgressBar.vue';
+import StatsLoader from '@/editor/StatsLoader';
 import BlockedIcon from '@/icons/BlockedIcon.vue';
 import CalendarBlankIcon from '@/icons/CalendarBlankIcon.vue';
 import CalendarIcon from '@/icons/CalendarIcon.vue';

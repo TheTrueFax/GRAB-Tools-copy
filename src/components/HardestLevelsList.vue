@@ -1,6 +1,5 @@
 <script>
-import { downloadLevel } from '@/assets/encoding/levels';
-import downloads from '@/assets/tools/downloads';
+import { downloadLevel } from '@/common/levels';
 import CheckmarkIcon from '@/icons/CheckmarkIcon.vue';
 import CrossIcon from '@/icons/CrossIcon.vue';
 import DownloadIcon from '@/icons/DownloadIcon.vue';
@@ -8,6 +7,7 @@ import EditIcon from '@/icons/EditIcon.vue';
 import { add_hardest_level_request } from '@/requests/AddHardestLevelRequest';
 import { remove_hardest_level_request } from '@/requests/RemoveHardestLevelRequest';
 import { useUserStore } from '@/stores/user';
+import downloads from '@/tools/downloads';
 import { mapState } from 'pinia';
 
 export default {

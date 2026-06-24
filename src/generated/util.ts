@@ -1,4 +1,4 @@
-import { LevelNodeTypes, LevelNodeWith } from '@/types/levelNodes';
+import { LevelNodeTypes, LevelNodeWith } from '@/common/levelNodes';
 import { levelNode, triggerSource, triggerTarget } from './helpers';
 import { TriggerSource, TriggerTarget } from './proto';
 

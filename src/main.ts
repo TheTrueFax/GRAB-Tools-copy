@@ -8,7 +8,7 @@ import { createPinia } from 'pinia';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import { createApp } from 'vue';
 
-import '@/assets/globals.css';
+import '@/styles/globals.css';
 
 const app = createApp(App);
 app.config.globalProperties.$config = config;

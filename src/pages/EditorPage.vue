@@ -1,8 +1,7 @@
 <script>
-import { createLevel, decodeLevel } from '@/assets/encoding/levels';
-import { get_protobuf, set_protobuf } from '@/assets/encoding/root';
-import { deepClone, json_parse } from '@/assets/encoding/utils';
-import downloads from '@/assets/tools/downloads';
+import { createLevel, decodeLevel } from '@/common/levels';
+import { get_protobuf, set_protobuf } from '@/common/root';
+import { deepClone, json_parse } from '@/common/utils';
 import JsonPanel from '@/components/EditorPanels/JsonPanel.vue';
 import MenuPanel from '@/components/EditorPanels/MenuPanel.vue';
 import PopupPanel from '@/components/EditorPanels/PopupPanel.vue';
@@ -15,6 +14,7 @@ import TerminalPanel from '@/components/EditorPanels/TerminalPanel.vue';
 import ViewportPanel from '@/components/EditorPanels/ViewportPanel.vue';
 import { useConfigStore } from '@/stores/config';
 import { useUserStore } from '@/stores/user';
+import downloads from '@/tools/downloads';
 import { mapState } from 'pinia';
 
 export default {

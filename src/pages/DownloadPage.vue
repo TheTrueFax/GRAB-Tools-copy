@@ -1,7 +1,7 @@
 <script>
-import { downloadLevel } from '@/assets/encoding/levels';
-import downloads from '@/assets/tools/downloads';
+import { downloadLevel } from '@/common/levels';
 import { useUserStore } from '@/stores/user';
+import downloads from '@/tools/downloads';
 import { mapState } from 'pinia';
 
 export default {

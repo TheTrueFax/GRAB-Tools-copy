@@ -1,5 +1,5 @@
 <script>
-import { groupNodes, recursiveUngroup } from '@/assets/encoding/group';
+import { groupNodes, recursiveUngroup } from '@/common/group';
 import {
 	ambienceSettings,
 	createLevel,
@@ -7,8 +7,8 @@ import {
 	downloadJSON,
 	downloadLevel,
 	encodeLevel,
-} from '@/assets/encoding/levels';
-import { load } from '@/assets/encoding/root';
+} from '@/common/levels';
+import { load } from '@/common/root';
 import {
 	deepClone,
 	json_parse,
@@ -18,18 +18,7 @@ import {
 	random_shape,
 	shapes,
 	traverse_node,
-} from '@/assets/encoding/utils';
-import audio from '@/assets/tools/audio';
-import BrushTool from '@/assets/tools/brush';
-import car from '@/assets/tools/car';
-import gun from '@/assets/tools/gun';
-import image from '@/assets/tools/image';
-import midi from '@/assets/tools/midi';
-import monochrome from '@/assets/tools/monochrome';
-import { obj } from '@/assets/tools/obj';
-import signs from '@/assets/tools/signs';
-import svg from '@/assets/tools/svg';
-import video from '@/assets/tools/video';
+} from '@/common/utils';
 import { animation, animationFrame } from '@/generated/helpers';
 import {
 	levelNodeWithCrumbling,
@@ -51,6 +40,17 @@ import {
 	triggerTargetWithSubLevel,
 } from '@/generated/nodes';
 import { useConfigStore } from '@/stores/config';
+import audio from '@/tools/audio';
+import BrushTool from '@/tools/brush';
+import car from '@/tools/car';
+import gun from '@/tools/gun';
+import image from '@/tools/image';
+import midi from '@/tools/midi';
+import monochrome from '@/tools/monochrome';
+import { obj } from '@/tools/obj';
+import signs from '@/tools/signs';
+import svg from '@/tools/svg';
+import video from '@/tools/video';
 import { mapActions, mapState } from 'pinia';
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';

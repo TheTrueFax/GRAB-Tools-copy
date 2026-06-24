@@ -82,44 +82,55 @@ Development helper scripts in `scripts/`:
 
 ```sh
 .
+├─ .github/          # github actions
 ├─ scripts/          # scripts for development
 ├─ public/           # public website assets
+│  ├─ bookmarklets/    # javascript bookmarklet sources
 │  ├─ fonts/           # fonts
+│  ├─ gasm/            # grab assembly samples
 │  ├─ images/          # images
 │  ├─ levels/          # levels for editor templates
 │  └─ favicon.png      # website icon
 ├─ src/              # website sources
-│  ├─ assets/          # website assets (included in build)
-│  │  ├─ bookmarklets/   # javascript bookmarklet sources
+│  ├─ assets/          # built in assets
 │  │  ├─ models/         # level models
 │  │  ├─ proto/          # level protobuf definition
 │  │  ├─ shaders/        # editor shaders
 │  │  ├─ textures/       # level textures
-│  │  ├─ tools/          # javascript tool modules
-│  │  ├─ *.css           # global css
-│  │  └─ *.js            # js utils
-│  ├─ components/      # vue general components
-│  │  └─ EditorPanels/   # components for the json editor
+│  ├─ common/          # common js & ts code
+│  ├─ components/      # vue components
+│  │  ├─ EditorPanels/   # components for the json editor
+│  │  └─ tools/          # components for tools
+│  ├─ editor/          # editor code
+│  ├─ generated/       # generated helper functions and types
 │  ├─ icons/           # vue svg icon components
 │  ├─ layouts/         # vue layout components
 │  ├─ pages/           # vue page components
-│  ├─ requests/        # javascript fetch requests
+│  ├─ requests/        # fetch requests
 │  ├─ stores/          # vue session stores
-│  ├─ tools/           # vue tool components
+│  ├─ styles/          # css source
+│  ├─ tools/           # tool sources
+│  ├─ types/           # global types
 │  ├─ App.vue          # vue app structure
-│  ├─ config.js        # general config / globals
-│  ├─ main.js          # website javascript entrypoint
-│  └─ router.js        # vue router config
+│  ├─ config.ts        # general config / globals
+│  ├─ main.ts          # website entrypoint
+│  └─ router.ts        # vue router config
 ├─ src-tauri/        # tauri rust application sources
-├─ .eslintrc.cjs     # eslint linting config
+├─ test/             # unit tests
+├─ .env.example      # example env config
+├─ .gitattributes    # git attributes
 ├─ .gitignore        # gitignore
 ├─ .nvim.lua         # optional nvim config
+├─ .nvmrc            # pinned node version
+├─ .prettierignore   # prettier ignore config
 ├─ .prettierrc.json  # prettier formatting config
 ├─ CONTRIBUTING.md   # contribution guide
 ├─ README.md         # this file
+├─ eslint.config.ts  # eslint config
 ├─ index.html        # mountable app html
-├─ jsconfig.json     # javascript config
 ├─ package-lock.json # npm packages lock file
 ├─ package.json      # npm config and packages
-└─ vite.config.js    # vite config
+├─ tsconfig.json     # typescript config
+├─ vite.config.ts    # vite config
+└─ vitest.config.ts  # vitest config
 ```

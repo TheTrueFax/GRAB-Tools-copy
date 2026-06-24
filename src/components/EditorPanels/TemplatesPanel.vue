@@ -1,68 +1,7 @@
-<template>
-	<section :ref="'templates'">
-		<span
-			class="title close"
-			@click="
-				() => {
-					$emit('close');
-				}
-			"
-			>Close</span
-		>
-		<div
-			v-for="[name, templates_list] in Object.entries(templates)"
-			:key="name"
-			class="templates-section"
-		>
-			<span
-				class="title"
-				@click="
-					() => {
-						toggle(name);
-					}
-				"
-				>{{ name }}</span
-			>
-			<div
-				v-show="active_sections.includes(name)"
-				class="templates-group"
-			>
-				<div
-					v-for="(template, i) of templates_list"
-					:key="i"
-					class="template"
-				>
-					<span class="name">{{ template.name }}</span>
-					<button
-						class="open"
-						@click="
-							() => {
-								open(template);
-							}
-						"
-					>
-						Open
-					</button>
-					<button
-						class="add"
-						@click="
-							() => {
-								add(template);
-							}
-						"
-					>
-						Insert
-					</button>
-				</div>
-			</div>
-		</div>
-	</section>
-</template>
-
 <script>
-import { decodeLevel } from '@/assets/encoding/levels';
-import { add_nodes } from '@/assets/encoding/utils';
-import downloads from '@/assets/tools/downloads';
+import { decodeLevel } from '@/common/levels';
+import { add_nodes } from '@/common/utils';
+import downloads from '@/tools/downloads';
 
 export default {
 	emits: ['modifier', 'close'],
@@ -269,6 +208,67 @@ export default {
 	},
 };
 </script>
+
+<template>
+	<section :ref="'templates'">
+		<span
+			class="title close"
+			@click="
+				() => {
+					$emit('close');
+				}
+			"
+			>Close</span
+		>
+		<div
+			v-for="[name, templates_list] in Object.entries(templates)"
+			:key="name"
+			class="templates-section"
+		>
+			<span
+				class="title"
+				@click="
+					() => {
+						toggle(name);
+					}
+				"
+				>{{ name }}</span
+			>
+			<div
+				v-show="active_sections.includes(name)"
+				class="templates-group"
+			>
+				<div
+					v-for="(template, i) of templates_list"
+					:key="i"
+					class="template"
+				>
+					<span class="name">{{ template.name }}</span>
+					<button
+						class="open"
+						@click="
+							() => {
+								open(template);
+							}
+						"
+					>
+						Open
+					</button>
+					<button
+						class="add"
+						@click="
+							() => {
+								add(template);
+							}
+						"
+					>
+						Insert
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+</template>
 
 <style scoped>
 section {

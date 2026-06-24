@@ -1,12 +1,12 @@
 <script>
-import { asm_to_json, json_to_asm } from '@/assets/AssemblyConversion';
-import build_editor from '@/assets/EditorSetup';
+import { asm_to_json, json_to_asm } from '@/editor/AssemblyConversion';
+import build_editor from '@/editor/EditorSetup';
 import {
 	gasmCompletion,
 	update_json_completions,
 	update_text_completions,
-} from '@/assets/GASMCompletion';
-import { gasm } from '@/assets/GASMDSL';
+} from '@/editor/GASMCompletion';
+import { gasm } from '@/editor/GASMDSL';
 import { useConfigStore } from '@/stores/config';
 import { foldGutter } from '@codemirror/language';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';

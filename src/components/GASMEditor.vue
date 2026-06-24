@@ -1,13 +1,13 @@
 <script>
-import { compile_gasm } from '@/assets/AssemblyConversion';
-import build_editor from '@/assets/EditorSetup';
-import { create_connection } from '@/assets/encoding/gasm/connections';
+import { create_connection } from '@/common/connections';
+import { compile_gasm } from '@/editor/AssemblyConversion';
+import build_editor from '@/editor/EditorSetup';
 import {
 	gasmCompletion,
 	update_json_completions,
-} from '@/assets/GASMCompletion';
-import { gasmDiagnostics } from '@/assets/GASMDiagnostics';
-import { gasm } from '@/assets/GASMDSL';
+} from '@/editor/GASMCompletion';
+import { gasmDiagnostics } from '@/editor/GASMDiagnostics';
+import { gasm } from '@/editor/GASMDSL';
 import { levelNodeWithGASM } from '@/generated/nodes';
 import { useConfigStore } from '@/stores/config';
 import { redo, undo } from '@codemirror/commands';

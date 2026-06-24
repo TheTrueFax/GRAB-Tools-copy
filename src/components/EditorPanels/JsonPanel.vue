@@ -1,6 +1,6 @@
 <script>
-import build_editor from '@/assets/EditorSetup';
-import { grabCompletion } from '@/assets/grabCompletion';
+import build_editor from '@/editor/EditorSetup';
+import { grabCompletion } from '@/editor/grabCompletion';
 import { redo, undo } from '@codemirror/commands';
 import { json } from '@codemirror/lang-json';
 import { foldGutter } from '@codemirror/language';
