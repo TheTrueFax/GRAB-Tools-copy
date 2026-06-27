@@ -5,14 +5,52 @@ const _changeEvent = { type: 'change' };
 // prettier-ignore
 class FreeControls extends THREE.EventDispatcher {
 
-	constructor( object, domElement ) {
+	object: THREE.Object3D;
+	domElement: HTMLElement;
+
+	movementSpeed: number;
+	rollSpeed: number;
+	isMouseActive: boolean;
+
+	moveState: {
+		left: number, right: number, forward: number, back: number, up: number, down: number,
+		pitchUp: number, pitchDown: number, yawLeft: number, yawRight: number
+	};
+	moveVector: THREE.Vector3;
+	rotationVector: THREE.Vector3;
+	eulerVector: THREE.Euler;
+	movementSpeedMultiplier: number;
+
+	touchCount: number;
+	touchPosition: THREE.Vector3;
+
+	keydown: (_: KeyboardEvent) => void;
+	keyup: (_: KeyboardEvent) => void;
+	mousedown: (_: MouseEvent) => void;
+	mouseup: (_: MouseEvent) => void;
+	mousemove: (_: MouseEvent) => void;
+	touchstart: (_: TouchEvent) => void;
+	touchend: (_: TouchEvent) => void;
+	touchcancel: (_: TouchEvent) => void;
+	touchmove: (_: TouchEvent) => void;
+
+	update: (delta: number) => void;
+
+	updateMovementVector: () => void;
+	updateRotationVector: () => void;
+
+	getContainerDimensions: () => { size: [number, number], offset: [number, number] };
+
+	dispose: () => void;
+
+	constructor( object: THREE.Object3D, domElement?: HTMLElement | undefined ) {
 
 		super();
 
 		if ( domElement === undefined ) {
 
 			console.warn( 'FreeControls: The second parameter "domElement" is now mandatory.' );
-			domElement = document;
+			domElement = document.body;
 
 		}
 
@@ -154,8 +192,8 @@ class FreeControls extends THREE.EventDispatcher {
 
 		this.touchstart = function(event){
 			this.touchCount = event.targetTouches.length;
-			this.touchPosition.x = event.targetTouches[0].screenX;
-			this.touchPosition.y = event.targetTouches[0].screenY;
+			this.touchPosition.x = event.targetTouches[0]!.screenX;
+			this.touchPosition.y = event.targetTouches[0]!.screenY;
 
 			console.log('start: ' + this.touchCount);
 
@@ -185,11 +223,11 @@ class FreeControls extends THREE.EventDispatcher {
 		this.touchmove = function(event){
 			if(this.touchCount > 0)
 			{
-				this.moveState.yawLeft = event.targetTouches[0].screenX - this.touchPosition.x;
-				this.moveState.pitchDown = this.touchPosition.y - event.targetTouches[0].screenY;
+				this.moveState.yawLeft = event.targetTouches[0]!.screenX - this.touchPosition.x;
+				this.moveState.pitchDown = this.touchPosition.y - event.targetTouches[0]!.screenY;
 
-				this.touchPosition.x = event.targetTouches[0].screenX;
-				this.touchPosition.y = event.targetTouches[0].screenY;
+				this.touchPosition.x = event.targetTouches[0]!.screenX;
+				this.touchPosition.y = event.targetTouches[0]!.screenY;
 
 				this.updateRotationVector();
 			}
@@ -221,7 +259,7 @@ class FreeControls extends THREE.EventDispatcher {
 				8 * ( 1 - lastQuaternion.dot( scope.object.quaternion ) ) > EPS
 			) {
 
-				scope.dispatchEvent( _changeEvent );
+				scope.dispatchEvent( _changeEvent as never );
 				lastQuaternion.copy( scope.object.quaternion );
 				lastPosition.copy( scope.object.position );
 
@@ -246,7 +284,7 @@ class FreeControls extends THREE.EventDispatcher {
 		};
 
 		this.getContainerDimensions = function(){
-			if(this.domElement != document)
+			if(this.domElement != document.body)
 			{
 				return {
 					size: [ this.domElement.offsetWidth, this.domElement.offsetHeight ],
@@ -308,7 +346,7 @@ class FreeControls extends THREE.EventDispatcher {
 }
 
 // prettier-ignore
-function contextmenu(event)
+function contextmenu(event: Event)
 {
 	event.preventDefault();
 }
