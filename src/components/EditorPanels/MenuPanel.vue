@@ -44,7 +44,7 @@ import audio from '@/tools/audio';
 import BrushTool from '@/tools/brush';
 import car from '@/tools/car';
 import gun from '@/tools/gun';
-import image from '@/tools/image';
+import { generate_pixel_art } from '@/tools/image';
 import midi from '@/tools/midi';
 import monochrome from '@/tools/monochrome';
 import { obj } from '@/tools/obj';
@@ -735,7 +735,7 @@ export default {
 					width = parseInt(width) || 50;
 					height = parseInt(height.value) || 50;
 
-					const node = await image.image(
+					const node = await generate_pixel_art(
 						file,
 						width,
 						height,

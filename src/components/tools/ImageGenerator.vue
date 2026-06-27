@@ -1,6 +1,6 @@
 <script>
 import { createLevel, downloadLevel, encodeLevel } from '@/common/levels';
-import image from '@/tools/image';
+import { generate_pixel_art } from '@/tools/image';
 import ToolTemplate from './ToolTemplate.vue';
 
 export default {
@@ -24,7 +24,13 @@ export default {
 			const mode = getByID(`${toolID}-mode`).value;
 			const shape = getByID(`${toolID}-shape`).value;
 
-			const node = await image.image(file, width, height, mode, shape);
+			const node = await generate_pixel_art(
+				file,
+				width,
+				height,
+				mode,
+				shape,
+			);
 
 			const obj = createLevel(
 				[node],
