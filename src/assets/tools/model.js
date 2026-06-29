@@ -3,8 +3,11 @@ import {
 	acceleratedRaycast,
 	computeBoundsTree,
 	disposeBoundsTree,
+    MeshBVH,
 } from 'three-mesh-bvh';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { levelNodeWithStatic } from '@/generated/nodes';
+import { groupNodes } from '../encoding/group';
 
 /**
  * @param {File} file - A OBJ file
@@ -20,6 +23,22 @@ async function model(file) {
 		return null;
 	}
 }
+
+function create_simple_static(position, size) {
+    const node = levelNodeWithStatic();
+    node.levelNodeStatic.position = {
+        x: position.x,
+        y: position.y,
+        z: position.z
+    };
+    node.levelNodeStatic.scale = {
+        x: size.x,
+        y: size.y,
+        z: size.z
+    };
+    return node;
+}
+
 
 class OctreeNode {
 	constructor(center, size) {
@@ -44,35 +63,35 @@ function calculate_octree(node, matrix, mesh, raycaster) {
 		),
 	);
 
-	if (!mesh.geometry.boundsTree.intersectsBox(box, matrix)) {
-		return point_in_mesh(node.center, mesh, raycaster)
-			? 2 // filled
-			: 0; // empty
+	if (mesh.geometry.boundsTree.intersectsBox(box, matrix)) {
+		return 1; // mixed
 	}
 
-	const xs = [box.min.x, box.max.x];
-	const ys = [box.min.y, box.max.y];
-	const zs = [box.min.z, box.max.z];
+    //console.log(node.center, node, point_in_mesh(node.center, mesh, raycaster))
 
-	for (const x of xs)
-		for (const y of ys)
-			for (const z of zs) {
-				if (
-					!point_in_mesh(new THREE.Vector3(x, y, z), mesh, raycaster)
-				) {
-					return 1; // mixed
-				}
-			}
-
-	return 2; // filled
+    return point_in_mesh(node.center, mesh, raycaster)
+        ? 2
+        : 0;
 }
 
 function point_in_mesh(point, mesh, raycaster) {
-	raycaster.set(point, new THREE.Vector3(1, 0, 0));
+    const direction = new THREE.Vector3(0.218094, 1.5324, 0.53903).normalize();
+    let count = 0;
 
-	const hits = raycaster.intersectObject(mesh, false);
+    raycaster.set(point, direction);
 
-	return hits.length % 2 === 1;
+    raycaster.firstHitOnly = false; 
+    
+    mesh.geometry.boundsTree.shapecast({
+        intersectsBounds: box => true,
+        intersectsTriangle: (tri, index) => {
+            if (raycaster.ray.intersectTriangle(tri.a, tri.b, tri.c, false, new THREE.Vector3())) {
+                count++;
+            }
+        }
+    });
+
+    return count % 2 === 1;
 }
 
 function build_octree(mesh, raycaster, max_depth) {
@@ -100,6 +119,9 @@ function build_octree(mesh, raycaster, max_depth) {
 				mesh,
 				raycaster,
 			);
+            if (i == max_depth - 1 && oct.type == 1) {
+                oct.type = 0;
+            }
 			if (oct.type == 1) {
 				// mixed
 				oct.children = [];
@@ -126,12 +148,35 @@ function build_octree(mesh, raycaster, max_depth) {
 				}
 			}
 		}
-		console.log(pending_buffer);
 		pending_octrees = pending_buffer;
 		pending_buffer = [];
 	}
 
 	return parent_octree;
+}
+
+function generate_shapes(octree) {
+    if (octree.type == null) return [];
+
+    if (octree.type == 2) { // filled completely
+        return [create_simple_static(
+            octree.center,
+            octree.size.clone().multiplyScalar(2)
+        )];
+    } if (octree.type == 1) { // mixed
+        if (!octree.children) return [];
+        if (octree.children.length!=8) return [];
+
+        let children_shapes = [];
+        for (let i=0; i < 8; i++) {
+            children_shapes.push(
+                ...generate_shapes(octree.children[i])
+            );
+        }
+
+        return children_shapes;
+    }
+    return [];
 }
 
 async function generate(file) {
@@ -160,11 +205,18 @@ async function generate(file) {
 	// Compute bounds tree on extracted BufferGeometry
 	const mesh = parsedObject.children[0];
 	mesh.geometry.computeBoundsTree();
+    mesh.updateMatrixWorld(true);
 
 	// Create raycaster
 	const raycaster = new THREE.Raycaster();
 
+    // Generate octree for mesh
 	const octree = build_octree(mesh, raycaster, 4);
+
+    console.log(octree);
+
+    // simple recursive turn octree into static nodes
+    return generate_shapes(octree);
 }
 
 export default {
