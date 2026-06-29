@@ -21,16 +21,27 @@ import { Midi } from '@tonejs/midi';
 /**
  * @param {File} file - A midi file
  * @param {Number} node_count - node count to offset ids
+ * @param {String} inst_type - instrument generation type
  * @param {Boolean} start_active - should the animation be start active
  * @param {Boolean} loop - should the animation loop
+ * @param {Boolean} optimize - option to merge tracks which can optimize complexity
  * @param {Number} volume - volume multiplier for whole song (0-1)
  * @returns {Promise<Object>} - A group level node
  */
-async function midi(file, node_count, start_active, loop, optimize, volume) {
+async function midi(file, node_count, inst_type, start_active, loop, optimize, volume) {
+	console.log(inst_type);
 	if (start_active && !loop) {
 		// Can't make a non-looping start active animation in grab.
 		window.toast(
 			'Cannot make an animation start active and not looping.',
+			'error',
+		);
+		return null;
+	}
+	if (optimize && inst_type == "Auto Instrument") {
+		// Merging tracks with instruments is a no-go and also plain dosent work
+		window.toast(
+			'Cannot optimize an "Auto Instrument" MIDI song.',
 			'error',
 		);
 		return null;
@@ -43,6 +54,7 @@ async function midi(file, node_count, start_active, loop, optimize, volume) {
 			loop,
 			optimize,
 			volume,
+			inst_type,
 		);
 		if (!level_nodes) return null;
 		return groupNodes(level_nodes);
@@ -86,6 +98,29 @@ function get_basic_sound_block(position, pitch, amplitude, instrument) {
 	};
 	return node;
 }
+function get_basic_sound_block_drums(position, amplitude, instrument) {
+	console.log(instrument.name)
+	const node = levelNodeWithSound();
+	node.levelNodeSound.position = position;
+	node.levelNodeSound.name = unique_sound_name(instrument.name, null);
+	node.levelNodeSound.volume = amplitude * instrument.velocity;
+	node.levelNodeSound.maxRangeFactor = 1000;
+	node.levelNodeSound.parameters = {
+		...node.levelNodeSound.parameters,
+		waveType: SoundGeneratorParametersWaveType.Noise,
+		envelopeAttack: instrument.attack,
+		envelopeSustain: instrument.sustain,
+		envelopeRelease: instrument.decay,
+		envelopePunch: instrument.sustainPunch,
+		frequencyBase: midi_to_hz(instrument.basePitch),
+		frequencyLimit: 35,
+		frequencyRamp: instrument.freqRamp,
+		frequencyDeltaRamp: instrument.freqDeltaRamp,
+		pitchJumpMod: 0.10000000149011612,
+		lowPassFilterFrequency: 10000,
+	};
+	return node;
+}
 function get_basic_sound_block_classic(position, pitch, amplitude, isNoise, waveType) {
 	const node = levelNodeWithSound();
 	node.levelNodeSound.position = position;
@@ -105,6 +140,7 @@ function get_basic_sound_block_classic(position, pitch, amplitude, isNoise, wave
 		frequencyLimit: 35,
 		pitchJumpMod: 0.10000000149011612,
 		lowPassFilterFrequency: 10000,
+		dutyCycle: (waveType == "square") ? 0.5 : 0, // Duty cycle required for square waves
 	};
 	return node;
 }
@@ -141,7 +177,11 @@ function get_sound_trigger_block(x, y, target_id, start_active, looping) {
 // Other helpers
 function unique_sound_name(instrument_name, pitch) {
 	if (instrument_name) {
-		return `grab-tools.live | ${instrument_name} | ${pitch}hz`;
+		if (pitch) {
+			return `grab-tools.live | ${instrument_name} | ${pitch}hz`;
+		} else {
+			return `grab-tools.live | ${instrument_name}`;
+		}
 	} else {
 		return `grab-tools.live | ${pitch}hz`;
 	}
@@ -181,7 +221,7 @@ function parse_unparsed_tracks(tracks) {
 			notes.push({
 				start: note.time,
 				duration: note.duration,
-				frequency_hertz: midi_to_hz(note.midi),
+				frequency_hertz: (track.channel==9) ? note.midi : midi_to_hz(note.midi), // the midi value needs to be preserved for drums
 				midi: note.midi,
 				velocity: note.velocity,
 			});
@@ -411,6 +451,7 @@ async function generate(
 	loop,
 	optimize,
 	volume,
+	instrument,
 ) {
 	// Decode midi file into JSON
 	const m = await decode_midi_file_as_json(file);
@@ -427,6 +468,9 @@ async function generate(
 	// Get duration of song in seconds
 	const duration = get_duration(tracks);
 
+	const is_auto_inst = instrument == "Auto Instrument";
+	const wave_type_classic = instrument.includes("Sine") ? "sine" : instrument.includes("Saw") ? "sawtooth" : "square";
+
 	let sound_blocks = [];
 	let triggers = [];
 	let wall_blocks = [];
@@ -442,24 +486,46 @@ async function generate(
 		unique_pitches.forEach((hz) => {
 			let track = tracks[t];
 			if (track.isDrums) {
-				sound_blocks.push(
-					get_basic_sound_block_classic(
-						{ x: 0, y: t, z: -1 },
-						hz * (track.isDrums ? 2.5 : 1), // Frequency is doubled for drum tracks
-						track.note_volumes[String(hz)] * volume,
-						track.isDrums,
-						"noise"
-					),
-				);
+				if (is_auto_inst) {
+					sound_blocks.push(
+						get_basic_sound_block_drums(
+							{ x: 0, y: t, z: -1 },
+							track.note_volumes[String(hz)] * volume,
+							get_instrument(hz), // hz is a preserved midi value for drum tracks
+						),
+					);
+				} else {
+					sound_blocks.push(
+						get_basic_sound_block_classic(
+							{ x: 0, y: t, z: -1 },
+							midi_to_hz(hz) * (track.isDrums ? 2.5 : 1), // Frequency is doubled for drum tracks
+							track.note_volumes[String(hz)] * volume,
+							true, // is drums
+							"noise"
+						),
+					);
+				}
 			} else {
-				sound_blocks.push(
-					get_basic_sound_block(
-						{ x: 0, y: t, z: -1 },
-						hz,
-						track.note_volumes[String(hz)] * volume,
-						get_instrument(track.instrument)
-					),
-				);
+				if (is_auto_inst) {
+					sound_blocks.push(
+						get_basic_sound_block(
+							{ x: 0, y: t, z: -1 },
+							hz,
+							track.note_volumes[String(hz)] * volume,
+							get_instrument(track.instrument, false)
+						),
+					);
+				} else {
+					sound_blocks.push(
+						get_basic_sound_block_classic(
+							{ x: 0, y: t, z: -1 },
+							hz,
+							track.note_volumes[String(hz)] * volume,
+							false, // isnt drums
+							wave_type_classic,
+						),
+					);
+				}
 			}
 		});
 
