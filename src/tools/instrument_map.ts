@@ -1665,6 +1665,526 @@ const instrument_map = [
   }
 ];
 
-export function get_instrument(index: number) {
-    return instrument_map[index];
+const percussion_map = [
+  {
+    "name": "Acoustic Bass Drum",
+    "basePitch": 44,
+    "velocity": 1.00,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.20,
+    "decay": 0.22,
+    "freqRamp": 0.06,
+    "freqDeltaRamp": -28
+  },
+  {
+    "name": "Bass Drum 1",
+    "basePitch": 46,
+    "velocity": 1.00,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.15,
+    "decay": 0.20,
+    "freqRamp": 0.05,
+    "freqDeltaRamp": -24
+  },
+  {
+    "name": "Side Stick",
+    "basePitch": 82,
+    "velocity": 0.85,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 0.95,
+    "decay": 0.035,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Acoustic Snare",
+    "basePitch": 64,
+    "velocity": 0.98,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.10,
+    "decay": 0.12,
+    "freqRamp": 0.035,
+    "freqDeltaRamp": -12
+  },
+  {
+    "name": "Hand Clap",
+    "basePitch": 72,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.020,
+    "sustainPunch": 1.25,
+    "decay": 0.16,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Electric Snare",
+    "basePitch": 67,
+    "velocity": 0.95,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.05,
+    "decay": 0.10,
+    "freqRamp": 0.030,
+    "freqDeltaRamp": -10
+  },
+  {
+    "name": "Low Floor Tom",
+    "basePitch": 42,
+    "velocity": 0.96,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.00,
+    "decay": 0.18,
+    "freqRamp": 0.050,
+    "freqDeltaRamp": -18
+  },
+  {
+    "name": "Closed Hi-Hat",
+    "basePitch": 98,
+    "velocity": 0.88,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.05,
+    "decay": 0.045,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "High Floor Tom",
+    "basePitch": 47,
+    "velocity": 0.95,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.00,
+    "decay": 0.16,
+    "freqRamp": 0.048,
+    "freqDeltaRamp": -17
+  },
+  {
+    "name": "Pedal Hi-Hat",
+    "basePitch": 95,
+    "velocity": 0.82,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 0.95,
+    "decay": 0.035,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Low Tom",
+    "basePitch": 50,
+    "velocity": 0.94,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.00,
+    "decay": 0.15,
+    "freqRamp": 0.045,
+    "freqDeltaRamp": -16
+  },
+  {
+    "name": "Open Hi-Hat",
+    "basePitch": 100,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.10,
+    "decay": 0.42,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Low-Mid Tom",
+    "basePitch": 53,
+    "velocity": 0.93,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.00,
+    "decay": 0.14,
+    "freqRamp": 0.042,
+    "freqDeltaRamp": -15
+  },
+  {
+    "name": "Hi-Mid Tom",
+    "basePitch": 57,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.00,
+    "decay": 0.13,
+    "freqRamp": 0.040,
+    "freqDeltaRamp": -14
+  },
+  {
+    "name": "Crash Cymbal 1",
+    "basePitch": 110,
+    "velocity": 1.00,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.15,
+    "decay": 1.80,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "High Tom",
+    "basePitch": 60,
+    "velocity": 0.90,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 0.98,
+    "decay": 0.12,
+    "freqRamp": 0.038,
+    "freqDeltaRamp": -13
+  },
+  {
+    "name": "Ride Cymbal 1",
+    "basePitch": 104,
+    "velocity": 0.95,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.05,
+    "decay": 2.40,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Chinese Cymbal",
+    "basePitch": 107,
+    "velocity": 1.00,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.20,
+    "decay": 1.60,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Ride Bell",
+    "basePitch": 111,
+    "velocity": 0.95,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.10,
+    "decay": 1.30,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Tambourine",
+    "basePitch": 90,
+    "velocity": 0.90,
+    "attack": 0.000,
+    "sustain": 0.010,
+    "sustainPunch": 1.15,
+    "decay": 0.70,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Splash Cymbal",
+    "basePitch": 113,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.10,
+    "decay": 0.85,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Cowbell",
+    "basePitch": 84,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.020,
+    "sustainPunch": 1.00,
+    "decay": 0.45,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Crash Cymbal 2",
+    "basePitch": 109,
+    "velocity": 0.98,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.15,
+    "decay": 1.90,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Vibraslap",
+    "basePitch": 76,
+    "velocity": 0.88,
+    "attack": 0.000,
+    "sustain": 0.030,
+    "sustainPunch": 1.20,
+    "decay": 0.65,
+    "freqRamp": 0.020,
+    "freqDeltaRamp": -4
+  },
+  {
+    "name": "Ride Cymbal 2",
+    "basePitch": 102,
+    "velocity": 0.90,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.00,
+    "decay": 2.10,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Hi Bongo",
+    "basePitch": 76,
+    "velocity": 0.88,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.05,
+    "decay": 0.13,
+    "freqRamp": 0.025,
+    "freqDeltaRamp": -8
+  },
+  {
+    "name": "Low Bongo",
+    "basePitch": 68,
+    "velocity": 0.90,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.05,
+    "decay": 0.16,
+    "freqRamp": 0.030,
+    "freqDeltaRamp": -9
+  },
+  {
+    "name": "Mute Hi Conga",
+    "basePitch": 80,
+    "velocity": 0.88,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 0.95,
+    "decay": 0.10,
+    "freqRamp": 0.020,
+    "freqDeltaRamp": -6
+  },
+  {
+    "name": "Open Hi Conga",
+    "basePitch": 82,
+    "velocity": 0.90,
+    "attack": 0.000,
+    "sustain": 0.020,
+    "sustainPunch": 1.00,
+    "decay": 0.26,
+    "freqRamp": 0.030,
+    "freqDeltaRamp": -8
+  },
+  {
+    "name": "Low Conga",
+    "basePitch": 62,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.020,
+    "sustainPunch": 1.00,
+    "decay": 0.30,
+    "freqRamp": 0.040,
+    "freqDeltaRamp": -10
+  },
+  {
+    "name": "High Timbale",
+    "basePitch": 84,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.05,
+    "decay": 0.12,
+    "freqRamp": 0.025,
+    "freqDeltaRamp": -12
+  },
+  {
+    "name": "Low Timbale",
+    "basePitch": 74,
+    "velocity": 0.94,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.05,
+    "decay": 0.15,
+    "freqRamp": 0.030,
+    "freqDeltaRamp": -14
+  },
+  {
+    "name": "High Agogo",
+    "basePitch": 92,
+    "velocity": 0.90,
+    "attack": 0.000,
+    "sustain": 0.010,
+    "sustainPunch": 1.05,
+    "decay": 0.55,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Low Agogo",
+    "basePitch": 80,
+    "velocity": 0.90,
+    "attack": 0.000,
+    "sustain": 0.010,
+    "sustainPunch": 1.05,
+    "decay": 0.65,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Cabasa",
+    "basePitch": 90,
+    "velocity": 0.85,
+    "attack": 0.000,
+    "sustain": 0.030,
+    "sustainPunch": 1.10,
+    "decay": 0.30,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Maracas",
+    "basePitch": 94,
+    "velocity": 0.88,
+    "attack": 0.000,
+    "sustain": 0.020,
+    "sustainPunch": 1.15,
+    "decay": 0.18,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Short Whistle",
+    "basePitch": 106,
+    "velocity": 0.82,
+    "attack": 0.000,
+    "sustain": 0.040,
+    "sustainPunch": 0.90,
+    "decay": 0.18,
+    "freqRamp": 0.020,
+    "freqDeltaRamp": -2
+  },
+  {
+    "name": "Long Whistle",
+    "basePitch": 98,
+    "velocity": 0.84,
+    "attack": 0.000,
+    "sustain": 0.45,
+    "sustainPunch": 0.80,
+    "decay": 0.30,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Short Guiro",
+    "basePitch": 88,
+    "velocity": 0.86,
+    "attack": 0.000,
+    "sustain": 0.030,
+    "sustainPunch": 1.20,
+    "decay": 0.12,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Long Guiro",
+    "basePitch": 78,
+    "velocity": 0.86,
+    "attack": 0.000,
+    "sustain": 0.280,
+    "sustainPunch": 1.00,
+    "decay": 0.22,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Claves",
+    "basePitch": 86,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.10,
+    "decay": 0.08,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Hi Wood Block",
+    "basePitch": 95,
+    "velocity": 0.88,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.00,
+    "decay": 0.09,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Low Wood Block",
+    "basePitch": 82,
+    "velocity": 0.88,
+    "attack": 0.000,
+    "sustain": 0.000,
+    "sustainPunch": 1.00,
+    "decay": 0.11,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Mute Cuica",
+    "basePitch": 74,
+    "velocity": 0.90,
+    "attack": 0.000,
+    "sustain": 0.050,
+    "sustainPunch": 1.05,
+    "decay": 0.15,
+    "freqRamp": 0.060,
+    "freqDeltaRamp": 6
+  },
+  {
+    "name": "Open Cuica",
+    "basePitch": 70,
+    "velocity": 0.92,
+    "attack": 0.000,
+    "sustain": 0.120,
+    "sustainPunch": 1.00,
+    "decay": 0.28,
+    "freqRamp": 0.100,
+    "freqDeltaRamp": 10
+  },
+  {
+    "name": "Mute Triangle",
+    "basePitch": 103,
+    "velocity": 0.82,
+    "attack": 0.000,
+    "sustain": 0.020,
+    "sustainPunch": 0.95,
+    "decay": 0.70,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  },
+  {
+    "name": "Open Triangle",
+    "basePitch": 105,
+    "velocity": 0.84,
+    "attack": 0.000,
+    "sustain": 0.050,
+    "sustainPunch": 0.95,
+    "decay": 3.20,
+    "freqRamp": 0.000,
+    "freqDeltaRamp": 0
+  }
+]
+
+export function get_instrument(index: number, isDrums: boolean) {
+    return isDrums ? percussion_map[index - 35] : instrument_map[index];
 };
