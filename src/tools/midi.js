@@ -15,6 +15,7 @@ import {
 	TriggerTargetMode,
 	TriggerTargetSoundMode,
 } from '@/generated/proto';
+import { get_instrument } from './instrument_map';
 import { Midi } from '@tonejs/midi';
 
 /**
@@ -51,18 +52,50 @@ async function midi(file, node_count, start_active, loop, optimize, volume) {
 	}
 }
 
+const wave_type_map = {
+	"sine": SoundGeneratorParametersWaveType.Sine,
+	"square": SoundGeneratorParametersWaveType.Square,
+	"sawtooth": SoundGeneratorParametersWaveType.Sawtooth,
+	"noise": SoundGeneratorParametersWaveType.Noise
+};
+
 // Node helpers
-function get_basic_sound_block(position, pitch, amplitude, isNoise) {
+function get_basic_sound_block(position, pitch, amplitude, instrument) {
+	console.log(instrument.name)
 	const node = levelNodeWithSound();
 	node.levelNodeSound.position = position;
-	node.levelNodeSound.name = unique_sound_name();
+	node.levelNodeSound.name = unique_sound_name(instrument.name, Math.floor(pitch));
+	node.levelNodeSound.volume = amplitude * instrument.velocity;
+	node.levelNodeSound.maxRangeFactor = 1000;
+	node.levelNodeSound.parameters = {
+		...node.levelNodeSound.parameters,
+		waveType: wave_type_map[instrument.wave],
+		envelopeAttack: instrument.attack,
+		envelopeSustain: instrument.sustain,
+		envelopeRelease: instrument.decay,
+		envelopePunch: instrument.sustainPunch,
+		frequencyBase: pitch,
+		frequencyLimit: 35,
+		frequencyRamp: instrument.freqRamp,
+		frequencyDeltaRamp: instrument.freqDeltaRamp,
+		vibratoStrength: instrument.vibratoDepth,
+		vibratoSpeed: instrument.vibratoRate,
+		pitchJumpMod: 0.10000000149011612,
+		lowPassFilterFrequency: 10000,
+	};
+	return node;
+}
+function get_basic_sound_block_classic(position, pitch, amplitude, isNoise, waveType) {
+	const node = levelNodeWithSound();
+	node.levelNodeSound.position = position;
+	node.levelNodeSound.name = unique_sound_name(null, Math.floor(pitch));
 	node.levelNodeSound.volume = amplitude * (isNoise ? 0.3 : 1);
 	node.levelNodeSound.maxRangeFactor = 1000;
 	node.levelNodeSound.parameters = {
 		...node.levelNodeSound.parameters,
 		waveType: isNoise
 			? SoundGeneratorParametersWaveType.Noise
-			: SoundGeneratorParametersWaveType.Sine,
+			: wave_type_map[waveType],
 		envelopeAttack: 0,
 		envelopeSustain: 0,
 		envelopeRelease: isNoise ? 0.3 : 5,
@@ -105,14 +138,12 @@ function get_sound_trigger_block(x, y, target_id, start_active, looping) {
 }
 
 // Other helpers
-function unique_sound_name() {
-	const chars =
-		'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM1234567890';
-	let output = '';
-	for (let i = 0; i < 5; i++) {
-		output += chars[Math.floor(Math.random() * chars.length)];
+function unique_sound_name(instrument_name, pitch) {
+	if (instrument_name) {
+		return `grab-tools.live | ${instrument_name} | ${pitch}hz`;
+	} else {
+		return `grab-tools.live | ${pitch}hz`;
 	}
-	return `MIDI-${output}`;
 }
 async function decode_midi_file_as_json(file) {
 	if (!file) return;
@@ -408,14 +439,27 @@ async function generate(
 
 		// Make each sound block for each pitch
 		unique_pitches.forEach((hz) => {
-			sound_blocks.push(
-				get_basic_sound_block(
-					{ x: 0, y: t, z: -1 },
-					hz * (tracks[t].isDrums ? 2.5 : 1), // Frequency is doubled for drum tracks
-					tracks[t].note_volumes[String(hz)] * volume,
-					tracks[t].isDrums,
-				),
-			);
+			let track = tracks[t];
+			if (track.isDrums) {
+				sound_blocks.push(
+					get_basic_sound_block_classic(
+						{ x: 0, y: t, z: -1 },
+						hz * (track.isDrums ? 2.5 : 1), // Frequency is doubled for drum tracks
+						track.note_volumes[String(hz)] * volume,
+						track.isDrums,
+						"noise"
+					),
+				);
+			} else {
+				sound_blocks.push(
+					get_basic_sound_block(
+						{ x: 0, y: t, z: -1 },
+						hz,
+						track.note_volumes[String(hz)] * volume,
+						get_instrument(track.instrument)
+					),
+				);
+			}
 		});
 
 		// Create triggers linked to each sound block
