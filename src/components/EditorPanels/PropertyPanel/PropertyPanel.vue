@@ -4,7 +4,7 @@ import {
 	deSerialize,
 	serializeToMenu,
 } from '@/components/EditorPanels/PropertyPanel/menuSerializer';
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
 	components: {
@@ -14,6 +14,7 @@ export default defineComponent({
 		return {
 			source_object: undefined,
 			deSerialized: undefined,
+			reOpen: ref(false),
 			menu_tree: serializeToMenu({}, 'undefined'),
 		};
 	},
@@ -25,6 +26,7 @@ export default defineComponent({
 		set_object(object) {
 			this.menu_tree = serializeToMenu(object);
 			this.source_object = object;
+			this.reOpen = !this.reOpen;
 		},
 	},
 });
@@ -32,7 +34,7 @@ export default defineComponent({
 
 <template>
 	<div class="property-editor">
-		<MenuItem ref="rootMenuItem" :node="menu_tree" />
+		<MenuItem ref="rootMenuItem" :node="menu_tree" :reOpen="reOpen" />
 	</div>
 </template>
 
