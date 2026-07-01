@@ -25,8 +25,8 @@ export default defineComponent({
 	<div class="menu-item">
 		<div
 			class="menu-row"
-			@click="toggle"
 			:class="$props.node.isExpandable && 'clickable'"
+			@click="toggle"
 		>
 			<span v-if="$props.node.isExpandable" class="arrow">
 				{{ isExpanded ? 'v' : '>' }}
@@ -42,20 +42,20 @@ export default defineComponent({
 				>
 					<span class="x-label">X:</span>
 					<input
-						type="number"
 						v-model.number="$props.node.value.x"
+						type="number"
 						class="primitive-number primitive-input"
 					/>
 					<span class="y-label">Y:</span>
 					<input
-						type="number"
 						v-model.number="$props.node.value.y"
+						type="number"
 						class="primitive-number primitive-input"
 					/>
 					<span class="z-label">Z:</span>
 					<input
-						type="number"
 						v-model.number="$props.node.value.z"
+						type="number"
 						class="primitive-number primitive-input"
 					/>
 				</div>
@@ -67,26 +67,26 @@ export default defineComponent({
 				>
 					<span class="x-label">X:</span>
 					<input
-						type="number"
 						v-model.number="$props.node.value.x"
+						type="number"
 						class="primitive-number primitive-input"
 					/>
 					<span class="y-label">Y:</span>
 					<input
-						type="number"
 						v-model.number="$props.node.value.y"
+						type="number"
 						class="primitive-number primitive-input"
 					/>
 					<span class="z-label">Z:</span>
 					<input
-						type="number"
 						v-model.number="$props.node.value.z"
+						type="number"
 						class="primitive-number primitive-input"
 					/>
 					<span class="w-label">W:</span>
 					<input
-						type="number"
 						v-model.number="$props.node.value.w"
+						type="number"
 						class="primitive-number primitive-input"
 					/>
 				</div>
@@ -94,26 +94,26 @@ export default defineComponent({
 				<!-- Primitive Editors -->
 				<input
 					v-else-if="$props.node.type === 'number'"
-					type="number"
 					v-model.number="$props.node.value"
+					type="number"
 					class="primitive-number primitive-input"
 				/>
 				<input
 					v-else-if="$props.node.type === 'string'"
-					type="text"
 					v-model="$props.node.value"
+					type="text"
 					class="primitive-text primitive-input"
 				/>
 				<input
 					v-else-if="$props.node.type === 'boolean'"
-					type="checkbox"
 					v-model="$props.node.value"
+					type="checkbox"
 					class="primitive-checkbox primitive-input"
 				/>
 				<input
 					v-else-if="$props.node.type === 'color'"
-					type="color"
 					v-model="$props.node.value"
+					type="color"
 					class="primitive-color primitive-input"
 				/>
 
@@ -200,7 +200,8 @@ export default defineComponent({
 	color: #888;
 }
 
-.primitive-number {
+.primitive-number,
+.primitive-text {
 	padding: 5px;
 }
 
