@@ -1,11 +1,19 @@
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 
 export default defineComponent({
 	props: {
 		node: Object,
 	},
-	setup(props) {},
+	watch: {
+		'$props.node': {
+			handler(newVal, oldVal) {
+				this.isExpanded = false;
+				if (this.$props.node.key=="node") this.isExpanded=true; // expand root node by default
+			},
+			deep: true,
+		},
+	},
 	data() {
 		return {
 			isExpanded: ref(false),
