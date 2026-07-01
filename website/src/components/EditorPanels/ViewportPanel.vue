@@ -12,6 +12,7 @@ import {
 import AnimationPanel from '@/components/EditorPanels/AnimationPanel.vue';
 import ContextMenu from '@/components/EditorPanels/ContextMenu.vue';
 import GASMPanel from '@/components/EditorPanels/GASMPanel.vue';
+import PropertyPanel from '@/components/EditorPanels/PropertyPanel/PropertyPanel.vue';
 import JsonPanel from '@/components/EditorPanels/JsonPanel.vue';
 import KeyHint from '@/components/EditorPanels/KeyHint.vue';
 import ResizableColPanel from '@/components/EditorPanels/ResizableColPanel.vue';
@@ -87,6 +88,7 @@ export default defineComponent({
 		ContextMenu,
 		JsonPanel,
 		GASMPanel,
+		PropertyPanel,
 		AnimationPanel,
 		ResizableColPanel,
 		KeyHint,
@@ -102,6 +104,7 @@ export default defineComponent({
 		return {
 			zoom_to_cursor: true,
 			free_movement: false,
+			editing_property_object: undefined,
 			dragging: false,
 			huge_far: false,
 			show_groups: true,
@@ -119,6 +122,7 @@ export default defineComponent({
 			contextmenu_position: { x: 0, y: 0 },
 			is_animating: true,
 			show_mini_editor: false,
+			show_property_editor: false,
 			show_gasm_editor: false,
 			show_keybinds: true,
 			show_key_hints: true,
@@ -1211,6 +1215,7 @@ export default defineComponent({
 						return;
 					}
 					if (this.show_mini_editor) this.close_mini_editor();
+					else if (this.show_property_editor) this.close_property_editor();
 					else if (this.show_gasm_editor) this.close_gasm_editor();
 					else if (this.contextmenu) this.contextmenu = undefined;
 					else if (!this.gizmo.empty()) this.gizmo.clear();
@@ -1277,6 +1282,10 @@ export default defineComponent({
 				}
 				return json;
 			});
+		},
+		close_property_editor() {
+			if (this.show_property_editor) this.$refs.property_editor.save();
+			this.show_property_editor = false;
 		},
 		close_mini_editor() {
 			if (this.show_mini_editor) this.mini_editor_changed(this.refs().mini_editor.json);
@@ -1368,6 +1377,13 @@ export default defineComponent({
 			this.show_mini_editor = true;
 			this.editing_json = markRaw(object);
 			this.refs().mini_editor.set_json(object.userData.node);
+		},
+		edit_object_properties(object) {
+			if (!object) return;
+
+			this.show_property_editor = true;
+			this.edit_property_object = object;
+			this.$refs.property_editor.set_object(object.userData.node);
 		},
 		edit_gasm_code(object: LevelNodeObject<LevelNodeGASM>) {
 			this.show_gasm_editor = true;
@@ -1468,6 +1484,13 @@ export default defineComponent({
 			});
 
 			const menu: Menu = {
+				...(clicked_is_selected && {
+					'Edit Properties': {
+						func: () => {
+							this.edit_object_properties(clicked_object);
+						},
+					},
+				}),
 				...(clicked_is_selected && {
 					'Edit JSON': {
 						func: () => {
@@ -2015,6 +2038,18 @@ export default defineComponent({
 					class="gasm-editor"
 					@set="save_gasm_code"
 				/>
+				<PropertyPanel
+					v-show="show_property_editor"
+					ref="property_editor"
+					class="property-editor"
+				/>
+				<button
+					v-show="show_property_editor"
+					class="close-gasm-editor"
+					@click="close_property_editor"
+				>
+					Save
+				</button>
 				<button
 					v-show="show_gasm_editor"
 					class="close-gasm-editor"
@@ -2180,7 +2215,8 @@ export default defineComponent({
 }
 
 .mini-editor,
-.gasm-editor {
+.gasm-editor,
+.property-editor {
 	position: absolute;
 	z-index: 1;
 }
