@@ -7,123 +7,204 @@ function camelToTitleCase(str) {
 }
 
 const classify_as = {
-	vector3: ['position', 'scale', 'gradientDirection'],
+	vector3: [
+		'position',
+		'scale',
+		'gradientDirection',
+		'direction',
+		'velocity',
+		'velocityMin',
+		'velocityMax',
+		'accelerationMin',
+		'accelerationMax',
+	],
 	vector4: ['rotation'],
-	color: ['color', 'color1', 'color2'],
+	color: ['color', 'color1', 'color2', 'startColor', 'endColor'],
+	minmax: ['lifeSpan', 'startSize', 'endSize'],
 };
 
-const enumerate_as = {
-	shape: [
-		[1000, 'Cube'],
-		[1001, 'Sphere'],
-		[1002, 'Cylinder'],
-		[1003, 'Pyramid'],
-		[1004, 'Prisim'],
-		[1005, 'Cone'],
-		[1006, 'Pyramid Square'],
-		[0, 'Start'],
-		[1, 'Finish'],
-		[2, 'Sign'],
-		[3, 'Gravity'],
-		[4, 'Lobby Terminal'],
-		[5, 'Particle Emitter'],
-		[6, 'Sound'],
-		[7, 'GASM'],
-		[8, 'Light'],
-	],
-	material: [
-		[0, 'Linear'],
-		[1, 'Quadratic Ease In'],
-		[2, 'Quadratic Ease Out'],
-		[3, 'Quadratic Ease In Out'],
-		[4, 'Sinusoidal Ease In'],
-		[5, 'Sinusoidal Ease Out'],
-		[6, 'Sinusoidal Ease In Out'],
-		[7, 'Exponential Ease In'],
-		[8, 'Exponential Ease Out'],
-		[9, 'Exponential Ease In Out'],
-		[10, 'Circular Ease In'],
-		[11, 'Circular Ease Out'],
-		[12, 'Circular Ease In Out'],
-		[13, 'Cubic Ease In'],
-		[14, 'Cubic Ease Out'],
-		[15, 'Cubic Ease In Out'],
-		[16, 'Quartic Ease In'],
-		[17, 'Quartic Ease Out'],
-		[18, 'Quartic Ease In Out'],
-		[19, 'Quintic Ease In'],
-		[20, 'Quintic Ease Out'],
-		[21, 'Quintic Ease In Out'],
-	],
-	weight: [
-		[0, 'Regular'],
-		[1, 'Light'],
-		[2, 'Semibold'],
-		[3, 'Bold'],
-		[4, 'Italic'],
-	],
-	levelNodeGravity: [
-		[0, 'Legs'],
-		[1, 'Fling'],
-	],
-	triggerSourceBasic: [
-		[0, 'Hand'],
-		[1, 'Head'],
-		[2, 'Grapple'],
-		[3, 'Feet'],
-		[4, 'Block'],
-	],
-	triggerTargetAnimation: [
-		[0, 'Stop'],
-		[1, 'Start'],
-		[2, 'Toggle'],
-		[3, 'Toggle Reverse'],
-		[4, 'Restart'],
-		[5, 'Reset'],
-	],
-	triggerTargetSound: [
-		[0, 'Stop'],
-		[1, 'Start'],
-		[2, 'Toggle'],
-		[4, 'Restart'],
-		[5, 'Reset'],
-	],
-	triggerTargetGASM: [
-		[0, 'Stop'],
-		[1, 'Start'],
-		[2, 'Toggle'],
-		[4, 'Restart'],
-		[5, 'Reset'],
-	],
-	triggerTargetMode: [
-		[0, 'On Enter'],
-		[1, 'On Leave'],
-		[2, 'Enter or Leave'],
-		[3, 'None'],
-	],
-	SoundGeneratorParametersWaveType: [
-		[0, 'Square'],
-		[1, 'Sawtooth'],
-		[2, 'Sine'],
-		[3, 'Noise'],
-	],
-	levelNodeGASMConnectionType: [
-		[0, 'Node'],
-		[1, 'Player'],
-	],
-	LevelNodeLightType: [
-		[0, 'Point'],
-		[1, 'Spot'],
-	],
-	AnimationDirection: [
-		[0, 'Restart'],
-		[1, 'Ping Pong'],
-	],
-	AnimationInterpolation: [
-		[0, 'No interpolation'],
-		[1, 'Interpolation'],
-	],
-};
+const enumerate_as = [
+	{
+		key: 'shape',
+		enumData: [
+			[1000, 'Cube'],
+			[1001, 'Sphere'],
+			[1002, 'Cylinder'],
+			[1003, 'Pyramid'],
+			[1004, 'Prisim'],
+			[1005, 'Cone'],
+			[1006, 'Pyramid Square'],
+			[0, 'Start'],
+			[1, 'Finish'],
+			[2, 'Sign'],
+			[3, 'Gravity'],
+			[4, 'Lobby Terminal'],
+			[5, 'Particle Emitter'],
+			[6, 'Sound'],
+			[7, 'GASM'],
+			[8, 'Light'],
+		],
+	},
+	{
+		key: 'material',
+		enumData: [
+			[0, 'Stone'],
+			[1, 'Cheese'],
+			[2, 'Ice'],
+			[3, 'Lava'],
+			[4, 'Wood'],
+			[5, 'Grapple'],
+			[6, 'Lava Grapple'],
+			[7, 'Crumbling'],
+			[8, 'Color / Concrete'],
+			[9, 'Bouncing'],
+			[10, 'Frost'],
+			[11, 'Trigger'],
+		],
+	},
+	{
+		key: 'interpolationType',
+		enumData: [
+			[0, 'Linear'],
+			[1, 'Quadratic Ease In'],
+			[2, 'Quadratic Ease Out'],
+			[3, 'Quadratic Ease In Out'],
+			[4, 'Sinusoidal Ease In'],
+			[5, 'Sinusoidal Ease Out'],
+			[6, 'Sinusoidal Ease In Out'],
+			[7, 'Exponential Ease In'],
+			[8, 'Exponential Ease Out'],
+			[9, 'Exponential Ease In Out'],
+			[10, 'Circular Ease In'],
+			[11, 'Circular Ease Out'],
+			[12, 'Circular Ease In Out'],
+			[13, 'Cubic Ease In'],
+			[14, 'Cubic Ease Out'],
+			[15, 'Cubic Ease In Out'],
+			[16, 'Quartic Ease In'],
+			[17, 'Quartic Ease Out'],
+			[18, 'Quartic Ease In Out'],
+			[19, 'Quintic Ease In'],
+			[20, 'Quintic Ease Out'],
+			[21, 'Quintic Ease In Out'],
+		],
+	},
+	{
+		key: 'weight',
+		parentKey: 'levelNodeSign',
+		enumData: [
+			[0, 'Regular'],
+			[1, 'Light'],
+			[2, 'Semibold'],
+			[3, 'Bold'],
+			[4, 'Italic'],
+		],
+	},
+	{
+		key: 'mode',
+		parentKey: 'levelNodeGravity',
+		enumData: [
+			[0, 'Legs'],
+			[1, 'Fling'],
+		],
+	},
+	{
+		key: 'type',
+		parentKey: 'triggerSourceBasic',
+		enumData: [
+			[0, 'Hand'],
+			[1, 'Head'],
+			[2, 'Grapple'],
+			[3, 'Feet'],
+			[4, 'Block'],
+		],
+	},
+	{
+		key: 'mode',
+		parentKey: 'triggerTargetAnimation',
+		enumData: [
+			[0, 'Stop'],
+			[1, 'Start'],
+			[2, 'Toggle'],
+			[3, 'Toggle Reverse'],
+			[4, 'Restart'],
+			[5, 'Reset'],
+		],
+	},
+	{
+		key: 'mode',
+		parentKey: 'triggerTargetSound',
+		enumData: [
+			[0, 'Stop'],
+			[1, 'Start'],
+			[2, 'Toggle'],
+			[3, 'Restart'],
+			[4, 'Reset'],
+		],
+	},
+	{
+		key: 'mode',
+		parentKey: 'triggerTargetGASM',
+		enumData: [
+			[0, 'Stop'],
+			[1, 'Start'],
+			[2, 'Toggle'],
+			[3, 'Restart'],
+			[4, 'Reset'],
+		],
+	},
+	{
+		key: 'mode',
+		parentKey: 'triggerTargets',
+		enumData: [
+			[0, 'On Enter'],
+			[1, 'On Leave'],
+			[2, 'Enter or Leave'],
+			[3, 'None'],
+		],
+	},
+	{
+		key: 'waveType',
+		enumData: [
+			[0, 'Square'],
+			[1, 'Sawtooth'],
+			[2, 'Sine'],
+			[3, 'Noise'],
+		],
+	},
+	{
+		key: 'type',
+		parentKey: 'connections',
+		enumData: [
+			[0, 'Node'],
+			[1, 'Player'],
+		],
+	},
+	{
+		key: 'type',
+		parentKey: 'levelNodeLight',
+		enumData: [
+			[0, 'Point'],
+			[1, 'Spot'],
+		],
+	},
+	{
+		key: 'direction',
+		parentKey: 'animations',
+		enumData: [
+			[0, 'Restart'],
+			[1, 'Ping Pong'],
+		],
+	},
+	{
+		key: 'interpolation',
+		parentKey: 'animations',
+		enumData: [
+			[0, 'No interpolation'],
+			[1, 'Interpolation'],
+		],
+	},
+];
 
 function deSerialize(object) {
 	if (object.children) {
@@ -152,21 +233,15 @@ function deSerialize(object) {
 	return object.value;
 }
 
-function serializeToMenu(value, key = 'node', parentKey = null) {
+function serializeToMenu(
+	value,
+	key = 'node',
+	parentKey = null,
+	isArrayItem = false,
+) {
 	const serkey = camelToTitleCase(key);
 
-	if (Object.keys(enumerate_as).includes(key)) {
-		return {
-			title: serkey,
-			key: key,
-			type: 'enum',
-			value: 0,
-			enumData: enumerate_as[key],
-			isExpandable: false,
-			children: null,
-		};
-	}
-
+	// Vector3
 	if (typeof value === 'object' && classify_as.vector3.includes(key)) {
 		return {
 			title: serkey,
@@ -183,6 +258,7 @@ function serializeToMenu(value, key = 'node', parentKey = null) {
 		};
 	}
 
+	// Vector4
 	if (typeof value === 'object' && classify_as.vector4.includes(key)) {
 		return {
 			title: serkey,
@@ -200,6 +276,23 @@ function serializeToMenu(value, key = 'node', parentKey = null) {
 		};
 	}
 
+	// Min-Max range
+	if (typeof value === 'object' && classify_as.minmax.includes(key)) {
+		return {
+			title: serkey,
+			key: key,
+			type: 'minmax',
+			value: {
+				x: 0,
+				y: 0,
+				...value,
+			},
+			isExpandable: false,
+			children: null,
+		};
+	}
+
+	// Color
 	if (typeof value === 'object' && classify_as.color.includes(key)) {
 		const col = {
 			r: value.r * 255 || 0,
@@ -216,6 +309,7 @@ function serializeToMenu(value, key = 'node', parentKey = null) {
 		};
 	}
 
+	// Array
 	if (Array.isArray(value)) {
 		return {
 			title: serkey,
@@ -224,11 +318,12 @@ function serializeToMenu(value, key = 'node', parentKey = null) {
 			value: null,
 			isExpandable: value.length > 0,
 			children: value.map((item, index) =>
-				serializeToMenu(item, index.toString(), key),
+				serializeToMenu(item, index.toString(), key, true),
 			),
 		};
 	}
 
+	// Objects
 	if (typeof value === 'object' && value !== null) {
 		return {
 			title: serkey,
@@ -237,11 +332,31 @@ function serializeToMenu(value, key = 'node', parentKey = null) {
 			value: null,
 			isExpandable: value != {},
 			children: Object.entries(value).map(([subKey, subVal]) =>
-				serializeToMenu(subVal, subKey, key),
+				serializeToMenu(subVal, subKey, isArrayItem ? parentKey : key),
 			),
 		};
 	}
 
+	// Enums
+	let enumData = null;
+	enumerate_as.forEach((e) => {
+		if (e.key != key) return;
+		if (e.parentKey && e.parentKey != parentKey) return;
+		enumData = e.enumData;
+	});
+	if (enumData) {
+		return {
+			title: serkey,
+			key: key,
+			type: 'enum',
+			value: value,
+			enumData: enumData,
+			isExpandable: false,
+			children: null,
+		};
+	}
+
+	// Basic data types (number, string, etc)
 	return {
 		title: serkey,
 		key: key,

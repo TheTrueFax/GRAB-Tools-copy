@@ -1,15 +1,17 @@
 <script>
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
 	props: {
 		node: Object,
+		reOpen: Boolean,
 	},
 	watch: {
-		'$props.node': {
+		'$props.reOpen': {
 			handler(newVal, oldVal) {
 				this.isExpanded = false;
-				if (this.$props.node.key=="node") this.isExpanded=true; // expand root node by default
+				this.advancedEdit = false;
+				if (this.$props.node.key == 'node') this.isExpanded = true; // expand root node by default
 			},
 			deep: true,
 		},
@@ -17,6 +19,7 @@ export default defineComponent({
 	data() {
 		return {
 			isExpanded: ref(false),
+			advancedEdit: ref(false),
 		};
 	},
 	methods: {
@@ -24,6 +27,9 @@ export default defineComponent({
 			if (this.$props.node.isExpandable) {
 				this.isExpanded = !this.isExpanded;
 			}
+		},
+		toggleAdvanced() {
+			this.advancedEdit = !this.advancedEdit;
 		},
 	},
 });
@@ -43,9 +49,25 @@ export default defineComponent({
 
 			<span class="node-key">{{ $props.node.title }}:</span>
 			<div class="node-editor" @click.stop>
-				<!-- Custom Vector3 Editor -->
+				<!-- Min-Max range -->
+				<div v-if="$props.node.type === 'minmax'" class="vector-inputs">
+					<span class="x-label">Min:</span>
+					<input
+						v-model.number="$props.node.value.x"
+						type="number"
+						class="primitive-number primitive-input"
+					/>
+					<span class="y-label">Max:</span>
+					<input
+						v-model.number="$props.node.value.y"
+						type="number"
+						class="primitive-number primitive-input"
+					/>
+				</div>
+
+				<!-- Vector3 -->
 				<div
-					v-if="$props.node.type === 'vector3'"
+					v-else-if="$props.node.type === 'vector3'"
 					class="vector-inputs"
 				>
 					<span class="x-label">X:</span>
@@ -125,6 +147,35 @@ export default defineComponent({
 					class="primitive-color primitive-input"
 				/>
 
+				<!-- Enum input (select, option) -->
+				<select
+					v-else-if="$props.node.type === 'enum' && !advancedEdit"
+					v-model="$props.node.value"
+					class="primitive-select primitive-input"
+				>
+					<option
+						v-for="(item, index) in $props.node.enumData"
+						:value="item[0]"
+						:selected="$props.node.value == item[0]"
+					>
+						{{ item[1] }}
+					</option>
+				</select>
+				<input
+					v-else-if="$props.node.type === 'enum' && advancedEdit"
+					v-model.number="$props.node.value"
+					type="number"
+					class="primitive-number primitive-input"
+				/>
+				<span
+					v-if="$props.node.type === 'enum'"
+					class="clickable"
+					style="margin-left: 10px"
+					@click="toggleAdvanced"
+				>
+					{{ advancedEdit ? '[simple]' : '[advanced]' }}
+				</span>
+
 				<!-- Structural Labels -->
 				<span
 					v-else-if="$props.node.type === 'object' && isExpanded"
@@ -170,6 +221,7 @@ export default defineComponent({
 				v-for="child in $props.node.children"
 				:key="child.key"
 				:node="child"
+				:reOpen="$props.reOpen"
 			/>
 		</div>
 		<span
@@ -209,7 +261,8 @@ export default defineComponent({
 }
 
 .primitive-number,
-.primitive-text {
+.primitive-text,
+.primitive-select {
 	padding: 5px;
 }
 
