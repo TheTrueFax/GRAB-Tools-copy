@@ -1,6 +1,9 @@
 <script>
 import MenuItem from '@/components/EditorPanels/PropertyPanel/MenuItem.vue';
-import { serializeToMenu, deSerialize } from '@/components/EditorPanels/PropertyPanel/menuSerializer';
+import {
+	deSerialize,
+	serializeToMenu,
+} from '@/components/EditorPanels/PropertyPanel/menuSerializer';
 import { defineComponent } from 'vue';
 
 export default defineComponent({

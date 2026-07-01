@@ -33,7 +33,7 @@ export default defineComponent({
 			</span>
 			<span v-else class="spacer"></span>
 
-			<span class="node-key">{{ $props.node.key }}:</span>
+			<span class="node-key">{{ $props.node.title }}:</span>
 			<div class="node-editor" @click.stop>
 				<!-- Custom Vector3 Editor -->
 				<div
@@ -113,7 +113,7 @@ export default defineComponent({
 				<input
 					v-else-if="$props.node.type === 'color'"
 					type="color"
-					v-model.color="$props.node.value"
+					v-model="$props.node.value"
 					class="primitive-color primitive-input"
 				/>
 

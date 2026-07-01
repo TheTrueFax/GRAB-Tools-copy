@@ -1,5 +1,3 @@
-import { obj } from "@/tools/obj";
-
 function isVector3(obj) {
 	return (
 		obj &&
@@ -20,32 +18,43 @@ function isVector4(obj) {
 	);
 }
 
+const rgbToHex = (r, g, b) =>
+	'#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
+
 function camelToTitleCase(str) {
 	const spaced = str.replace(/([A-Z])/g, ' $1');
 	return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
 const classify_as = {
-	vector3: ['Position', 'Scale'],
-	vector4: ['Rotation'],
-	color: ['Color', 'Color1', 'Color2'],
+	vector3: ['position', 'scale', 'gradientDirection'],
+	vector4: ['rotation'],
+	color: ['color', 'color1', 'color2'],
 };
 
 function deSerialize(object) {
 	if (object.children) {
-		if (object.type=='array') {
+		if (object.type == 'array') {
 			let result = [];
-			object.children.forEach(element => {
+			object.children.forEach((element) => {
 				result.push(deSerialize(element));
 			});
 			return result;
 		} else {
 			let result = {};
-			object.children.forEach(element => {
+			object.children.forEach((element) => {
 				result[element.key] = deSerialize(element);
 			});
 			return result;
 		}
+	}
+	if (object.type == 'color' && typeof object.value === 'string') {
+		return {
+			r: parseInt(object.value.substring(1, 3), 16) / 255,
+			g: parseInt(object.value.substring(3, 5), 16) / 255,
+			b: parseInt(object.value.substring(5, 7), 16) / 255,
+			a: 1,
+		};
 	}
 	return object.value;
 }
@@ -55,7 +64,7 @@ function serializeToMenu(value, key = 'node') {
 
 	if (typeof value === 'object' && classify_as.vector3.includes(key)) {
 		return {
-			serkey,
+			title: serkey,
 			key: key,
 			type: 'vector3',
 			value: {
@@ -71,7 +80,7 @@ function serializeToMenu(value, key = 'node') {
 
 	if (typeof value === 'object' && classify_as.vector4.includes(key)) {
 		return {
-			serkey,
+			title: serkey,
 			key: key,
 			type: 'vector4',
 			value: {
@@ -87,11 +96,16 @@ function serializeToMenu(value, key = 'node') {
 	}
 
 	if (typeof value === 'object' && classify_as.color.includes(key)) {
+		const col = {
+			r: value.r * 255 || 0,
+			g: value.g * 255 || 0,
+			b: value.b * 255 || 0,
+		};
 		return {
-			serkey,
+			title: serkey,
 			key: key,
 			type: 'color',
-			value: { ...value },
+			value: rgbToHex(col.r, col.g, col.b),
 			isExpandable: false,
 			children: null,
 		};
@@ -99,7 +113,7 @@ function serializeToMenu(value, key = 'node') {
 
 	if (Array.isArray(value)) {
 		return {
-			serkey,
+			title: serkey,
 			key: key,
 			type: 'array',
 			value: null,
@@ -112,7 +126,7 @@ function serializeToMenu(value, key = 'node') {
 
 	if (typeof value === 'object' && value !== null) {
 		return {
-			serkey,
+			title: serkey,
 			key: key,
 			type: 'object',
 			value: null,
@@ -124,7 +138,7 @@ function serializeToMenu(value, key = 'node') {
 	}
 
 	return {
-		serkey,
+		title: serkey,
 		key: key,
 		type: typeof value,
 		value: value,
@@ -133,4 +147,4 @@ function serializeToMenu(value, key = 'node') {
 	};
 }
 
-export { serializeToMenu, deSerialize };
+export { deSerialize, serializeToMenu };
