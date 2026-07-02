@@ -105,6 +105,26 @@ export default {
 					:checked="input.default"
 				/>
 			</label>
+			<span v-else-if="input.type === 'label'">
+				<span
+					v-if="typeof input.text === 'object'"
+					v-for="ob in input.text"
+				>
+					<span v-if="ob.type === 'text'">
+						{{ ob.text }}
+					</span>
+					<a
+						v-else-if="ob.type === 'link'"
+						:href="ob.href"
+						target="_blank"
+					>
+						{{ ob.text }}
+					</a>
+				</span>
+				<span v-else>
+					{{ input.text }}
+				</span>
+			</span>
 			<input
 				v-else
 				:ref="`input-${i}`"

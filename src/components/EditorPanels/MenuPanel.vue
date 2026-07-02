@@ -650,6 +650,24 @@ export default {
 						type: 'number',
 						text: 'Volume (0-100, default 30)',
 					},
+					{
+						type: 'label',
+						text: [
+							{
+								type: 'text',
+								text: 'Don\'t have a MIDI file? Download some ',
+							},
+							{
+								type: 'link',
+								text: 'here',
+								href: 'https://onlinesequencer.net/sequences',
+							},
+							{
+								type: 'text',
+								text: '!',
+							},
+						],
+					},
 				],
 				async (
 					files,
