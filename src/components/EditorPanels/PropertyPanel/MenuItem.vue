@@ -70,7 +70,7 @@ export default defineComponent({
 			this.$emit('set', (e) => {
 				console.log(e.$props.node);
 				e.$props.node.children.splice(
-					this.$props.node.arrayIndex - 1,
+					this.$props.node.arrayIndex + 1,
 					0,
 					serializeToMenu(
 						Object.keys(this.$props.node.blankTypes).length == 1
@@ -368,7 +368,6 @@ export default defineComponent({
 		<div
 			v-if="$props.node.arrayIndex!=null && addMenuOpen"
 			class="add-menu ignore-menu-close"
-			@mouseleave="addMenuOpen = false"
 		>
 			<span v-if="Object.keys($props.node.blankTypes).length > 1">
 				<select
