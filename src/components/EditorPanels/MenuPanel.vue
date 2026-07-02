@@ -655,7 +655,7 @@ export default {
 						text: [
 							{
 								type: 'text',
-								text: 'Don\'t have a MIDI file? Download some ',
+								text: "Don't have a MIDI file? Download some ",
 							},
 							{
 								type: 'link',
