@@ -3,21 +3,11 @@ import { serializeToMenu } from '@/components/EditorPanels/PropertyPanel/menuSer
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
-	emits: ['set', 'refresh'],
 	props: {
 		node: Object,
 		reOpen: Boolean,
 	},
-	watch: {
-		'$props.reOpen': {
-			handler(newVal, oldVal) {
-				this.isExpanded = false;
-				this.advancedEdit = false;
-				if (this.$props.node.key == 'node') this.isExpanded = true; // expand root node by default
-			},
-			deep: true,
-		},
-	},
+	emits: ['set', 'refresh'],
 	data() {
 		return {
 			isExpanded: ref(false),
@@ -25,6 +15,16 @@ export default defineComponent({
 			isHovered: ref(false),
 			addMenuOpen: ref(false),
 		};
+	},
+	watch: {
+		'$props.reOpen': {
+			handler() {
+				this.isExpanded = false;
+				this.advancedEdit = false;
+				if (this.$props.node.key == 'node') this.isExpanded = true; // expand root node by default
+			},
+			deep: true,
+		},
 	},
 	methods: {
 		toggle(e) {
@@ -226,7 +226,8 @@ export default defineComponent({
 					class="primitive-select primitive-input"
 				>
 					<option
-						v-for="(item, index) in $props.node.enumData"
+						v-for="item in $props.node.enumData"
+						:key="item[0]"
 						:value="item[0]"
 						:selected="$props.node.value == item[0]"
 					>
@@ -306,13 +307,14 @@ export default defineComponent({
 		>
 			<span v-if="Object.keys($props.node.blankTypes).length > 1">
 				<select
-					class="primitive-select primitive-input"
 					ref="blankTypeSelect"
+					class="primitive-select primitive-input"
 				>
 					<option
 						v-for="(item, index) in Object.keys(
 							$props.node.blankTypes,
 						)"
+						:key="item"
 						:value="item"
 						:selected="index == 0"
 					>
@@ -334,11 +336,11 @@ export default defineComponent({
 				><span class="spacer"></span>GASM not supported</span
 			>
 			<MenuItem
-				v-else
 				v-for="child in $props.node.children"
+				v-else
 				:key="child.key"
 				:node="child"
-				:reOpen="$props.reOpen"
+				:re-open="$props.reOpen"
 				@set="setEmit"
 				@refresh="refreshEmit"
 			/>

@@ -42,7 +42,7 @@ export default defineComponent({
 		<MenuItem
 			ref="rootMenuItem"
 			:node="menu_tree"
-			:reOpen="reOpen"
+			:re-open="reOpen"
 			@refresh="refresh_tree"
 		/>
 	</div>
