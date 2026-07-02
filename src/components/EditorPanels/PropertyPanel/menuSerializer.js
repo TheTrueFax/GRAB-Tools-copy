@@ -443,9 +443,9 @@ function serializeToMenu(
 		!node.type
 	) {
 		const col = {
-			r: value.r * 255 || 0,
-			g: value.g * 255 || 0,
-			b: value.b * 255 || 0,
+			r: Math.floor(value.r * 255 || 0),
+			g: Math.floor(value.g * 255 || 0),
+			b: Math.floor(value.b * 255 || 0),
 		};
 		node = {
 			...node,
