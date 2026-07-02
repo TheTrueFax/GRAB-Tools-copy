@@ -24,32 +24,17 @@ import { get_instrument } from './instrument_map';
  * @param {String} inst_type - instrument generation type
  * @param {Boolean} start_active - should the animation be start active
  * @param {Boolean} loop - should the animation loop
- * @param {Boolean} optimize - option to merge tracks which can optimize complexity
  * @param {Number} volume - volume multiplier for whole song (0-1)
  * @returns {Promise<Object>} - A group level node
  */
-async function midi(
-	file,
-	node_count,
-	inst_type,
-	start_active,
-	loop,
-	optimize,
-	volume,
-) {
+async function midi(file, node_count, inst_type, start_active, loop, volume) {
+	const optimize = inst_type.includes('Classic');
+
 	//console.log(inst_type);
 	if (start_active && !loop) {
 		// Can't make a non-looping start active animation in grab.
 		window.toast(
 			'Cannot make an animation start active and not looping.',
-			'error',
-		);
-		return null;
-	}
-	if (optimize && inst_type == 'Auto Instrument') {
-		// Merging tracks with instruments is a no-go and also plain dosent work
-		window.toast(
-			'Cannot optimize an "Auto Instrument" MIDI song.',
 			'error',
 		);
 		return null;

@@ -642,23 +642,11 @@ export default {
 						default: true,
 					},
 					{
-						type: 'checkbox',
-						text: 'Optimize complexity: ',
-						default: false,
-					},
-					{
 						type: 'number',
 						text: 'Volume (0-100, default 30)',
 					},
 				],
-				async (
-					files,
-					instrument,
-					start_active,
-					loop,
-					optimize,
-					volume,
-				) => {
+				async (files, instrument, start_active, loop, volume) => {
 					if (!files.length) {
 						window.toast('No midi file chosen', 'error');
 						return;
@@ -677,7 +665,6 @@ export default {
 							instrument,
 							start_active,
 							loop,
-							optimize,
 							volume,
 						);
 						if (!node) return;
