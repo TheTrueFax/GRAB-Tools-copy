@@ -1,219 +1,44 @@
+import { load } from '@/common/root';
+
 const rgbToHex = (r, g, b) =>
 	'#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
 
 function camelToTitleCase(str) {
-	const spaced = str.replace(/([A-Z])/g, ' $1');
-	return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+	// camelCase
+	return str
+		.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+		.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+		.replace(/^./, (c) => c.toUpperCase());
 }
 
-const classify_as = {
-	vector3: [
-		'position',
-		'scale',
-		'gradientDirection',
-		'direction',
-		'velocity',
-		'velocityMin',
-		'velocityMax',
-		'accelerationMin',
-		'accelerationMax',
-	],
-	vector4: ['rotation'],
-	color: [
-		'color',
-		'color1',
-		'color2',
-		'startColor',
-		'endColor',
-		'skyColor0',
-		'skyColor1',
-		'sunColor',
-		'ambientColor',
-	],
-	minmax: ['lifeSpan', 'startSize', 'endSize'],
-};
+function enumCaseToTitleCase(str) {
+	// ENUM_CASE or enum_case or enumCase
+	if (str.toLowerCase() != str && str.toUpperCase() != str) {
+		// probably in camel case
+		return camelToTitleCase(str);
+	}
+	str = str.toLowerCase();
+	return str
+		.replace(
+			/([a-z0-9])_([a-z0-9])/g,
+			(p1, p2) => `${p1} ${p2.toUpperCase()}`,
+		)
+		.replace(/^./, (c) => c.toUpperCase());
+}
 
-const enumerate_as = [
-	{
-		key: 'shape',
-		enumData: [
-			[1000, 'Cube'],
-			[1001, 'Sphere'],
-			[1002, 'Cylinder'],
-			[1003, 'Pyramid'],
-			[1004, 'Prisim'],
-			[1005, 'Cone'],
-			[1006, 'Pyramid Square'],
-			/*[0, 'Start'],
-			[1, 'Finish'],
-			[2, 'Sign'],
-			[3, 'Gravity'],
-			[4, 'Lobby Terminal'],
-			[5, 'Particle Emitter'],
-			[6, 'Sound'],
-			[7, 'GASM'],
-			[8, 'Light'],*/
-		],
-	},
-	{
-		key: 'material',
-		enumData: [
-			[0, 'Stone'],
-			[1, 'Cheese'],
-			[2, 'Ice'],
-			[3, 'Lava'],
-			[4, 'Wood'],
-			[5, 'Grapple'],
-			[6, 'Lava Grapple'],
-			[7, 'Crumbling'],
-			[8, 'Color'],
-			[9, 'Bouncing'],
-			[10, 'Frost'],
-		],
-	},
-	{
-		key: 'interpolationType',
-		enumData: [
-			[0, 'Linear'],
-			[1, 'Quadratic Ease In'],
-			[2, 'Quadratic Ease Out'],
-			[3, 'Quadratic Ease In Out'],
-			[4, 'Sinusoidal Ease In'],
-			[5, 'Sinusoidal Ease Out'],
-			[6, 'Sinusoidal Ease In Out'],
-			[7, 'Exponential Ease In'],
-			[8, 'Exponential Ease Out'],
-			[9, 'Exponential Ease In Out'],
-			[10, 'Circular Ease In'],
-			[11, 'Circular Ease Out'],
-			[12, 'Circular Ease In Out'],
-			[13, 'Cubic Ease In'],
-			[14, 'Cubic Ease Out'],
-			[15, 'Cubic Ease In Out'],
-			[16, 'Quartic Ease In'],
-			[17, 'Quartic Ease Out'],
-			[18, 'Quartic Ease In Out'],
-			[19, 'Quintic Ease In'],
-			[20, 'Quintic Ease Out'],
-			[21, 'Quintic Ease In Out'],
-		],
-	},
-	{
-		key: 'weight',
-		parentKey: 'levelNodeSign',
-		enumData: [
-			[0, 'Regular'],
-			[1, 'Light'],
-			[2, 'Semibold'],
-			[3, 'Bold'],
-			[4, 'Italic'],
-		],
-	},
-	{
-		key: 'mode',
-		parentKey: 'levelNodeGravity',
-		enumData: [
-			[0, 'Legs'],
-			[1, 'Fling'],
-		],
-	},
-	{
-		key: 'type',
-		parentKey: 'triggerSourceBasic',
-		enumData: [
-			[0, 'Hand'],
-			[1, 'Head'],
-			[2, 'Grapple'],
-			[3, 'Feet'],
-			[4, 'Block'],
-		],
-	},
-	{
-		key: 'mode',
-		parentKey: 'triggerTargetAnimation',
-		enumData: [
-			[0, 'Stop'],
-			[1, 'Start'],
-			[2, 'Toggle'],
-			[3, 'Toggle Reverse'],
-			[4, 'Restart'],
-			[5, 'Reset'],
-		],
-	},
-	{
-		key: 'mode',
-		parentKey: 'triggerTargetSound',
-		enumData: [
-			[0, 'Stop'],
-			[1, 'Start'],
-			[2, 'Toggle'],
-			[3, 'Restart'],
-			[4, 'Reset'],
-		],
-	},
-	{
-		key: 'mode',
-		parentKey: 'triggerTargetGASM',
-		enumData: [
-			[0, 'Stop'],
-			[1, 'Start'],
-			[2, 'Toggle'],
-			[3, 'Restart'],
-			[4, 'Reset'],
-		],
-	},
-	{
-		key: 'mode',
-		parentKey: 'triggerTargets',
-		enumData: [
-			[0, 'On Enter'],
-			[1, 'On Leave'],
-			[2, 'Enter or Leave'],
-			[3, 'None'],
-		],
-	},
-	{
-		key: 'waveType',
-		enumData: [
-			[0, 'Square'],
-			[1, 'Sawtooth'],
-			[2, 'Sine'],
-			[3, 'Noise'],
-		],
-	},
-	{
-		key: 'type',
-		parentKey: 'connections',
-		enumData: [
-			[0, 'Node'],
-			[1, 'Player'],
-		],
-	},
-	{
-		key: 'type',
-		parentKey: 'levelNodeLight',
-		enumData: [
-			[0, 'Point'],
-			[1, 'Spot'],
-		],
-	},
-	{
-		key: 'direction',
-		parentKey: 'animations',
-		enumData: [
-			[0, 'Restart'],
-			[1, 'Ping Pong'],
-		],
-	},
-	{
-		key: 'interpolation',
-		parentKey: 'animations',
-		enumData: [
-			[0, 'No interpolation'],
-			[1, 'Interpolation'],
-		],
-	},
-];
+function titleToCamelCase(str) {
+	// Title Case
+	if (!str) return '';
+	if (str.toUpperCase() === str) return str;
+	return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
+const structure = {
+	loaded: false,
+	classes: {},
+	enums: [],
+	blank_types: [],
+};
 
 const blank_types = [
 	{
@@ -568,6 +393,80 @@ const blank_types = [
 	},
 ];
 
+function load_proto_data() {
+	const proto = load();
+	console.log(proto);
+
+	structure.loaded = true;
+
+	// Load enums
+	Object.values(proto._fullyQualifiedObjects).forEach((item) => {
+		if (item.constructor.name == 'Enum') {
+			let enumData = [];
+			Object.entries(item.valuesById).forEach(([k, i]) => {
+				if (i.charAt(0) == '_') return; // hidden
+				try {
+					enumData.push([parseInt(k), enumCaseToTitleCase(i)]);
+				} catch (_err) {
+					window.toast('Invalid protobuf enums', 'error');
+				}
+			});
+			if (item.name === 'LevelNodeShape') {
+				structure.enums.push({
+					key: 'shape',
+					parentKey: 'levelNodeStatic',
+					enumData: enumData,
+				});
+				return;
+			}
+			if (item.name === 'LevelNodeMaterial') {
+				structure.enums.push({
+					key: 'material',
+					parentKey: 'levelNodeStatic',
+					enumData: enumData,
+				});
+				return;
+			}
+			if (item.parent.name === 'Animation') {
+				structure.enums.push({
+					key: titleToCamelCase(item.name),
+					parentKey: 'Animations',
+					enumData: enumData,
+				});
+				return;
+			}
+			if (item.parent.name.includes('TriggerTarget')) {
+				structure.enums.push({
+					key: titleToCamelCase(item.name),
+					parentKey: 'TriggerTargets',
+					enumData: enumData,
+				});
+				return;
+			}
+			if (item.name === 'InterpolationType') {
+				structure.enums.push({
+					key: titleToCamelCase(item.name),
+					parentKey: 'triggerTargetAmbience',
+					enumData: enumData,
+				});
+				return;
+			}
+			structure.enums.push({
+				key: titleToCamelCase(item.name),
+				parentKey: titleToCamelCase(item.parent.name),
+				enumData: enumData,
+			});
+		} else {
+			Object.entries(item.fields).forEach(([k, i]) => {
+				if (structure.classes[k]) return;
+				structure.classes[k] = i.type;
+			});
+		}
+	});
+
+	console.log(structure);
+}
+
 function deSerialize(object) {
 	if (object.children) {
 		if (object.type == 'array') {
@@ -601,7 +500,11 @@ function serializeToMenu(
 	parentKey = null,
 	arrayIndex = null,
 ) {
+	if (!structure.loaded) load_proto_data();
+
 	const serkey = camelToTitleCase(key);
+
+	const type = structure.classes[key];
 
 	let node = {
 		title: serkey,
@@ -672,11 +575,7 @@ function serializeToMenu(
 	}
 
 	// Vector3
-	if (
-		typeof value === 'object' &&
-		classify_as.vector3.includes(key) &&
-		!node.type
-	) {
+	if (typeof value === 'object' && type === 'Vector' && !node.type) {
 		node = {
 			...node,
 			type: 'vector3',
@@ -690,11 +589,7 @@ function serializeToMenu(
 	}
 
 	// Vector4
-	if (
-		typeof value === 'object' &&
-		classify_as.vector4.includes(key) &&
-		!node.type
-	) {
+	if (typeof value === 'object' && type === 'Quaternion' && !node.type) {
 		node = {
 			...node,
 			type: 'vector4',
@@ -709,11 +604,7 @@ function serializeToMenu(
 	}
 
 	// Min-Max range
-	if (
-		typeof value === 'object' &&
-		classify_as.minmax.includes(key) &&
-		!node.type
-	) {
+	if (typeof value === 'object' && type === 'Vector2' && !node.type) {
 		node = {
 			...node,
 			type: 'minmax',
@@ -726,11 +617,7 @@ function serializeToMenu(
 	}
 
 	// Color
-	if (
-		typeof value === 'object' &&
-		classify_as.color.includes(key) &&
-		!node.type
-	) {
+	if (typeof value === 'object' && type === 'Color' && !node.type) {
 		const col = {
 			r: Math.floor(value.r * 255 || 0),
 			g: Math.floor(value.g * 255 || 0),
@@ -780,7 +667,7 @@ function serializeToMenu(
 
 	// Enums
 	let enumData = null;
-	enumerate_as.forEach((e) => {
+	structure.enums.forEach((e) => {
 		if (e.key != key) return;
 		if (e.parentKey && e.parentKey != parentKey) return;
 		enumData = e.enumData;
