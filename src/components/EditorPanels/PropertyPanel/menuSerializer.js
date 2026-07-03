@@ -6,25 +6,6 @@ function camelToTitleCase(str) {
 	return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
-function sortObjectKeys(o) {
-	return Object.keys(o)
-		.sort()
-		.reduce((obj, key) => {
-			obj[key] = o[key];
-			return obj;
-		}, {});
-}
-
-function populateObject(a, b) {
-	let target = a;
-	Object.keys(target).forEach((key) => {
-		if (Object.prototype.hasOwnProperty.call(b, key)) {
-			target[key] = b[key];
-		}
-	});
-	return target;
-}
-
 const classify_as = {
 	vector3: [
 		'position',
@@ -63,7 +44,7 @@ const enumerate_as = [
 			[1004, 'Prisim'],
 			[1005, 'Cone'],
 			[1006, 'Pyramid Square'],
-			[0, 'Start'],
+			/*[0, 'Start'],
 			[1, 'Finish'],
 			[2, 'Sign'],
 			[3, 'Gravity'],
@@ -71,7 +52,7 @@ const enumerate_as = [
 			[5, 'Particle Emitter'],
 			[6, 'Sound'],
 			[7, 'GASM'],
-			[8, 'Light'],
+			[8, 'Light'],*/
 		],
 	},
 	{
@@ -85,10 +66,9 @@ const enumerate_as = [
 			[5, 'Grapple'],
 			[6, 'Lava Grapple'],
 			[7, 'Crumbling'],
-			[8, 'Color / Concrete'],
+			[8, 'Color'],
 			[9, 'Bouncing'],
 			[10, 'Frost'],
-			[11, 'Trigger'],
 		],
 	},
 	{
@@ -420,6 +400,172 @@ const blank_types = [
 			},
 		},
 	},
+	{
+		parentKey: 'node',
+		key: 'levelNodeStatic',
+		ifKey: {
+			material: 3,
+		},
+		types: {
+			ColoredLava: {
+				shape: 1000,
+				material: 3,
+				position: {
+					x: 0,
+					y: 0,
+					z: 0,
+				},
+				scale: {
+					x: 1,
+					y: 1,
+					z: 1,
+				},
+				rotation: {
+					x: 0,
+					y: 0,
+					z: 0,
+					w: 1,
+				},
+				color1: {
+					r: 0,
+					g: 0,
+					b: 0,
+					a: 1,
+				},
+				isTransparent: false,
+				color2: {
+					r: 0,
+					g: 0,
+					b: 0,
+					a: 1,
+				},
+				isGrabbable: false,
+				isGrapplable: false,
+				isPassable: false,
+				isGradient: false,
+				gradientDirection: {
+					x: 0,
+					y: 0,
+					z: 0,
+				},
+				specularBrightness: 0,
+				isAdditive: false,
+			},
+		},
+	},
+	{
+		parentKey: 'node',
+		key: 'levelNodeStatic',
+		ifKey: {
+			material: 7,
+		},
+		types: {
+			Crumbling: {
+				shape: 1000,
+				material: 7,
+				position: {
+					x: 0,
+					y: 0,
+					z: 0,
+				},
+				scale: {
+					x: 1,
+					y: 1,
+					z: 1,
+				},
+				rotation: {
+					x: 0,
+					y: 0,
+					z: 0,
+					w: 1,
+				},
+				stableTime: 5,
+				respawnTime: 5,
+				isLocal: false,
+			},
+		},
+	},
+	{
+		parentKey: 'frames',
+		types: {
+			Frame: {
+				time: 1,
+				position: {
+					x: 0,
+					y: 1,
+					z: 0,
+				},
+				rotation: {
+					x: 0,
+					y: 0,
+					z: 0,
+					w: 1,
+				},
+			},
+		},
+	},
+	{
+		parentKey: 'node',
+		key: 'levelNodeSign',
+		ifKey: {
+			hideModel: false,
+		},
+		types: {
+			DefaultSign: {
+				position: {
+					x: 0,
+					y: 0,
+					z: 0,
+				},
+				rotation: {
+					x: 0,
+					y: 0,
+					z: 0,
+					w: 1,
+				},
+				text: 'Text',
+				color: {
+					r: 1,
+					g: 1,
+					b: 1,
+				},
+				hideModel: false,
+				isNeon: false,
+			},
+		},
+	},
+	{
+		parentKey: 'node',
+		key: 'levelNodeSign',
+		ifKey: {
+			hideModel: true,
+		},
+		types: {
+			DefaultSign: {
+				position: {
+					x: 0,
+					y: 0,
+					z: 0,
+				},
+				rotation: {
+					x: 0,
+					y: 0,
+					z: 0,
+					w: 1,
+				},
+				text: 'Text',
+				scale: 1,
+				color: {
+					r: 1,
+					g: 1,
+					b: 1,
+				},
+				hideModel: false,
+				weight: 0,
+				isNeon: false,
+			},
+		},
+	},
 ];
 
 function deSerialize(object) {
@@ -471,8 +617,12 @@ function serializeToMenu(
 		if (e.key && key != e.key) return;
 		let matches = false;
 		if (e.ifKey) {
-			Object.entries(e.ifKey).forEach(([key, val]) => {
-				if ((Array.isArray(val) && val.includes(value[key])) || value[key] == val) matches = true;
+			Object.entries(e.ifKey).forEach(([akey, val]) => {
+				if (
+					(Array.isArray(val) && val.includes(value[akey])) ||
+					value[akey] == val
+				)
+					matches = true;
 			});
 			if (!matches) return;
 		}
@@ -488,17 +638,26 @@ function serializeToMenu(
 			let source = Object.entries(node.blankTypes)[0][1];
 			let source_keys = Object.keys(source);
 			value = {
-				...value,
 				...source,
+				...value,
 			};
 			let new_value = {};
-			Object.entries(value).forEach(([key, val]) => {
-				if (source_keys.includes(key)) {
-					new_value[key] = val;
+			Object.entries(value).forEach(([akey, val]) => {
+				if (source_keys.includes(akey)) {
+					new_value[akey] = val;
 				}
 			});
 			value = new_value;
 		}
+	}
+
+	if (key == 'node') {
+		value = {
+			isLocked: false,
+			animations: [],
+			activeAnimation: 0,
+			...value,
+		};
 	}
 
 	// 42 empty array parents looking to populate in your area
