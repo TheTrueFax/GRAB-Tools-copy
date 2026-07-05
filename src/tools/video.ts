@@ -53,7 +53,7 @@ async function read_video(file: File, callback: (percent: number) => void) {
 				const buf = new Uint8Array(reader.result as ArrayBuffer);
 				resolve(buf);
 			};
-			reader.onerror = reject;
+			reader.onerror = () => reject(new Error('Failed to read file'));
 			reader.readAsArrayBuffer(file);
 		});
 	} catch (e) {

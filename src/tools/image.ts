@@ -33,10 +33,10 @@ export async function generate_pixel_art(
 		reader.onload = () => {
 			const img = new Image();
 			img.onload = () => resolve(img);
-			img.onerror = reject;
+			img.onerror = () => reject(new Error('Failed to load image'));
 			img.src = reader.result as string;
 		};
-		reader.onerror = reject;
+		reader.onerror = () => reject(new Error('Failed to read file'));
 		reader.readAsDataURL(file);
 	});
 
