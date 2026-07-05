@@ -166,10 +166,10 @@ export default {
 						Y: { func: this.mirror_y },
 						Z: { func: this.mirror_z },
 					},
-					Programs: {
-						'Make Gun (unfinished)': { func: this.make_gun },
-						'Make Car (unfinished)': { func: this.make_car },
-					},
+					// Programs: {
+					// 	'Make Gun (unfinished)': { func: this.make_gun },
+					// 	'Make Car (unfinished)': { func: this.make_car },
+					// },
 				},
 				Select: {
 					All: { func: this.select_all },
