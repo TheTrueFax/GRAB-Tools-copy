@@ -1,4 +1,5 @@
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
+mod filesystem;
 pub fn run() {
   tauri::Builder::default()
     .setup(|app| {
@@ -11,6 +12,10 @@ pub fn run() {
       }
       Ok(())
     })
+    .plugin(tauri_plugin_android_fs::init())
+    .invoke_handler(tauri::generate_handler![
+      filesystem::copy_file
+    ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

@@ -51,6 +51,7 @@ import { obj } from '@/tools/obj';
 import signs from '@/tools/signs';
 import svg from '@/tools/svg';
 import video from '@/tools/video';
+import { invoke } from '@tauri-apps/api/core';
 import { mapActions, mapState } from 'pinia';
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
@@ -84,6 +85,7 @@ export default {
 						JSON: { func: this.save_json },
 						glTF: { func: this.save_gltf },
 						'Set Default': { func: this.set_default_level },
+						'Save To GRAB': { func: this.save_to_grab },
 					},
 				},
 				Insert: {
@@ -406,6 +408,20 @@ export default {
 					window.toast('Invalid level data', 'error');
 					return;
 				}
+				downloadLevel(level);
+			});
+		},
+		save_to_grab() {
+			this.$emit('function', async (json) => {
+				const level = await encodeLevel(json);
+				if (!level) {
+					window.toast('Invalid level data', 'error');
+					return;
+				}
+				await invoke('copy_file', {
+					source: '/some/file.txt',
+					destination: '/some/other/file.txt',
+				});
 				downloadLevel(level);
 			});
 		},
