@@ -411,7 +411,7 @@ export default {
 				downloadLevel(level);
 			});
 		},
-		save_to_grab() {
+		async save_to_grab() {
 			this.$emit('function', async (json) => {
 				const level = await encodeLevel(json);
 				if (!level) {

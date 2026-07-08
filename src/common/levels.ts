@@ -1,7 +1,6 @@
 import { load } from '@/common/root';
 import { DOMAIN, FORMAT_VERSION } from '@/config';
 import { Color, Level, LevelNode } from '@/generated/proto';
-import { invoke } from '@tauri-apps/api/core';
 
 export async function decodeLevel(buffer: Blob): Promise<Level | null> {
 	try {
@@ -59,18 +58,7 @@ export function encodeLevel(level: Level): ArrayBuffer | null {
 export function downloadLevel(
 	level: ArrayBuffer,
 	name: string = Date.now().toString().slice(0, -3),
-	folder: string = null,
 ) {
-	if (folder) {
-		// If folder exists, assume to be a absolute path and needs to be downloaded with tauri
-		await invoke('write_file', {
-			path,
-			name,
-			data: Array.from(new Uint8Array(data)),
-		});
-		return;
-	}
-
 	const blob = new Blob([level], {
 		type: 'application/octet-stream',
 	});
