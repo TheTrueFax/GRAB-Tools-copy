@@ -190,12 +190,17 @@ function get_usable_tracks(m) {
 			// No notes, no track
 			return;
 		}
+		if (track.instrument > 127 || track.instrument < 0) {
+			// just in case this ever happens
+			return;
+		}
 		tracks.push(track);
 	});
 	return tracks;
 }
 function parse_unparsed_tracks(tracks) {
 	let new_tracks = [];
+	let discarded_notes = 0;
 	tracks.forEach((track) => {
 		let notes = [];
 
@@ -204,6 +209,11 @@ function parse_unparsed_tracks(tracks) {
 		let average_note_volumes_count = {};
 
 		track.notes.forEach((note) => {
+			if (track.channel == 9 && (note.midi < 35 || note.midi > 80)) {
+				// skip drum notes that lie outside of the map
+				discarded_notes++;
+				return;
+			}
 			notes.push({
 				start: note.time,
 				duration: note.duration,
@@ -247,6 +257,12 @@ function parse_unparsed_tracks(tracks) {
 			isDrums: track.channel == 9,
 		});
 	});
+	if (discarded_notes) {
+		window.toast(
+			`MIDI file contains unsupported drums, removed ${discarded_notes} notes`,
+			'warning',
+		);
+	}
 	return new_tracks;
 }
 function get_unique_pitches(track) {
