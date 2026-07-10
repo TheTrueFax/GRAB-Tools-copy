@@ -165,7 +165,19 @@ async function decode_midi_file_as_json(file) {
 
 	const buffer = await file.arrayBuffer();
 
-	return new Midi(buffer);
+	try {
+		return new Midi(buffer);
+	} catch (e) {
+		if (typeof e === 'string') {
+			throw new Error(
+				e.replace('Bad MIDI file', 'File is not a real MIDI file'),
+				{
+					cause: e,
+				},
+			);
+		}
+		throw e;
+	}
 }
 function midi_to_hz(m) {
 	const hz_value = 440 * Math.pow(2, (m - 69) / 12);
