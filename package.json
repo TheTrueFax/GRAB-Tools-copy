@@ -13,6 +13,7 @@
 		"lint:ci": "eslint .",
 		"format": "prettier --write src/",
 		"format:ci": "prettier --check src/",
+		"launch": "open https://localhost:5173/ && npm run dev",
 		"tauri": "tauri",
 		"proto": "npx pbts -i src/assets/proto/proto.proto -o src/generated/proto.ts && echo 'You will have to manually clean up the file as it may have errors'",
 		"helpers": "node scripts/generate-helpers.mjs && npx prettier --write src/generated/helpers.ts",
