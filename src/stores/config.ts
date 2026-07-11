@@ -7,12 +7,14 @@ export const useConfigStore = defineStore('config', {
 		dark_mode: boolean;
 		vim_enabled: boolean;
 		default_gasm: string;
+		active_gasm_tab: number;
 	} => ({
 		editor_config: undefined,
 		default_level: undefined,
 		dark_mode: false,
 		vim_enabled: false,
 		default_gasm: '',
+		active_gasm_tab: 0,
 	}),
 	actions: {
 		set_dark_mode(value: boolean) {
@@ -23,6 +25,9 @@ export const useConfigStore = defineStore('config', {
 		},
 		set_default_gasm(value: string) {
 			this.default_gasm = value;
+		},
+		set_active_gasm_tab(value: number) {
+			this.active_gasm_tab = value;
 		},
 	},
 	persist: true,
