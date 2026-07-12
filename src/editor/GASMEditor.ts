@@ -7,6 +7,7 @@ import {
 } from '@/editor/GASMCompletion';
 import { gasmDiagnostics } from '@/editor/GASMDiagnostics';
 import { gasm } from '@/editor/GASMDSL';
+import { pythonCompletion } from '@/editor/PythonCompletion';
 import { compile_python } from '@/editor/PythonConversion';
 import { levelNodeWithGASM } from '@/generated/nodes';
 import { useConfigStore } from '@/stores/config';
@@ -228,8 +229,7 @@ export class PythonEditor implements BaseEditor {
 				highlightSelectionMatches(),
 				...(useConfigStore().vim_enabled ? [vim()] : []),
 				basicSetup,
-				...gasmCompletion(),
-				gasmDiagnostics,
+				pythonCompletion(),
 			],
 			[...searchKeymap],
 			(update: ViewUpdate) => {
