@@ -7,6 +7,7 @@ export const useConfigStore = defineStore('config', {
 		dark_mode: boolean;
 		vim_enabled: boolean;
 		default_gasm: string;
+		default_python: string;
 		active_gasm_tab: number;
 	} => ({
 		editor_config: undefined,
@@ -14,6 +15,7 @@ export const useConfigStore = defineStore('config', {
 		dark_mode: false,
 		vim_enabled: false,
 		default_gasm: '',
+		default_python: '',
 		active_gasm_tab: 0,
 	}),
 	actions: {
@@ -25,6 +27,9 @@ export const useConfigStore = defineStore('config', {
 		},
 		set_default_gasm(value: string) {
 			this.default_gasm = value;
+		},
+		set_default_python(value: string) {
+			this.default_python = value;
 		},
 		set_active_gasm_tab(value: number) {
 			this.active_gasm_tab = value;

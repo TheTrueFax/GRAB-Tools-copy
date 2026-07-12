@@ -2,7 +2,7 @@
 import AssemblyEditor from '@/components/AssemblyEditor.vue';
 import DropDown from '@/components/EditorPanels/DropDown.vue';
 import ResizableColPanel from '@/components/EditorPanels/ResizableColPanel.vue';
-import { GASMEditor, OutputEditor } from '@/editor/GASMEditor';
+import { GASMEditor, OutputEditor, PythonEditor } from '@/editor/GASMEditor';
 import { useConfigStore } from '@/stores/config';
 
 export default {
@@ -15,7 +15,7 @@ export default {
 		return {
 			active_tab: 0,
 			error: false,
-			editors: [GASMEditor],
+			editors: [GASMEditor, PythonEditor],
 			menu: {
 				Edit: {
 					Copy: { func: () => this.copy() },
