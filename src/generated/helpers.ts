@@ -15,6 +15,7 @@ export function level(overrides?: Partial<proto.Level>): proto.Level {
 		defaultSpawnPointID: 0,
 		unlisted: false,
 		showReplays: true,
+		disablePracticeMode: false,
 	};
 	if (overrides) merge(obj, overrides);
 	return obj;
