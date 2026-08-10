@@ -337,7 +337,7 @@ export default defineComponent({
 			const selected_nodes = (this.gizmo?.selection ?? [])
 				.map((o) => o.userData.node)
 				.filter(Boolean);
-			this.gizmo.clear();
+			this.gizmo?.clear();
 			if (this.level) {
 				this.scene.remove(this.level.scene);
 				this.level.scene.traverse((obj) => {
