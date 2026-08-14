@@ -611,14 +611,26 @@ export default {
 						type: 'number',
 						text: 'Volume (0-100, default 30)',
 					},
+					{
+						type: 'number',
+						text: 'Speed multiplier (default 1)',
+					},
 				],
-				async (files, instrument, start_active, loop, volume) => {
+				async (
+					files,
+					instrument,
+					start_active,
+					loop,
+					volume,
+					speedIndex,
+				) => {
 					if (!files.length) {
 						window.toast('No midi file chosen', 'error');
 						return;
 					}
 
 					volume = (parseInt(volume) || 30) / 100;
+					speedIndex = 1 / (parseFloat(speedIndex) || 1);
 
 					const file = files[0];
 
@@ -632,6 +644,7 @@ export default {
 							start_active,
 							loop,
 							volume,
+							speedIndex,
 						);
 						if (!nodes) return;
 

@@ -23,6 +23,8 @@ export default {
 			const loop = getByID(`${toolID}-loop`).checked;
 			const instrument = getByID(`${toolID}-instrument`).value;
 			const volume = parseInt(getByID(`${toolID}-volume`).value) || 40;
+			const speedIndex =
+				1 / (parseFloat(getByID(`${toolID}-speed`).value) || 1);
 
 			const nodes = await midi.midi(
 				file,
@@ -31,6 +33,7 @@ export default {
 				start_active,
 				loop,
 				volume,
+				speedIndex,
 			);
 			if (!nodes) return;
 
@@ -76,6 +79,12 @@ export default {
 			min="0"
 			max="100"
 			placeholder="Volume (0-100, default 30)"
+		/>
+		<input
+			id="midi-tool-speed"
+			type="number"
+			min="0"
+			placeholder="Speed multiplier (default 1)"
 		/>
 		<span>
 			Don't have a MIDI file? Download some
