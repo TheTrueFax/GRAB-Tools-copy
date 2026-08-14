@@ -637,7 +637,7 @@ async function generate(
 			const notes = notes_by_pitch[hz.toString()]!;
 			for (const note of notes) {
 				const previous_frame = animationFrame({
-					time: note.start - 0.05,
+					time: note.start,
 					position: { x: 0 },
 				});
 
@@ -647,7 +647,7 @@ async function generate(
 				});
 
 				const next_frame = animationFrame({
-					time: note.start + note.duration - 0.05,
+					time: note.start + note.duration,
 					position: { x: 1 },
 				});
 
