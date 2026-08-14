@@ -664,7 +664,7 @@ async function generate(
 
 			// Last frame for each block has to be at the same time to ensure sync
 			const last_frame = animationFrame();
-			last_frame.time = Math.ceil(duration);
+			last_frame.time = duration;
 			current_trigger_animation.frames!.push(last_frame);
 		}
 
