@@ -48,6 +48,7 @@ async function midi(
 	start_active: boolean,
 	loop: boolean,
 	volume: number,
+	speedIndex: number,
 ): Promise<LevelNode[] | null> {
 	const optimize = inst_type.includes('Classic');
 
@@ -69,6 +70,7 @@ async function midi(
 			optimize,
 			volume,
 			inst_type,
+			speedIndex,
 		);
 		if (!level_nodes) return null;
 		return level_nodes;
@@ -493,6 +495,25 @@ function refactor_as_optimised(tracks: TrackData[]) {
 	return new_tracks;
 }
 
+function change_tracks_speed(tracks: TrackData[], speedIndex: number) {
+	const new_tracks: TrackData[] = [];
+	for (const track of tracks) {
+		const notes: NoteData[] = [];
+		for (const note of track.notes) {
+			notes.push({
+				...note,
+				start: note.start * speedIndex,
+				duration: note.duration * speedIndex,
+			});
+		}
+		new_tracks.push({
+			...track,
+			notes: notes,
+		});
+	}
+	return new_tracks;
+}
+
 async function generate(
 	file: File,
 	node_count: number,
@@ -501,6 +522,7 @@ async function generate(
 	optimize: boolean,
 	volume: number,
 	instrument: string,
+	speedIndex: number,
 ) {
 	// Decode midi file into JSON
 	const m = await decode_midi_file_as_json(file);
@@ -511,8 +533,14 @@ async function generate(
 
 	// Turn the units inside the note into useable units by GRAB
 	const tracks = optimize
-		? refactor_as_optimised(parse_unparsed_tracks(unparsed_tracks))
-		: parse_unparsed_tracks(unparsed_tracks);
+		? change_tracks_speed(
+				refactor_as_optimised(parse_unparsed_tracks(unparsed_tracks)),
+				speedIndex,
+			)
+		: change_tracks_speed(
+				parse_unparsed_tracks(unparsed_tracks),
+				speedIndex,
+			);
 	console.log(tracks, unparsed_tracks);
 
 	// Get duration of song in seconds
