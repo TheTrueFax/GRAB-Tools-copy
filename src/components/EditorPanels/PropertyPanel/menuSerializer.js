@@ -46,6 +46,7 @@ const registry = {
 
 function loadTypeRegistry() {
 	const proto = load();
+	console.log(proto);
 	registry.loaded = true;
 
 	Object.values(proto._fullyQualifiedObjects).forEach((item) => {
@@ -181,7 +182,7 @@ function resolveValueType(key, parentTypeName) {
 }
 
 /** collect child entries from a known message type */
-function buildTypedefEntries(value, typeDef, typeName, arrayIndex) {
+function buildTypedefEntries(value, typeDef, typeName) {
 	const entries = [];
 
 	// oneofs
@@ -203,7 +204,7 @@ function buildTypedefEntries(value, typeDef, typeName, arrayIndex) {
 
 		entries.push([
 			activeVariant,
-			serialize(subVal, activeVariant, typeName, arrayIndex),
+			serialize(subVal, activeVariant, typeName),
 			0, // oneof
 		]);
 	});
@@ -220,7 +221,7 @@ function buildTypedefEntries(value, typeDef, typeName, arrayIndex) {
 
 		entries.push([
 			subKey,
-			serialize(subVal, subKey, typeName, arrayIndex),
+			serialize(subVal, subKey, typeName),
 			subField.type === 'bool' ? 2 : 1, // bools last
 		]);
 	});
@@ -291,14 +292,13 @@ export function serialize(
 	if (typeof value === 'object' && value !== null) {
 		const typeDef = typeName ? registry.types[typeName] : null;
 		const entries = typeDef
-			? buildTypedefEntries(value, typeDef, typeName, arrayIndex)
+			? buildTypedefEntries(value, typeDef, typeName)
 			: Object.entries(value).map(([subKey, subVal]) => [
 					subKey,
 					serialize(
 						subVal,
 						subKey,
 						arrayIndex != null ? parentTypeName : typeName,
-						arrayIndex,
 					),
 				]);
 
