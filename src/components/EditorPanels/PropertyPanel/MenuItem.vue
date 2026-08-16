@@ -385,6 +385,7 @@ export default defineComponent({
 				v-if="
 					$props.node.blankTypes &&
 					Object.keys($props.node.blankTypes).length > 1 &&
+					$props.node.type !== 'array' &&
 					isExpanded
 				"
 			>
