@@ -12,8 +12,6 @@ export default defineComponent({
 		return {
 			isExpanded: ref(false),
 			isHovered: ref(false),
-			addMenuOpen: ref(false),
-			ignoreMenuClose: false,
 			lastNodeKey: this.$props.node.key,
 		};
 	},
@@ -81,13 +79,9 @@ export default defineComponent({
 					this.$props.node.arrayIndex,
 					0,
 					serialize(
-						Object.keys(this.$props.node.blankTypes).length == 1
-							? this.$props.node.blankTypes[
-									Object.keys(this.$props.node.blankTypes)[0]
-								]
-							: this.$props.node.blankTypes[
-									this.$refs.blankTypeSelect.value
-								],
+						this.$props.node.blankTypes[
+							Object.keys(this.$props.node.blankTypes)[0]
+						],
 						this.$props.node.arrayIndex.toString(),
 						this.$props.node.elementType || this.$props.node.key,
 						this.$props.node.arrayIndex,
@@ -103,13 +97,9 @@ export default defineComponent({
 					this.$props.node.arrayIndex + 1,
 					0,
 					serialize(
-						Object.keys(this.$props.node.blankTypes).length == 1
-							? this.$props.node.blankTypes[
-									Object.keys(this.$props.node.blankTypes)[0]
-								]
-							: this.$props.node.blankTypes[
-									this.$refs.blankTypeSelect.value
-								],
+						this.$props.node.blankTypes[
+							Object.keys(this.$props.node.blankTypes)[0]
+						],
 						this.$props.node.arrayIndex.toString(),
 						this.$props.node.elementType || this.$props.node.key,
 						this.$props.node.arrayIndex,
@@ -122,13 +112,9 @@ export default defineComponent({
 			if (this.$props.node.type != 'array') return;
 			this.$props.node.children = [
 				serialize(
-					Object.keys(this.$props.node.blankTypes).length == 1
-						? this.$props.node.blankTypes[
-								Object.keys(this.$props.node.blankTypes)[0]
-							]
-						: this.$props.node.blankTypes[
-								this.$refs.blankTypeSelectSingle.value
-							],
+					this.$props.node.blankTypes[
+						Object.keys(this.$props.node.blankTypes)[0]
+					],
 					'0',
 					this.$props.node.elementType || this.$props.node.key,
 					0,
@@ -186,15 +172,14 @@ export default defineComponent({
 		refreshEmit() {
 			this.$emit('refresh');
 		},
-		onclick(e) {
-			if (
-				!e.target.className.includes('ignore-menu-close') &&
-				this.addMenuOpen &&
-				!this.ignoreMenuClose
-			) {
-				this.addMenuOpen = false;
-			}
-			this.ignoreMenuClose = false;
+		refreshSelectedBlankType() {
+			this.$props.node.children = serialize(
+				this.$props.node.blankTypes[this.$props.node.selectedBlankType],
+				this.$props.node.key,
+				this.$props.node.parentTypeName,
+				this.$props.node.arrayIndex,
+			).children;
+			this.refreshEmit();
 		},
 	},
 });
@@ -395,18 +380,37 @@ export default defineComponent({
 				>
 			</div>
 
+			<!-- Item type selection field -->
+			<div
+				v-if="
+					$props.node.blankTypes &&
+					Object.keys($props.node.blankTypes).length > 1 &&
+					isExpanded
+				"
+			>
+				<span class="spacer"></span>
+				<select
+					v-model="$props.node.selectedBlankType"
+					class="primitive-select primitive-input"
+					@change="refreshSelectedBlankType"
+					@click.stop
+				>
+					<option
+						v-for="item in Object.keys($props.node.blankTypes)"
+						:key="item"
+						:value="item"
+						:selected="item == $props.node.selectedBlankType"
+					>
+						{{ item }}
+					</option>
+				</select>
+			</div>
+
 			<!-- Array modification buttons -->
 			<div v-if="isHovered && $props.node.arrayIndex != null">
 				<span class="spacer"></span>
-				<button
-					class="modify-button"
-					@click="
-						addMenuOpen = true;
-						ignoreMenuClose = true;
-					"
-				>
-					+
-				</button>
+				<button class="modify-button" @click="addItemAbove">▲</button>
+				<button class="modify-button" @click="addItemBelow">▼</button>
 				<button class="modify-button red-button" @click="removeItem">
 					X
 				</button>
@@ -419,91 +423,10 @@ export default defineComponent({
 				"
 			>
 				<span class="spacer"></span>
-				<button
-					class="modify-button"
-					@click="
-						Object.keys($props.node.blankTypes).length > 1
-							? (addMenuOpen = true)
-							: addArrayItem();
-						ignoreMenuClose = true;
-					"
-				>
-					+
-				</button>
+				<button class="modify-button" @click="addArrayItem">+</button>
 			</div>
 		</div>
-		<!-- Populate menu for empty array parents -->
-		<div
-			v-if="
-				$props.node.type === 'array' &&
-				$props.node.children.length === 0 &&
-				addMenuOpen
-			"
-			class="add-menu ignore-menu-close"
-		>
-			<span v-if="Object.keys($props.node.blankTypes).length > 1">
-				<select
-					ref="blankTypeSelectSingle"
-					class="primitive-select primitive-input ignore-menu-close"
-				>
-					<option
-						v-for="(item, index) in Object.keys(
-							$props.node.blankTypes,
-						)"
-						:key="item"
-						:value="item"
-						:selected="index == 0"
-					>
-						{{ item }}
-					</option>
-				</select>
-				<br />
-			</span>
-			<button
-				class="modify-button in-menu-button ignore-menu-close"
-				@click="addArrayItem"
-			>
-				Add item
-			</button>
-		</div>
 
-		<!-- Populate menu for array children -->
-		<div
-			v-if="$props.node.arrayIndex != null && addMenuOpen"
-			class="add-menu ignore-menu-close"
-		>
-			<span v-if="Object.keys($props.node.blankTypes).length > 1">
-				<select
-					ref="blankTypeSelect"
-					class="primitive-select primitive-input ignore-menu-close"
-				>
-					<option
-						v-for="(item, index) in Object.keys(
-							$props.node.blankTypes,
-						)"
-						:key="item"
-						:value="item"
-						:selected="index == 0"
-					>
-						{{ item }}
-					</option>
-				</select>
-				<br />
-			</span>
-			<button
-				class="modify-button ignore-menu-close in-menu-button"
-				@click="addItemAbove"
-			>
-				Insert item above
-			</button>
-			<br />
-			<button
-				class="modify-button ignore-menu-close in-menu-button"
-				@click="addItemBelow"
-			>
-				Insert item below
-			</button>
-		</div>
 		<div v-if="isExpanded && !isInlineType()" class="menu-children">
 			<span v-if="$props.node.key == 'program'" class="node-key x-label"
 				><span class="spacer"></span>GASM not supported</span

@@ -230,6 +230,15 @@ function buildTypedefEntries(value, typeDef, typeName) {
 	return entries;
 }
 
+function getBlankType(value, blankTypes) {
+	let valTypeName = camelToTitleCase(Object.keys(value)[0]);
+	if (blankTypes[valTypeName]) {
+		return valTypeName;
+	} else {
+		console.warn('cant find blank type', value, blankTypes);
+	}
+}
+
 /** serialise an object into a menu tree */
 export function serialize(
 	value,
@@ -247,7 +256,12 @@ export function serialize(
 		fieldInfo = null;
 	}
 
-	const node = { title: camelToTitleCase(key ?? ''), key, arrayIndex };
+	const node = {
+		title: camelToTitleCase(key ?? ''),
+		key,
+		arrayIndex,
+		parentTypeName,
+	};
 	if (typeName) node.typeName = typeName;
 
 	// array
@@ -265,6 +279,9 @@ export function serialize(
 					elementType,
 					index,
 				);
+				if (Object.keys(blankTypes).length > 1) {
+					child.selectedBlankType = getBlankType(item, blankTypes);
+				}
 				child.elementType = elementType;
 				child.blankTypes = blankTypes;
 				return child;
