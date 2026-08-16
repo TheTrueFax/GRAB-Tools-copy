@@ -232,7 +232,9 @@ function buildTypedefEntries(value, typeDef, typeName) {
 
 function getBlankType(value, blankTypes) {
 	if (Object.keys(value).length == 0) return;
-	const valTypeNames = Object.keys(value).map((v) => {return camelToTitleCase(v)});
+	const valTypeNames = Object.keys(value).map((v) => {
+		return camelToTitleCase(v);
+	});
 	for (let v in valTypeNames) {
 		if (blankTypes[valTypeNames[v]]) {
 			return valTypeNames[v];
@@ -309,8 +311,12 @@ export function serialize(
 
 	// object
 	if (typeof value === 'object' && value !== null) {
-		const blankTypes = parentTypeName === null ? getBlankTypesForArray("LevelNode") : null;
-		const selectedBlankType = (blankTypes && Object.keys(blankTypes).length > 1) ? getBlankType(value, blankTypes) : null;
+		const blankTypes =
+			parentTypeName === null ? getBlankTypesForArray('LevelNode') : null;
+		const selectedBlankType =
+			blankTypes && Object.keys(blankTypes).length > 1
+				? getBlankType(value, blankTypes)
+				: null;
 		const typeDef = typeName ? registry.types[typeName] : null;
 		const entries = typeDef
 			? buildTypedefEntries(value, typeDef, typeName)

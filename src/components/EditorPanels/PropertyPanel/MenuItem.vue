@@ -1,5 +1,8 @@
 <script>
-import { serialize } from '@/components/EditorPanels/PropertyPanel/menuSerializer';
+import {
+	deserialize,
+	serialize,
+} from '@/components/EditorPanels/PropertyPanel/menuSerializer';
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
@@ -155,6 +158,7 @@ export default defineComponent({
 			this.setChildValue('r', parseInt(hex.substring(1, 3), 16) / 255);
 			this.setChildValue('g', parseInt(hex.substring(3, 5), 16) / 255);
 			this.setChildValue('b', parseInt(hex.substring(5, 7), 16) / 255);
+			this.setChildValue('a', 1); // alpha value should never be 0, but can default to 0 sometimes
 		},
 		removeItem() {
 			if (this.$props.node.arrayIndex == null) return;
@@ -173,8 +177,30 @@ export default defineComponent({
 			this.$emit('refresh');
 		},
 		refreshSelectedBlankType() {
+			const ds = deserialize(this.$props.node);
+			// quick and dirty clone but it gets the job done
+			const blankTypeCloned = JSON.parse(
+				JSON.stringify(
+					this.$props.node.blankTypes[
+						this.$props.node.selectedBlankType
+					],
+				),
+			);
+			const blankTypeItem = Object.keys(blankTypeCloned)[0];
+			// try map some values to new object (like position, rotation, scale, etc)
+			for (let i of Object.keys(ds)) {
+				for (let x of Object.keys(ds[i])) {
+					if (blankTypeCloned[blankTypeItem][x] !== null) {
+						blankTypeCloned[blankTypeItem][x] = ds[i][x];
+					}
+				}
+				if (typeof ds[i] !== 'object') {
+					blankTypeCloned[i] = ds[i];
+				}
+			}
+			// serialize the values and replace the children
 			this.$props.node.children = serialize(
-				this.$props.node.blankTypes[this.$props.node.selectedBlankType],
+				blankTypeCloned,
 				this.$props.node.key,
 				this.$props.node.parentTypeName,
 				this.$props.node.arrayIndex,
