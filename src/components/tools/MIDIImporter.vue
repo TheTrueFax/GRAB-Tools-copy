@@ -23,19 +23,22 @@ export default {
 			const loop = getByID(`${toolID}-loop`).checked;
 			const instrument = getByID(`${toolID}-instrument`).value;
 			const volume = parseInt(getByID(`${toolID}-volume`).value) || 40;
+			const speedIndex =
+				1 / (parseFloat(getByID(`${toolID}-speed`).value) || 1);
 
-			const node = await midi.midi(
+			const nodes = await midi.midi(
 				file,
 				0,
 				instrument,
 				start_active,
 				loop,
 				volume,
+				speedIndex,
 			);
-			if (!node) return;
+			if (!nodes) return;
 
 			const obj = createLevel(
-				[node],
+				nodes,
 				'MIDI: ' + file.name,
 				'Generated with GRAB Tools',
 				['TheTrueFax', 'GRAB Tools'],
@@ -76,6 +79,12 @@ export default {
 			min="0"
 			max="100"
 			placeholder="Volume (0-100, default 30)"
+		/>
+		<input
+			id="midi-tool-speed"
+			type="number"
+			min="0"
+			placeholder="Speed multiplier (default 1)"
 		/>
 		<span>
 			Don't have a MIDI file? Download some

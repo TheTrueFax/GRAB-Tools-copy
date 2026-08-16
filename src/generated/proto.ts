@@ -11,6 +11,7 @@ export interface Level {
 	defaultSpawnPointID?: number;
 	unlisted?: boolean;
 	showReplays?: boolean; // true
+	disablePracticeMode?: boolean;
 }
 
 export interface Vector {
@@ -477,6 +478,7 @@ export enum TriggerSourceBasicType {
 	GRAPPLE = 2,
 	FEET = 3,
 	BLOCK = 4,
+	SPAWN = 5,
 }
 
 export enum TriggerTargetAnimationMode {
@@ -597,4 +599,5 @@ export interface ProgrammablePropertyDataComponent {
 export enum ConnectionType {
 	NODE = 0,
 	PLAYER = 1,
+	LOBBY = 2,
 }

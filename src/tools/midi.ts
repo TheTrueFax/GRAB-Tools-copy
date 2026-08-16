@@ -1,4 +1,3 @@
-import { groupNodes } from '@/common/group';
 import { LevelNodeWith } from '@/common/levelNodes';
 import { animation, animationFrame } from '@/generated/helpers';
 import {
@@ -10,7 +9,7 @@ import {
 	triggerTargetWithSound,
 } from '@/generated/nodes';
 import {
-	LevelNodeGroup,
+	LevelNode,
 	LevelNodeSound,
 	LevelNodeStatic,
 	LevelNodeTrigger,
@@ -49,7 +48,8 @@ async function midi(
 	start_active: boolean,
 	loop: boolean,
 	volume: number,
-): Promise<LevelNodeWith<LevelNodeGroup> | null> {
+	speedIndex: number,
+): Promise<LevelNode[] | null> {
 	const optimize = inst_type.includes('Classic');
 
 	//console.log(inst_type);
@@ -70,9 +70,10 @@ async function midi(
 			optimize,
 			volume,
 			inst_type,
+			speedIndex,
 		);
 		if (!level_nodes) return null;
-		return groupNodes(level_nodes);
+		return level_nodes;
 	} catch (e) {
 		if (e instanceof Error) {
 			window.toast(e, 'error');
@@ -355,7 +356,7 @@ function make_connected_trigger(
 	trigger.levelNodeTrigger.position = position;
 	trigger.levelNodeTrigger.scale = { x: 1, y: 1, z: 1 };
 
-	const trigger_start_index = current_soundblocks + node_count + 1;
+	const trigger_start_index = current_soundblocks + node_count;
 	for (
 		let i = trigger_start_index;
 		i < trigger_count + trigger_start_index + 1;
@@ -494,6 +495,25 @@ function refactor_as_optimised(tracks: TrackData[]) {
 	return new_tracks;
 }
 
+function change_tracks_speed(tracks: TrackData[], speedIndex: number) {
+	const new_tracks: TrackData[] = [];
+	for (const track of tracks) {
+		const notes: NoteData[] = [];
+		for (const note of track.notes) {
+			notes.push({
+				...note,
+				start: note.start * speedIndex,
+				duration: note.duration * speedIndex,
+			});
+		}
+		new_tracks.push({
+			...track,
+			notes: notes,
+		});
+	}
+	return new_tracks;
+}
+
 async function generate(
 	file: File,
 	node_count: number,
@@ -502,6 +522,7 @@ async function generate(
 	optimize: boolean,
 	volume: number,
 	instrument: string,
+	speedIndex: number,
 ) {
 	// Decode midi file into JSON
 	const m = await decode_midi_file_as_json(file);
@@ -512,8 +533,14 @@ async function generate(
 
 	// Turn the units inside the note into useable units by GRAB
 	const tracks = optimize
-		? refactor_as_optimised(parse_unparsed_tracks(unparsed_tracks))
-		: parse_unparsed_tracks(unparsed_tracks);
+		? change_tracks_speed(
+				refactor_as_optimised(parse_unparsed_tracks(unparsed_tracks)),
+				speedIndex,
+			)
+		: change_tracks_speed(
+				parse_unparsed_tracks(unparsed_tracks),
+				speedIndex,
+			);
 	console.log(tracks, unparsed_tracks);
 
 	// Get duration of song in seconds
@@ -591,7 +618,7 @@ async function generate(
 				get_sound_trigger_block(
 					i,
 					t,
-					i + node_count + 2 + current_soundblocks,
+					i + node_count + 1 + current_soundblocks,
 					start_active,
 					loop,
 				),
@@ -610,7 +637,7 @@ async function generate(
 			const notes = notes_by_pitch[hz.toString()]!;
 			for (const note of notes) {
 				const previous_frame = animationFrame({
-					time: note.start - 0.05,
+					time: note.start,
 					position: { x: 0 },
 				});
 
@@ -620,7 +647,7 @@ async function generate(
 				});
 
 				const next_frame = animationFrame({
-					time: note.start + note.duration - 0.05,
+					time: note.start + note.duration,
 					position: { x: 1 },
 				});
 
@@ -637,7 +664,7 @@ async function generate(
 
 			// Last frame for each block has to be at the same time to ensure sync
 			const last_frame = animationFrame();
-			last_frame.time = Math.ceil(duration);
+			last_frame.time = duration;
 			current_trigger_animation.frames!.push(last_frame);
 		}
 

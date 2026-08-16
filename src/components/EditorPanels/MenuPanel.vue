@@ -611,31 +611,44 @@ export default {
 						type: 'number',
 						text: 'Volume (0-100, default 30)',
 					},
+					{
+						type: 'number',
+						text: 'Speed multiplier (default 1)',
+					},
 				],
-				async (files, instrument, start_active, loop, volume) => {
+				async (
+					files,
+					instrument,
+					start_active,
+					loop,
+					volume,
+					speedIndex,
+				) => {
 					if (!files.length) {
 						window.toast('No midi file chosen', 'error');
 						return;
 					}
 
 					volume = (parseInt(volume) || 30) / 100;
+					speedIndex = 1 / (parseFloat(speedIndex) || 1);
 
 					const file = files[0];
 
 					this.$emit('viewport', async (scope) => {
 						const max_id = scope.level.nodes.all.length;
 
-						const node = await midi.midi(
+						const nodes = await midi.midi(
 							file,
 							max_id,
 							instrument,
 							start_active,
 							loop,
 							volume,
+							speedIndex,
 						);
-						if (!node) return;
+						if (!nodes) return;
 
-						this.insert_selection_nodes([node]);
+						this.insert_selection_nodes(nodes);
 					});
 				},
 			);
