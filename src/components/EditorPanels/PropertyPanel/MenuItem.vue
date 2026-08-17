@@ -48,6 +48,7 @@ export default defineComponent({
 	},
 	mounted() {
 		window.addEventListener('click', this.onclick);
+		//if (this.$props.node.type == 'Color') this.$props.node.value.a = 1; // some concrete blocks without a color2 default to alpha 0 which causes rendering issues
 	},
 	methods: {
 		objectEquals(a, b) {
@@ -158,7 +159,6 @@ export default defineComponent({
 			this.setChildValue('r', parseInt(hex.substring(1, 3), 16) / 255);
 			this.setChildValue('g', parseInt(hex.substring(3, 5), 16) / 255);
 			this.setChildValue('b', parseInt(hex.substring(5, 7), 16) / 255);
-			this.setChildValue('a', 1); // alpha value should never be 0, but can default to 0 sometimes
 		},
 		removeItem() {
 			if (this.$props.node.arrayIndex == null) return;
