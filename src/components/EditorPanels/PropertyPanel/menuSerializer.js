@@ -318,6 +318,21 @@ export function serialize(
 				? getBlankType(value, blankTypes)
 				: null;
 		const typeDef = typeName ? registry.types[typeName] : null;
+
+		// lazy fix for defaulting blankTypes
+		if (typeName == 'Color' && value.a == 0) {
+			value = { r: 1, g: 1, b: 1, a: 1 };
+		}
+		if (
+			typeName == 'Quaternion' &&
+			value.x == 0 &&
+			value.y == 0 &&
+			value.z == 0 &&
+			value.w == 0
+		) {
+			value.w = 1;
+		}
+
 		const entries = typeDef
 			? buildTypedefEntries(value, typeDef, typeName)
 			: Object.entries(value).map(([subKey, subVal]) => [
