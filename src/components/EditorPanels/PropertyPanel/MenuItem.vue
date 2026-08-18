@@ -48,7 +48,6 @@ export default defineComponent({
 	},
 	mounted() {
 		window.addEventListener('click', this.onclick);
-		//if (this.$props.node.type == 'Color') this.$props.node.value.a = 1; // some concrete blocks without a color2 default to alpha 0 which causes rendering issues
 	},
 	methods: {
 		objectEquals(a, b) {
@@ -455,12 +454,11 @@ export default defineComponent({
 		</div>
 
 		<div v-if="isExpanded && !isInlineType()" class="menu-children">
-			<span v-if="$props.node.key == 'program'" class="node-key x-label"
+			<!--<span v-if="$props.node.key == 'program'" class="node-key x-label"
 				><span class="spacer"></span>GASM not supported</span
-			>
+			>-->
 			<MenuItem
 				v-for="child in $props.node.children"
-				v-else
 				:key="child.key"
 				:node="child"
 				:re-open="$props.reOpen"
