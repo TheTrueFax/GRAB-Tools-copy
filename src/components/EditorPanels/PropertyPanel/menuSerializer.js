@@ -61,18 +61,14 @@ function loadTypeRegistry() {
 			});
 
 			registry.enums[
-				(item.parent.name == 'Level'
-					? 'LevelNodeStatic'
-					: item.parent.name) +
-					'.' +
-					item.name
+				item.parent.name == 'Level'
+					? item.name
+					: item.parent.name + '.' + item.name
 			] = enumData;
 			registry.enumLookup[
-				(item.parent.name == 'Level'
-					? 'LevelNodeStatic'
-					: item.parent.name) +
-					'.' +
-					item.name
+				item.parent.name == 'Level'
+					? item.name
+					: item.parent.name + '.' + item.name
 			] = true;
 		}
 
@@ -110,8 +106,11 @@ function loadTypeRegistry() {
 function getDefaultForType(typeName, parentTypeName = null) {
 	// primitives use their defaults
 	if (typeName in PRIMITIVE_DEFAULTS) return PRIMITIVE_DEFAULTS[typeName];
+	// shape should be cube
+	if (typeName == 'LevelNodeShape') return 1000;
 	// enums use 0
 	if (registry.enumLookup[parentTypeName + '.' + typeName]) return 0;
+	if (registry.enumLookup[typeName]) return 0;
 	// colors have an alpha of 1
 	if (typeName == 'Color') return { r: 0, g: 0, b: 0, a: 1 };
 	// quaternions have a w of 1
@@ -182,7 +181,11 @@ function getFieldInfo(typeName, key) {
 
 /** look up an enum by type name */
 function getEnumData(typeName, parentTypeName) {
-	return registry.enums[parentTypeName + '.' + typeName] || null;
+	const x = registry.enums[parentTypeName + '.' + typeName] || null;
+	if (!x) {
+		return registry.enums[typeName] || null;
+	}
+	return x;
 }
 
 /** resolve a type from its parent */
