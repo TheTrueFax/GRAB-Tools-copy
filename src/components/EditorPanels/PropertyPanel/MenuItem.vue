@@ -196,7 +196,11 @@ export default defineComponent({
 			// try map some values to new object (like position, rotation, scale, etc)
 			for (let i of Object.keys(ds)) {
 				for (let x of Object.keys(ds[i])) {
-					if (blankTypeCloned[blankTypeItem][x] != null) {
+					if (
+						blankTypeCloned[blankTypeItem][x] != null &&
+						typeof blankTypeCloned[blankTypeItem][x] ==
+							typeof ds[i][x]
+					) {
 						blankTypeCloned[blankTypeItem][x] = ds[i][x];
 					}
 				}
