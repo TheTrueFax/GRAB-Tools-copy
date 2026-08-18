@@ -60,8 +60,20 @@ function loadTypeRegistry() {
 				enumData.push([parseInt(k), enumCaseToTitleCase(i)]);
 			});
 
-			registry.enums[item.parent.name + '.' + item.name] = enumData;
-			registry.enumLookup[item.parent.name + '.' + item.name] = true;
+			registry.enums[
+				(item.parent.name == 'Level'
+					? 'LevelNodeStatic'
+					: item.parent.name) +
+					'.' +
+					item.name
+			] = enumData;
+			registry.enumLookup[
+				(item.parent.name == 'Level'
+					? 'LevelNodeStatic'
+					: item.parent.name) +
+					'.' +
+					item.name
+			] = true;
 		}
 
 		// messages
@@ -91,6 +103,7 @@ function loadTypeRegistry() {
 			registry.types[item.name] = typeDef;
 		}
 	});
+	console.log(registry);
 }
 
 /** build a default for any proto type */
