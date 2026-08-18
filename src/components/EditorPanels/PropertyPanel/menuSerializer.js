@@ -60,8 +60,8 @@ function loadTypeRegistry() {
 				enumData.push([parseInt(k), enumCaseToTitleCase(i)]);
 			});
 
-			registry.enums[item.parent.name + "." + item.name] = enumData;
-			registry.enumLookup[item.parent.name + "." + item.name] = true;
+			registry.enums[item.parent.name + '.' + item.name] = enumData;
+			registry.enumLookup[item.parent.name + '.' + item.name] = true;
 		}
 
 		// messages
@@ -98,7 +98,7 @@ function getDefaultForType(typeName, parentTypeName = null) {
 	// primitives use their defaults
 	if (typeName in PRIMITIVE_DEFAULTS) return PRIMITIVE_DEFAULTS[typeName];
 	// enums use 0
-	if (registry.enumLookup[parentTypeName + "." + typeName]) return 0;
+	if (registry.enumLookup[parentTypeName + '.' + typeName]) return 0;
 
 	const typeDef = registry.types[typeName];
 	if (!typeDef) return undefined;
@@ -114,7 +114,9 @@ function getDefaultForType(typeName, parentTypeName = null) {
 	// build children recursively excluding oneofs
 	Object.entries(typeDef.fields).forEach(([fieldName, field]) => {
 		if (oneofFieldNames.has(fieldName)) return;
-		result[fieldName] = field.repeated ? [] : getDefaultForType(field.type, typeName);
+		result[fieldName] = field.repeated
+			? []
+			: getDefaultForType(field.type, typeName);
 	});
 
 	return result;
@@ -163,7 +165,7 @@ function getFieldInfo(typeName, key) {
 
 /** look up an enum by type name */
 function getEnumData(typeName, parentTypeName) {
-	return registry.enums[parentTypeName + "." + typeName] || null;
+	return registry.enums[parentTypeName + '.' + typeName] || null;
 }
 
 /** resolve a type from its parent */
@@ -195,12 +197,16 @@ function buildTypedefEntries(value, typeDef, typeName, parentTypeName = null) {
 	// active oneof variant
 	Object.entries(oneofs).forEach(([, variants]) => {
 		// a variant should exist but fallback to the first one
-		const activeVariant = variants.find((v) => value[v]) ?? variants[0];
+		const activeVariant =
+			variants.find((v) => value[v] != null) ?? variants[0];
 
 		const subVal =
 			activeVariant in value
 				? value[activeVariant] // value
-				: getDefaultForType(typeDef.fields[activeVariant].type, parentTypeName); // default
+				: getDefaultForType(
+						typeDef.fields[activeVariant].type,
+						parentTypeName,
+					); // default
 
 		entries.push([
 			activeVariant,
@@ -304,7 +310,9 @@ export function serialize(
 
 	// enum
 	const enumData =
-		fieldInfo && !fieldInfo.repeated ? getEnumData(typeName, parentTypeName) : null;
+		fieldInfo && !fieldInfo.repeated
+			? getEnumData(typeName, parentTypeName)
+			: null;
 	if (enumData) {
 		return { ...node, type: 'enum', value, enumData };
 	}
@@ -332,8 +340,6 @@ export function serialize(
 		) {
 			value.w = 1;
 		}
-		
-		console.log(value, typeDef, typeName, parentTypeName)
 
 		const entries = typeDef
 			? buildTypedefEntries(value, typeDef, typeName, parentTypeName)
@@ -366,7 +372,6 @@ export function deserialize(object) {
 	if (!object.children) return object.value;
 	// array
 	if (object.type === 'array') return object.children.map(deserialize);
-
 	// object
 	const result = {};
 	object.children.forEach((c) => {

@@ -5,6 +5,13 @@ import {
 } from '@/components/EditorPanels/PropertyPanel/menuSerializer';
 import { defineComponent, ref } from 'vue';
 
+function camelToTitleCase(str) {
+	return str
+		.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+		.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+		.replace(/^./, (c) => c.toUpperCase());
+}
+
 export default defineComponent({
 	props: {
 		node: Object,
@@ -189,11 +196,16 @@ export default defineComponent({
 			// try map some values to new object (like position, rotation, scale, etc)
 			for (let i of Object.keys(ds)) {
 				for (let x of Object.keys(ds[i])) {
-					if (blankTypeCloned[blankTypeItem][x] !== null) {
+					if (blankTypeCloned[blankTypeItem][x] != null) {
 						blankTypeCloned[blankTypeItem][x] = ds[i][x];
 					}
 				}
-				if (typeof ds[i] !== 'object') {
+				if (
+					!Object.keys(this.$props.node.blankTypes).includes(
+						camelToTitleCase(i),
+					) &&
+					ds[i] != null
+				) {
 					blankTypeCloned[i] = ds[i];
 				}
 			}
