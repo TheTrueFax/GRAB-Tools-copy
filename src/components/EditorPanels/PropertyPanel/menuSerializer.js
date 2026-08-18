@@ -99,6 +99,10 @@ function getDefaultForType(typeName, parentTypeName = null) {
 	if (typeName in PRIMITIVE_DEFAULTS) return PRIMITIVE_DEFAULTS[typeName];
 	// enums use 0
 	if (registry.enumLookup[parentTypeName + '.' + typeName]) return 0;
+	// colors have an alpha of 1
+	if (typeName == 'Color') return { r: 0, g: 0, b: 0, a: 1 };
+	// quaternions have a w of 1
+	if (typeName == 'Quaternion') return { x: 0, y: 0, z: 0, w: 1 };
 
 	const typeDef = registry.types[typeName];
 	if (!typeDef) return undefined;
@@ -223,7 +227,9 @@ function buildTypedefEntries(value, typeDef, typeName, parentTypeName = null) {
 			? value[subKey]
 			: subField.repeated
 				? []
-				: getDefaultForType(subField.type, parentTypeName);
+				: subKey == 'color1' // default main color on concrete is white
+					? { r: 1, g: 1, b: 1, a: 1 }
+					: getDefaultForType(subField.type, parentTypeName);
 
 		entries.push([
 			subKey,
@@ -326,20 +332,6 @@ export function serialize(
 				? getBlankType(value, blankTypes)
 				: null;
 		const typeDef = typeName ? registry.types[typeName] : null;
-
-		// lazy fix for defaulting blankTypes
-		if (typeName == 'Color' && value.a == 0) {
-			value = { r: 1, g: 1, b: 1, a: 1 };
-		}
-		if (
-			typeName == 'Quaternion' &&
-			value.x == 0 &&
-			value.y == 0 &&
-			value.z == 0 &&
-			value.w == 0
-		) {
-			value.w = 1;
-		}
 
 		const entries = typeDef
 			? buildTypedefEntries(value, typeDef, typeName, parentTypeName)
