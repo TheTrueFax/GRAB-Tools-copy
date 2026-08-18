@@ -103,7 +103,14 @@ function loadTypeRegistry() {
 }
 
 /** build a default for any proto type */
-function getDefaultForType(typeName, parentTypeName = null) {
+function getDefaultForType(typeName, parentTypeName = null, labelName = null) {
+	// scale
+	if (labelName == 'scale') return { x: 1, y: 1, z: 1 };
+	// levelNodeStart and levelNodeFinish
+	if (labelName == 'radius') return 1;
+	// levelNodeCrumbling defualt material is grabbableCrumbling (id: 7)
+	if (labelName == 'material' && parentTypeName == 'LevelNodeCrumbling')
+		return 7;
 	// primitives use their defaults
 	if (typeName in PRIMITIVE_DEFAULTS) return PRIMITIVE_DEFAULTS[typeName];
 	// shape should be cube
@@ -132,7 +139,7 @@ function getDefaultForType(typeName, parentTypeName = null) {
 		if (oneofFieldNames.has(fieldName)) return;
 		result[fieldName] = field.repeated
 			? []
-			: getDefaultForType(field.type, typeName);
+			: getDefaultForType(field.type, typeName, fieldName);
 	});
 
 	return result;
