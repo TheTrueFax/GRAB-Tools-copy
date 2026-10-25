@@ -69,7 +69,7 @@ export default defineComponent({
 		</select>
 		<label>
 			Start active:
-			<input ref="start-active" type="checkbox" checked="true" />
+			<input ref="active" type="checkbox" checked="true" />
 		</label>
 		<label> Loop: <input ref="loop" type="checkbox" checked="true" /> </label>
 		<input
