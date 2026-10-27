@@ -32,7 +32,7 @@ export default defineComponent({
 		:details="'Paste a list of level browser links to your levels to download them.'"
 	>
 		<textarea
-			id="urls"
+			ref="urls"
 			cols="30"
 			rows="5"
 			placeholder="link, link, link, link"
