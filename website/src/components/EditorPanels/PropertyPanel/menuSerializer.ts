@@ -82,11 +82,11 @@ function loadTypeRegistry() {
 			const enumData: [number, string][] = [];
 
 			Object.entries(item.valuesById).forEach(([k, i]: string[]) => {
-				if (i && i.charAt(0) === '_') return;
+				if (i?.startsWith('_')) return;
 				// store as [id, displayName]
 				enumData.push([
-					parseInt(k || '0'),
-					enumCaseToTitleCase(i || 'UNKNOWN_ENUM'),
+					parseInt(k ?? '0'),
+					enumCaseToTitleCase(i ?? 'UNKNOWN_ENUM'),
 				]);
 			});
 
@@ -221,14 +221,14 @@ function getBlankTypesForArray(elementType: string) {
 /** look up a field on a parent type */
 function getFieldInfo(typeName: string, key: string) {
 	const typeDef = registry.types[typeName];
-	return typeDef?.fields[key] || null;
+	return typeDef?.fields[key] ?? null;
 }
 
 /** look up an enum by type name */
 function getEnumData(typeName: string, parentTypeName: string) {
-	const x = registry.enums[parentTypeName + '.' + typeName] || null;
+	const x = registry.enums[parentTypeName + '.' + typeName] ?? null;
 	if (!x) {
-		return registry.enums[typeName] || null;
+		return registry.enums[typeName] ?? null;
 	}
 	return x;
 }
@@ -276,7 +276,7 @@ function buildTypedefEntries(
 				activeVariant in value
 					? value[activeVariant] // value
 					: getDefaultForType(
-							typeDef.fields[activeVariant]?.type || '', // this looks so dumb
+							typeDef.fields[activeVariant]?.type ?? '', // this looks so dumb
 							parentTypeName,
 						); // default
 
@@ -320,15 +320,13 @@ function getBlankType(
 		return camelToTitleCase(v);
 	});
 	for (const v of valTypeNames) {
-		if (blankTypes && blankTypes[v]) {
-			return v;
-		}
+		if (blankTypes?.[v]) return v;
 	}
 	console.warn('cant find blank type', value, blankTypes);
 }
 
 export interface Node {
-	value: unknown | null;
+	value: unknown;
 	title: string;
 	key: string;
 	arrayIndex: number;
@@ -394,7 +392,7 @@ export function serialize(
 				);
 				if (blankTypes && Object.keys(blankTypes).length > 1) {
 					child.selectedBlankType =
-						getBlankType(item, blankTypes) || '';
+						getBlankType(item, blankTypes) ?? '';
 				}
 				child.elementType = elementType;
 				child.blankTypes = blankTypes;
@@ -415,7 +413,7 @@ export function serialize(
 	// enum
 	const enumData =
 		fieldInfo && !fieldInfo.repeated
-			? getEnumData(typeName || '', parentTypeName)
+			? getEnumData(typeName ?? '', parentTypeName)
 			: [];
 	if (enumData && enumData.length > 0) {
 		return { ...node, type: 'enum', value, enumData };
@@ -427,8 +425,8 @@ export function serialize(
 			parentTypeName == '' ? getBlankTypesForArray('LevelNode') : null;
 		const selectedBlankType =
 			blankTypes && Object.keys(blankTypes).length > 1
-				? getBlankType(value as Record<string, object>, blankTypes) ||
-					null
+				? (getBlankType(value as Record<string, object>, blankTypes) ??
+					null)
 				: null;
 		const typeDef = typeName ? registry.types[typeName] : null;
 
@@ -436,7 +434,7 @@ export function serialize(
 			? buildTypedefEntries(
 					value as Record<string, object>,
 					typeDef,
-					typeName || '',
+					typeName ?? '',
 					parentTypeName,
 				)
 			: Object.entries(value).map(([subKey, subVal]) => [
@@ -444,13 +442,13 @@ export function serialize(
 					serialize(
 						subVal,
 						subKey,
-						(arrayIndex != -1 ? parentTypeName : typeName) || '',
+						(arrayIndex != -1 ? parentTypeName : typeName) ?? '',
 					),
 				]);
 
 		return {
 			...node,
-			type: typeName || 'object',
+			type: typeName ?? 'object',
 			isExpandable: entries.length > 0,
 			children: entries.map(([, child]) => child as Node),
 			blankTypes,
@@ -465,7 +463,7 @@ export function serialize(
 /** reconstruct an object from a menu tree */
 export function deserialize(object: Node): LevelNode {
 	// value
-	if (!object.children) return object.value;
+	if (!object.children) return object.value as LevelNode;
 	// array
 	if (object.type === 'array') return object.children.map(deserialize);
 	// object
