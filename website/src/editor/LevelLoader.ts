@@ -88,7 +88,7 @@ export interface LevelData {
 	};
 }
 
-interface LevelLoaderOptions {
+export interface LevelConfig {
 	sky: boolean;
 	lights: boolean;
 	text: boolean;
@@ -172,7 +172,7 @@ export function levelData(): LevelData {
 class LevelLoader {
 	root: Root;
 	font: Font | undefined;
-	options: LevelLoaderOptions = {
+	options: LevelConfig = {
 		sky: true,
 		lights: true,
 		text: false,
@@ -219,7 +219,7 @@ class LevelLoader {
 	];
 	skyMaterial: THREE.ShaderMaterial;
 
-	constructor(options: Partial<LevelLoaderOptions> = {}) {
+	constructor(options: Partial<LevelConfig> = {}) {
 		this.config(options);
 
 		textureLoader = new THREE.TextureLoader();
@@ -539,7 +539,7 @@ class LevelLoader {
 		});
 	}
 
-	config(options: Partial<LevelLoaderOptions> = {}) {
+	config(options: Partial<LevelConfig> = {}) {
 		Object.assign(this.options, options);
 	}
 
