@@ -15,7 +15,9 @@ export default defineComponent({
 		raw: { type: Object as PropType<Record<MetricKey, number>>, required: true },
 		weights: { type: Object as PropType<Record<MetricKey, number>>, required: true },
 	},
-	emits: ['expand'],
+	emits: {
+		expand: () => true,
+	},
 	data() {
 		return {
 			expanded: false,

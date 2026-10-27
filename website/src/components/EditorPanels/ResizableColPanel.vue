@@ -2,7 +2,9 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-	emits: ['resize'],
+	emits: {
+		resize: () => true,
+	},
 	data() {
 		return {
 			down: false,

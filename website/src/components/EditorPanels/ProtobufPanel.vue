@@ -8,7 +8,10 @@ import { EditorView } from 'codemirror';
 import { defineComponent, markRaw } from 'vue';
 
 export default defineComponent({
-	emits: ['set', 'close'],
+	emits: {
+		set: (_: string) => true,
+		close: () => true,
+	},
 	data() {
 		return {
 			view: null! as EditorView,

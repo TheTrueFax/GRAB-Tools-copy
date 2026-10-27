@@ -13,7 +13,9 @@ export default defineComponent({
 	props: {
 		mini: Boolean,
 	},
-	emits: ['changed'],
+	emits: {
+		changed: (_: object) => true,
+	},
 	data() {
 		return {
 			view: null! as EditorView,

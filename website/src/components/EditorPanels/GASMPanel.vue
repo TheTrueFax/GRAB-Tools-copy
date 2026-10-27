@@ -19,7 +19,9 @@ import { mapState } from 'pinia';
 import { defineComponent, markRaw } from 'vue';
 
 export default defineComponent({
-	emits: ['set'],
+	emits: {
+		set: (_: LevelNodeWith<LevelNodeGASM>) => true,
+	},
 	data() {
 		return {
 			json: undefined as LevelNodeWith<LevelNodeGASM> | undefined,
@@ -98,7 +100,9 @@ export default defineComponent({
 				return;
 			}
 
-			this.$emit('set', data);
+			if (data) {
+				this.$emit('set', data);
+			}
 		},
 		click(e: Event) {
 			if (e.target === (this.$refs.code_container as HTMLElement)) {

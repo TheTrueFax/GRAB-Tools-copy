@@ -10,7 +10,10 @@ type Template = { name: string } & (
 );
 
 export default defineComponent({
-	emits: ['modifier', 'close'],
+	emits: {
+		modifier: (_: (_: Level) => Level) => true,
+		close: () => true,
+	},
 	data() {
 		return {
 			active_sections: [] as string[],

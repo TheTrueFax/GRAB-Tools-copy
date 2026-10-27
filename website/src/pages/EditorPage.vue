@@ -215,9 +215,11 @@ export default defineComponent({
 		<MenuPanel
 			@modifier="run_modifier"
 			@function="run_function"
-			@viewport="run_viewport"
-			@popup="set_popup"
-			@scope="scope"
+			@viewport="run_viewport as (_: (_: never) => void) => void"
+			@popup="
+				set_popup as (_: Input[], _f: (...data: never[]) => void | Promise<void>) => void
+			"
+			@scope="scope as (_: (_: never) => void) => void"
 		/>
 		<ResizableRowPanel :ref="'main_panel'" class="main-panel" @resize="resize_left">
 			<template #first>
@@ -231,7 +233,7 @@ export default defineComponent({
 							class="view-panel"
 							@changed="viewport_changed"
 							@modifier="run_modifier"
-							@scope="scope"
+							@scope="scope as (_: (_: never) => void) => void"
 							@undo="undo"
 							@redo="redo"
 						/>

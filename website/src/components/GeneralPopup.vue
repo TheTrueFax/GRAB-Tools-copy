@@ -8,7 +8,9 @@ export default defineComponent({
 			required: true,
 		},
 	},
-	emits: ['update:visible'],
+	emits: {
+		'update:visible': (_: boolean) => true,
+	},
 	watch: {
 		visible(value: boolean) {
 			this.sync(value);

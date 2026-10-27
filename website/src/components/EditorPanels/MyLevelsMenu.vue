@@ -6,6 +6,7 @@ import { user_levels_request } from '@/requests/UserLevelsRequest';
 import { useUserStore } from '@/stores/user';
 import downloads from '@/tools/downloads';
 import { LevelDetails } from '@grab-tools/lib/data/types';
+import { Level } from '@grab-tools/lib/generated/proto';
 import { mapState } from 'pinia';
 import { defineComponent } from 'vue';
 
@@ -20,7 +21,11 @@ export default defineComponent({
 			required: true,
 		},
 	},
-	emits: ['update:visible', 'open', 'insert'],
+	emits: {
+		'update:visible': (_: boolean) => true,
+		open: (_: Level) => true,
+		insert: (_: Level) => true,
+	},
 	data() {
 		return {
 			levels: [] as LevelDetails[],

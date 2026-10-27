@@ -77,8 +77,13 @@ export default defineComponent({
 	components: {
 		DropDown,
 	},
-	// TODO: apparently can be a typed dict?
-	emits: ['modifier', 'function', 'viewport', 'popup', 'scope'],
+	emits: {
+		modifier: (_: (level: Level) => Level | Promise<Level>) => true,
+		function: (_: (level: Level) => void | Promise<void>) => true,
+		viewport: (_: (_: never) => void) => true,
+		popup: <F extends (...data: never[]) => void | Promise<void>>(_: Input[], _f: F) => true,
+		scope: (_: (_: never) => void) => true,
+	},
 	data() {
 		return {
 			menu: {

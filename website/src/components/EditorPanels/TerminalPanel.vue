@@ -5,7 +5,9 @@ import { defineComponent, markRaw } from 'vue';
 
 export default defineComponent({
 	components: {},
-	emits: ['command'],
+	emits: {
+		command: (_: (_: Level) => Level) => true,
+	},
 	data() {
 		return {
 			terminal: null as unknown as Terminal,

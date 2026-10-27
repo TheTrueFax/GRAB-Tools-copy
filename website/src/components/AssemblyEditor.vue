@@ -10,7 +10,9 @@ export default defineComponent({
 			required: true,
 		},
 	},
-	emits: ['changed'],
+	emits: {
+		changed: () => true,
+	},
 	data() {
 		const instance: BaseEditor = null!;
 

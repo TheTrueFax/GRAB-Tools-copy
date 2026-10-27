@@ -10,7 +10,9 @@ export default defineComponent({
 		PlayIcon,
 		PauseIcon,
 	},
-	emits: ['scope'],
+	emits: {
+		scope: (_: (_: never) => void) => true,
+	},
 	data() {
 		return {
 			max: 0,

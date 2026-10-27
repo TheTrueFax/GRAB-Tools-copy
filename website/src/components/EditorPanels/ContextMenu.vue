@@ -13,7 +13,9 @@ export default defineComponent({
 			required: true,
 		},
 	},
-	emits: ['close'],
+	emits: {
+		close: () => true,
+	},
 	methods: {
 		close() {
 			this.$emit('close');

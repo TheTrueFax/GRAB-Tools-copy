@@ -22,7 +22,9 @@ export default defineComponent({
 	props: {
 		list: Array as PropType<ListRowData[]>,
 	},
-	emits: ['update'],
+	emits: {
+		update: () => true,
+	},
 	data() {
 		return {
 			edit_level_id: null as string | null,

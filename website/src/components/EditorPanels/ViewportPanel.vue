@@ -91,7 +91,13 @@ export default defineComponent({
 		ResizableColPanel,
 		KeyHint,
 	},
-	emits: ['changed', 'modifier', 'scope', 'undo', 'redo'],
+	emits: {
+		changed: () => true,
+		modifier: (_: (json: Level) => Level) => true,
+		scope: (_: (scope: never) => void) => true,
+		undo: () => true,
+		redo: () => true,
+	},
 	data() {
 		return {
 			zoom_to_cursor: true,
@@ -1975,8 +1981,8 @@ export default defineComponent({
 				};
 			}
 		},
-		run_in_scope(func: (scope: unknown) => void) {
-			func(this);
+		run_in_scope(func: (scope: never) => void) {
+			func(this as never);
 		},
 	},
 });

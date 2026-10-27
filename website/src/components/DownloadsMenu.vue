@@ -26,7 +26,9 @@ export default defineComponent({
 			required: true,
 		},
 	},
-	emits: ['update:visible'],
+	emits: {
+		'update:visible': (_: boolean) => true,
+	},
 	data() {
 		return {
 			allow_downloads: false,
