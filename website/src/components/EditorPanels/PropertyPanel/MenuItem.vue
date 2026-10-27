@@ -1,8 +1,12 @@
-<script>
-import { deserialize, serialize } from '@/components/EditorPanels/PropertyPanel/menuSerializer';
-import { defineComponent, ref } from 'vue';
+<script lang="ts">
+import {
+	deserialize,
+	Node,
+	serialize,
+} from '@/components/EditorPanels/PropertyPanel/menuSerializer';
+import { defineComponent, PropType, ref } from 'vue';
 
-function camelToTitleCase(str) {
+function camelToTitleCase(str: string) {
 	return str
 		.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
 		.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
@@ -11,10 +15,20 @@ function camelToTitleCase(str) {
 
 export default defineComponent({
 	props: {
-		node: Object,
-		reOpen: Boolean,
+		node: {
+			type: Object as PropType<Node>,
+			required: true,
+		},
+		reOpen: {
+			type: Boolean,
+			required: true,
+		},
 	},
-	emits: ['set', 'refresh'],
+	emits: {
+		// TODO: replace unknown with a Node and pass it not 'this'
+		set: (_: (_: unknown) => void) => true,
+		refresh: () => true,
+	},
 	data() {
 		return {
 			isExpanded: ref(false),
@@ -43,10 +57,11 @@ export default defineComponent({
 		},
 	},
 	mounted() {
-		window.addEventListener('click', this.onclick);
+		// FIXME: does this.onclick exist?
+		// window.addEventListener('click', this.onclick);
 	},
 	methods: {
-		objectEquals(a, b) {
+		objectEquals(a: object, b: object) {
 			if (typeof a != typeof b) return false;
 			if (typeof a != 'object') {
 				return a == b;
@@ -65,8 +80,8 @@ export default defineComponent({
 			});
 			return equal;
 		},
-		toggle(e) {
-			if (e.target.className.includes('modify-button')) return;
+		toggle(e: Event) {
+			if ((e.target as HTMLElement).className.includes('modify-button')) return;
 			if (this.$props.node.isExpandable) {
 				this.isExpanded = !this.isExpanded;
 			}
