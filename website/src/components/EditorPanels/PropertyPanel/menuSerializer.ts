@@ -1,4 +1,5 @@
 import { load } from '@/common/root';
+import { LevelNode } from '@grab-tools/lib/generated/proto';
 import { Enum, Field, OneOf, Type } from 'protobufjs';
 //import '@/components/EditorPanels/PropertyPanel/fullyQualifiedObjectTypes.ts';
 
@@ -326,7 +327,7 @@ function getBlankType(
 	console.warn('cant find blank type', value, blankTypes);
 }
 
-interface Node {
+export interface Node {
 	value: unknown | null;
 	title: string;
 	key: string;
@@ -462,7 +463,7 @@ export function serialize(
 }
 
 /** reconstruct an object from a menu tree */
-export function deserialize(object: Node): Record<string, unknown> | unknown {
+export function deserialize(object: Node): LevelNode {
 	// value
 	if (!object.children) return object.value;
 	// array

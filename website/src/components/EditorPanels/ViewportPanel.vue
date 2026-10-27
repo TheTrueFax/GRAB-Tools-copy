@@ -104,7 +104,6 @@ export default defineComponent({
 		return {
 			zoom_to_cursor: true,
 			free_movement: false,
-			editing_property_object: undefined,
 			dragging: false,
 			huge_far: false,
 			show_groups: true,
@@ -140,6 +139,7 @@ export default defineComponent({
 			mouseup_fired: false,
 			right_click_dragged: false,
 			level: markRaw(levelData()),
+			editing_property_object: undefined as Raw<LevelNodeObject> | undefined,
 			editing_json: undefined as Raw<LevelNodeObject> | undefined,
 			editing_gasm: undefined as Raw<LevelNodeObject<LevelNodeGASM>> | undefined,
 			editing_parent: undefined as
@@ -207,6 +207,7 @@ export default defineComponent({
 				gasm_editor: InstanceType<typeof GASMPanel>;
 				mini_editor: InstanceType<typeof JsonPanel>;
 				animation_panel: InstanceType<typeof AnimationPanel>;
+				property_editor: InstanceType<typeof PropertyPanel>;
 			};
 		},
 		update_node_shader(object: THREE.Object3D | undefined, position = true, light = true) {
@@ -1283,16 +1284,16 @@ export default defineComponent({
 				return json;
 			});
 		},
-		save_properties(new_node) {
-			const id = this.editing_property_object?.userData?.id;
+		save_properties(new_node: LevelNode) {
+			const id = this.editing_property_object?.userData.id;
 			if (!id) {
 				window.toast('Failed to write node', 'error');
 				return;
 			}
 			this.modifier((json) => {
 				console.log(json);
-				const index = json.levelNodes.findIndex(
-					(n) => n === this.level.nodes.all[id - 1].userData.node,
+				const index = (json.levelNodes ??= []).findIndex(
+					(n) => n === this.level.nodes.all[id - 1]?.userData.node,
 				);
 				if (index !== -1) {
 					json.levelNodes[index] = new_node;
@@ -1302,8 +1303,8 @@ export default defineComponent({
 		},
 		close_property_editor() {
 			if (this.show_property_editor) {
-				this.$refs.property_editor.save();
-				this.save_properties(this.$refs.property_editor.deSerialized);
+				this.refs().property_editor.save();
+				this.save_properties(this.refs().property_editor.deSerialized!);
 			}
 			this.show_property_editor = false;
 		},
@@ -1398,12 +1399,12 @@ export default defineComponent({
 			this.editing_json = markRaw(object);
 			this.refs().mini_editor.set_json(object.userData.node);
 		},
-		edit_object_properties(object) {
+		edit_object_properties(object: LevelNodeObject | undefined) {
 			if (!object) return;
 
 			this.show_property_editor = true;
 			this.editing_property_object = object;
-			this.$refs.property_editor.set_object(object.userData.node);
+			this.refs().property_editor.set_object(object.userData.node);
 		},
 		edit_gasm_code(object: LevelNodeObject<LevelNodeGASM>) {
 			this.show_gasm_editor = true;
