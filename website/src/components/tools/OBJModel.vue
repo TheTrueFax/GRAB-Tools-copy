@@ -47,8 +47,8 @@ export default defineComponent({
 
 <template>
 	<ToolTemplate :name="'3D Model'" :details="'Import a .obj 3D models into grab.'">
-		<input refs="file" type="file" accept=".obj,.mtl" multiple />
-		<select refs="mode">
+		<input ref="file" type="file" accept=".obj,.mtl" multiple />
+		<select ref="mode">
 			<option value="triangles" selected>triangles</option>
 			<option value="particles">particles</option>
 			<option value="spheres">spheres</option>
